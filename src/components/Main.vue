@@ -204,5 +204,64 @@ $menu_item_h:20px;
     font-size: 1.3em;
     font-weight: bold;
 }
-
+.Loadding_cover{
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    width: 100%;
+    background: rgba(0, 0, 0, .5);
+    z-index: 100000;
+    transition: ease .5s;
+}
+.Loadding_board{
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    height: auto;
+    width: 40%;
+    margin-left: -20%;
+    background: rgb(255, 255, 255);
+    z-index: 100001;
+    border-radius: 1em;
+    box-shadow: 2px 2px 10px rgba(0,0,0,.1);
+}
+.Loadding_title{
+    height: 1.5em;
+    color: black;
+    font-size: 1em;
+    line-height: 1.5em;
+    text-align: center;
+    font-weight: bold;
+}
+.Loadding_bar{
+    height: 5px;
+    width: calc(10% - 20px);
+    margin-left: 10px;
+    background: #81C784;
+    border-radius: 10px;
+    margin: 10px;
+}
+.Loadding_bar::before{
+    content: "";
+    height: 5px;
+    width: calc(100% - 20px);
+    margin-left: 10px;
+    background: #e0e0e0;
+    border-radius: 10px;
+    margin: 10px;
+    position: absolute;
+    left: 0px;
+    top: 1.5em;
+    z-index: -1;
+}
+.Loadding_info{
+    height: 1.5em;
+    color: #999999;
+    font-size: .8em;
+    line-height: 1.5em;
+    margin: 5px;
+    text-align: left;
+    text-indent: 10px;
+}
 </style>

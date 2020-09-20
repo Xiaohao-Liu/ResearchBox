@@ -76,6 +76,7 @@
 <script>
 const $ = require("jquery");
 const config = require("../../utils/config");
+const Loadding = require("../../utils/loadding");
 export default {
     inject:['reload'],
   name: 'login',
@@ -113,42 +114,66 @@ export default {
   },
   mounted:function(){
       var that =this;
-      $.ajax({
-            type:"GET",
-            url: config.server_host + "/api/paper/by_ntime",
-            async:false,
-            dataType:"json",
-            success:function(returndata){
-                console.log(returndata)
-                for(var i = 0; i< returndata.data.length;i++){
-                    if(returndata.data[i] ==null)continue;
-                    if(returndata.data[i]['tags'] != ''){
-                        returndata.data[i]['tags'] = returndata.data[i]['tags'].split(';');
-                    }else returndata.data[i]['tags']=[]
-                    that.paper_list.push(returndata.data[i]);
+      var first_loadding = new Loadding();
+    first_loadding.add_title("初始化");
+    first_loadding.__init__();
+    first_loadding.add_process(
+        "拉取数据",
+        function(){
+             $.ajax({
+                type:"GET",
+                url: config.server_host + "/api/paper/by_ntime",
+                async:false,
+                dataType:"json",
+                success:function(returndata){
+                    console.log(returndata)
+                    for(var i = 0; i< returndata.data.length;i++){
+                        if(returndata.data[i] ==null)continue;
+                        if(returndata.data[i]['tags'] != ''){
+                            returndata.data[i]['tags'] = returndata.data[i]['tags'].split(';');
+                        }else returndata.data[i]['tags']=[]
+                        that.paper_list.push(returndata.data[i]);
+                    }
                 }
-            }
-        });
+            });
+        }
+    );
+    first_loadding.start();
+     
   },
   methods:{
       add_paper:function(){
           var that = this;
           console.log(that.add_form);
-          $.ajax({
-            type:"POST",
-            url: config.server_host + "/api/paper/add",
-            async:false,
-            data:{"title":that.add_form.title,"author1":that.add_form.author1,"Ptime":that.add_form.Ptime},
-            dataType:"json",
-            success:function(returndata){
-                that.show_add_paper=false;
-                console.log(returndata);
-                that.reload();
-            }
-        });
+          var loadding = new Loadding();
+    loadding.add_title("初始化");
+    loadding.__init__();
+    loadding.add_process(
+        "添加Paper",
+        function(){
+            $.ajax({
+                type:"POST",
+                url: config.server_host + "/api/paper/add",
+                async:false,
+                data:{"title":that.add_form.title,"author1":that.add_form.author1,"Ptime":that.add_form.Ptime},
+                dataType:"json",
+                success:function(returndata){
+                    that.show_add_paper=false;
+                    console.log(returndata);
+                    that.reload();
+                }
+            });
+        })
+        loadding.start();
       },
       del_paper:function(md5_title){
           var that = this;
+          var loadding = new Loadding();
+        loadding.add_title("初始化");
+        loadding.__init__();
+        loadding.add_process(
+        "删除Paper",
+        function(){
           $.ajax({
             type:"POST",
             url: config.server_host + "/api/paper/del",
@@ -160,6 +185,8 @@ export default {
                 that.reload();
             }
         });
+        })
+        loadding.start();
       },
       handleCommand:function(command){
           if(command.type=='e'){

@@ -89,6 +89,30 @@ function getPapersInfo(md5titles){
 function deletePaper(md5_title){
     return Promise.all([
         new Promise((resolve,reject)=>{
+            client.hget("RSB_Paper_"+md5_title,"tags",(err,value)=>{
+                if(err) console.log(err);
+                resolve(value.split(';'));
+            })
+        }).then(
+            old_tags=>{
+                var stack = []
+                for(let i = 0;i<old_tags.length;i++){
+                    stack[i] = del_paper_from_tag(md5_title,old_tags[i].replace(" ","+"));
+                }
+                return Promise.all(stack);
+            }
+        ),
+        new Promise((resolve,reject)=>{
+            client.hget("RSB_Paper_"+md5_title,"meeting",(err,value)=>{
+                if(err) console.log(err);
+                resolve(value)
+            })
+        }).then(
+            old_meeting=>{
+                return del_paper_from_meeting(md5_title,old_meeting)
+            }
+        ),
+        new Promise((resolve,reject)=>{
             client.del("RSB_Paper_"+md5_title,(err)=>{
                 if(err) console.log(err);
                 resolve(true);
@@ -108,79 +132,6 @@ function deletePaper(md5_title){
         }),
     ])
 }
-
-// function set_paper_title(md5_title,p_time,n_time,new_title){
-//     return Promise.all([
-//         // 删除原先的时间存档
-//         new Promise((resolve,reject)=>{
-//             client.zrem("RSB_Papers_By_Ntime",md5_title,(err)=>{
-//                 if(err) {
-//                     console.log(err);
-//                     return; 
-//                 }
-//                 resolve(true)
-//             })
-//         }),
-//         new Promise((resolve,reject)=>{
-//             client.zrem("RSB_Papers_By_Ptime",md5_title,(err)=>{
-//                 if(err) {
-//                     console.log(err);
-//                     return; 
-//                 }
-//                 resolve(true)
-//             })
-//         })
-//     ]).then(
-//         res=>{
-//             // 更新原先的时间存档
-//             var new_md5_title = md5(new_title);
-//             return Promise.all([
-//                 new Promise((resolve,reject)=>{
-//                     client.hget("RSB_Paper_"+md5_title,"Ntime",(err,value)=>{
-//                         if(err) console.log(err);
-//                         resolve(value)
-//                     })
-//                 }).then(
-//                     n_time=>{
-//                         return new Promise((resolve,reject)=>{
-//                             client.zadd("RSB_Papers_By_Ntime",n_time,new_md5_title,(err)=>{
-//                                 if(err) console.log(err);
-//                                 resolve(true)
-//                             })
-//                         })
-//                     }
-//                 ),
-//                 new Promise((resolve,reject)=>{
-//                     client.hget("RSB_Paper_"+md5_title,"Ptime",(err,value)=>{
-//                         if(err) console.log(err);
-//                         resolve(value)
-//                     })
-//                 }).then(
-//                     p_time=>{
-//                         return new Promise((resolve,reject)=>{
-//                             client.zadd("RSB_Papers_By_Ptime",p_time,new_md5_title,(err)=>{
-//                                 if(err) console.log(err);
-//                                 resolve(true)
-//                             })
-//                         })
-//                     }
-//                 ),
-//                 new Promise((resolve,reject)=>{
-//                     client.hset("RSB_Paper_"+md5_title,"title",new_title,(err)=>{
-//                         if(err) console.log(err);
-//                         resolve(true)
-//                     })
-//                 }),
-//                 new Promise((resolve,reject)=>{
-//                     client.hset("RSB_Paper_"+md5_title,"md5_title",new_md5_title,(err)=>{
-//                         if(err) console.log(err);
-//                         resolve(true)
-//                     })
-//                 })
-//             ])
-//         }
-//     )
-// }
 
 
 function set_paper_author1(md5_title,new_author1){

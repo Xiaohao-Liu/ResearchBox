@@ -86,6 +86,8 @@
 <script>
 const $ = require("jquery");
 const config = require("../../utils/config");
+const Loadding = require("../../utils/loadding");
+
 export default {
   name: 'login',
   props: 
@@ -129,6 +131,12 @@ export default {
   },
   mounted:function(){
       var that =this;
+      var first_loadding = new Loadding();
+    first_loadding.add_title("初始化");
+    first_loadding.__init__();
+    first_loadding.add_process(
+        "拉取数据",
+        function(){
       $.ajax({
             type:"GET",
             url: config.server_host + "/api/paper/fetchone/"+that.md5_title,
@@ -147,10 +155,18 @@ export default {
                 console.log(that.edit_form)
             }
         });
+        })
+        first_loadding.start()
   },
   methods:{
       upload_all:function(){
         var that =this;
+        var loadding = new Loadding();
+    loadding.add_title("初始化");
+    loadding.__init__();
+    loadding.add_process(
+        "更新数据",
+        function(){
         var form = {}
         for(var key in that.edit_form)form[key] = that.edit_form[key]
         form["tags"] = form["tags"].join(";")
@@ -164,6 +180,8 @@ export default {
                 that.$router.push('/papereditor/'+returndata.data.md5_title)
             }
         });
+        })
+        loadding.start();
       },
       handleClose:function(tag) {
         this.edit_form.tags.splice(this.edit_form.tags.indexOf(tag), 1);
