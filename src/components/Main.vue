@@ -102,6 +102,12 @@ router:router,
               icon:"el-icon-receiving",
               route:"/meetingmanager"
           },
+          {
+              idx:3,
+              title:"计划管理",
+              icon:"el-icon-s-order",
+              route:"/planmanager"
+          },
       ]
     }
   },

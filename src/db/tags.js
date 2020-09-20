@@ -4,7 +4,7 @@ const md5 = require("../utils/md5");
 function insert_tags(tags){
     
     return new Promise((resolve,reject)=>{
-        client.sadd("RSB_Paper_Tags",tags,(err)=>{
+        client.sadd("RSB_Paper_Tags",tags.toLowerCase(),(err)=>{
             if(err)console.log(err);
             resolve(true);
         })
@@ -13,7 +13,7 @@ function insert_tags(tags){
 
 function del_tags(tags){
     return new Promise((resolve,reject)=>{
-        client.srem("RSB_Paper_Tags",tags,(err)=>{
+        client.srem("RSB_Paper_Tags",tags.toLowerCase(),(err)=>{
             if(err)console.log(err);
             resolve(true);
         })
@@ -31,7 +31,7 @@ function get_tags(){
 
 function get_papers_by_tags(tags){
     var keys = [];
-    for(var i =0;i<tags.length;i++)keys[i]="RSB_Papers_By_Tag_"+tags[i].replace(" ","+")
+    for(var i =0;i<tags.length;i++)keys[i]="RSB_Papers_By_Tag_"+tags[i].replace(" ","+").toLowerCase()
     return new Promise((resolve,reject)=>{
         client.sunion(keys,(err,value)=>{
             if(err)console.log(err);
@@ -42,7 +42,7 @@ function get_papers_by_tags(tags){
 
 function is_tag(tag){
     return new Promise((resolve,reject)=>{
-        client.sismember("RSB_Paper_Tags",tag,(err,value)=>{
+        client.sismember("RSB_Paper_Tags",tag.toLowerCase(),(err,value)=>{
             if(err)console.log(err);
             resolve(value)
         })
@@ -53,20 +53,20 @@ function del_paper_from_tag(paper, tag){
     if(tag == "")return Promise.all([]);
     return Promise.all([
         new Promise((resolve,reject)=>{
-            client.srem("RSB_Papers_By_Tag_"+tag,paper,(err)=>{
+            client.srem("RSB_Papers_By_Tag_"+tag.toLowerCase(),paper,(err)=>{
                 if(err)console.log(err);
                 resolve(true)
             })
         }),
         new Promise((resolve,reject)=>{
-            client.scard("RSB_Papers_By_Tag_"+tag,(err,value)=>{
+            client.scard("RSB_Papers_By_Tag_"+tag.toLowerCase(),(err,value)=>{
                 if(err)console.log(err);
                 resolve(value);
             })
         }).then(
             num_left=>{
                 if(num_left==0){
-                    return del_tags(tag);
+                    return del_tags(tag.toLowerCase());
                 }else return Promise.resolve(true);
             }
         )
@@ -82,7 +82,7 @@ function put_paper_to_tag(paper, tag){
                     status=>{
                         if(status){
                             return new Promise((resolve,reject)=>{
-                                client.sadd("RSB_Papers_By_Tag_"+tag,paper,(err)=>{
+                                client.sadd("RSB_Papers_By_Tag_"+tag.toLowerCase(),paper,(err)=>{
                                     if(err)console.log(err);
                                     resolve(true)
                                 })
@@ -91,7 +91,7 @@ function put_paper_to_tag(paper, tag){
                     })
             }
             return new Promise((resolve,reject)=>{
-                client.sadd("RSB_Papers_By_Tag_"+tag,paper,(err)=>{
+                client.sadd("RSB_Papers_By_Tag_"+tag.toLowerCase(),paper,(err)=>{
                     if(err)console.log(err);
                     resolve(true)
                 })
