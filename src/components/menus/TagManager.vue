@@ -43,6 +43,8 @@
 <script>
 const $ = require("jquery");
 const config = require("../../utils/config");
+const Loadding = require("../../utils/loadding");
+
 export default {
     inject:['reload'],
   name: 'login',
@@ -58,6 +60,12 @@ export default {
   },
   mounted:function(){
       var that =this;
+      var first_loadding = new Loadding();
+    first_loadding.add_title("初始化");
+    first_loadding.__init__();
+    first_loadding.add_process(
+        "拉取数据",
+        function(){
       $.ajax({
             type:"GET",
             url: config.server_host + "/api/tag/get",
@@ -67,6 +75,8 @@ export default {
                 that.tags_list = returndata.data;
             }
         });
+        })
+        first_loadding.start();
   },
   methods:{
     handleClose(tag) {
@@ -82,6 +92,12 @@ export default {
     get_papers_by_search_tags:function(){
         var that = this;
         if(that.search_tags.length==0){return;}
+        var loadding = new Loadding();
+    loadding.add_title("初始化");
+    loadding.__init__();
+    loadding.add_process(
+        "获取Paper数据",
+        function(){
         $.ajax({
             type:"POST",
             url: config.server_host + "/api/tag/paper_by_tags",
@@ -100,6 +116,8 @@ export default {
                 }
             }
         });
+        });
+        loadding.start();
     }
   }
 }
