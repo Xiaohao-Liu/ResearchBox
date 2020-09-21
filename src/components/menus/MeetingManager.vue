@@ -1,5 +1,13 @@
 <template>
   <el-main style="position:absolute;height:100%;width:100%;top:0px;left:0px;">
+      <el-select style="width:calc(100% - 20px);margin:10px;" v-model="select_meeting" :change="handlePush(select_meeting)" clearable autocomplete default-first-option filterable placeholder="请搜索">
+        <el-option
+        v-for="item in meetings_list"
+        :key="item.split('+').join(' ')"
+        :label="item.split('+').join(' ')"
+        :value="item.split('+').join(' ')">
+        </el-option>
+    </el-select>
       <el-card class="meeting_list">
           <el-row>
             <el-col >
@@ -32,7 +40,7 @@
         
         <el-row>
             <el-col :span="24"  v-for="tag in paper.tags" :key="tag">
-                <el-tag class='micro_meeting'>{{tag}}</el-tag>
+                <el-tag class='micro_tag'>{{tag}}</el-tag>
             </el-col>
         </el-row>
         <div class="status_bar" v-bind:style="{width:paper.process + '%'}"></div>
@@ -53,6 +61,7 @@ export default {
   },
   data(){
     return {
+        select_meeting:"",
         meetings_list:[],
         search_meetings:[],
         paper_list:[],
@@ -81,12 +90,12 @@ export default {
   methods:{
     handleClose(meeting) {
         this.search_meetings.splice(this.search_meetings.indexOf(meeting), 1);
-        this.get_papers_by_search_meetings()
+        this.get_papers_by_search_meetings();
     },
     handlePush(meeting) {
         if(this.search_meetings.indexOf(meeting)>=0)return;
         this.search_meetings.push(meeting);
-        this.get_papers_by_search_meetings()
+        this.get_papers_by_search_meetings();
     },
 
     get_papers_by_search_meetings:function(){
@@ -129,8 +138,11 @@ export default {
 .meeting_list{
 
 }
-.meeting_list .el-meeting{
+.meeting_list .el-tag{
     cursor: pointer;
+    margin: 2px 5px;
+    border-radius: 10px;
+    padding: 0px 20px;
 }
 .meeting_search{
     box-shadow: 0px 0px 0 0 black !important;

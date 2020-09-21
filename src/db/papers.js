@@ -54,6 +54,12 @@ function insertPaper(paper,replace=false){
                         if(err) console.log(err);
                         resolve(true);
                     })
+                }),
+                new Promise((resolve,reject)=>{
+                    client.hset("RSB_Papers",RSB_Paper.Ntime,RSB_Paper.md5_title,(err)=>{
+                        if(err) console.log(err);
+                        resolve(true);
+                    })
                 })
             ])
         }
@@ -85,6 +91,19 @@ function getPapersInfo(md5titles){
     }
     return Promise.all(promise_stack)
 }
+
+// function setPaperRecent(md5_title){
+//     return new Promise((resolve, reject)=>{
+//         client.get("RSB_Papers_Recent",(err,value)=>{
+//             if(err)console.log(err);
+//             resolve(value)
+//         })
+//     }).then(
+//         res=>{
+            
+//         }
+//     );
+// }
 
 function deletePaper(md5_title){
     return Promise.all([
@@ -130,6 +149,22 @@ function deletePaper(md5_title){
                 resolve(true);
             })
         }),
+        new Promise((resolve,reject)=>{
+            client.hget("RSB_Paper_"+md5_title,"Ntime",(err,value)=>{
+                if(err) console.log(err);
+                resolve(value)
+            })
+        }).then(
+            res=>{
+                return new Promise((resolve,reject)=>{
+                    client.hdel("RSB_Papers",res,(err)=>{
+                        if(err) console.log(err);
+                        resolve(true);
+                    })
+                })
+            }
+        )
+        
     ])
 }
 
@@ -168,13 +203,17 @@ function set_paper_meeting(md5_title,new_meeting){
         })
     }).then(
         old_meeting=>{
-            return Promise.all([
-                del_paper_from_meeting(md5_title,old_meeting),
-                put_paper_to_meeting(md5_title,new_meeting)
-            ]).then(_=>{
+            var stack =[]
+            if(old_meeting.toLowerCase()!=new_meeting.toLowerCase()){
+                stack = [
+                    del_paper_from_meeting(md5_title,old_meeting),
+                    put_paper_to_meeting(md5_title,new_meeting)
+                ]
+            }
+            return Promise.all(stack).then(_=>{
                 client.hset("RSB_Paper_"+md5_title,"meeting",new_meeting,(err)=>{
                     if(err) console.log(err);
-                    return Promise.resolve(true)
+                    return Promise.resolve(true);
                 })
             })
         }
@@ -189,12 +228,19 @@ function set_paper_tags(md5_title,new_tags){
         })
     }).then(
         old_tags=>{
-            var stack = []
+            var stack = [];
+            var num=0;
             for(let i = 0;i<old_tags.length;i++){
-                stack[i] = del_paper_from_tag(md5_title,old_tags[i].replace(" ","+"));
+                if(new_tags.indexOf(old_tags[i])<0){
+                    stack[num] = del_paper_from_tag(md5_title,old_tags[i].split(" ").join("+"));
+                    num+=1;
+                }
             }
             for(let i = 0;i<new_tags.length;i++){
-                stack[i+old_tags.length] = put_paper_to_tag(md5_title,new_tags[i].replace(" ","+"));
+                if(old_tags.indexOf(new_tags[i])<0){
+                    stack[num] = put_paper_to_tag(md5_title,new_tags[i].split(" ").join("+"));
+                    num +=1;
+                }
             }
             return Promise.all(stack).then(_=>{
                 client.hset("RSB_Paper_"+md5_title,"tags",new_tags.join(";"),(err)=>{

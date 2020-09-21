@@ -2,29 +2,23 @@
   <el-container style="height:100%;width:100%;position:absolute;top:0px;left:0px;">
     <el-header class="top_bar">
         <el-row style="margin:0px;"> 
-            <el-col class="user_bar" :span="4">
+            <!-- <el-col class="user_bar" :span="4">
                         <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
-            </el-col>
-            <el-col class="title_bar" :span="20">{{title}}</el-col>
+            </el-col> -->
+            <el-col class="title_bar" :span="24">{{title}}</el-col>
         </el-row>
     </el-header>
-    <el-container style="height:calc(100% - 50px);background:red;padding:0px;"> 
-        <el-aside id="aside_bar" width="200px">
+    <el-container style="height:calc(100% - 20px);background:red;padding:0px;"> 
+        <el-aside id="aside_bar" width="200px" >
             <el-row class="menu_top">
                 <el-col :span="24">
                     <el-card>
-                        <div class="image" v-bind:style="{backgroundImage:'url(https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg)'}"/>
-                        <el-row style="position: absolute;
-    width: 100%;
-    bottom: 0px;
-    padding: 5px 10px;
-    color: white;
-    line-height: 50px;
-    text-align: left;">
+                        <div class="image" v-bind:style="{backgroundImage:'url(https://dss0.baidu.com/94o3dSag_xI4khGko9WTAnF6hhy/forum/crop=0,245,1383,858/sign=5f869109adec08fa324f49e764de115f/a9d3fd1f4134970a98cb259998cad1c8a6865dcf.jpg)'}"/>
+                        <el-row style="position: absolute;width: 100%;bottom: 0px;padding: 5px 10px;color: white;line-height: 50px;text-align: left;">
+                            <el-col :span="18"  style="text-indent:10px;text-shadow: 0px 0px 5px black;">{{user_info.username}}</el-col>
                             <el-col :span="6">
-                                <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar> 
+                                <el-button  style="background: rgba(0,0,0,.2);padding: 10px;font-size: 10px;color: white;border: 0px;    backdrop-filter: blur(10px);box-shadow: 0px 0px 10px -2px black;" v-on:click="$router.push('/user');title='用户管理'" icon="el-icon-edit" circle></el-button>
                             </el-col>
-                            <el-col :span="18"  style="text-indent:10px;">{{username}}</el-col>
                         </el-row>
                     </el-card>
                 </el-col>
@@ -45,22 +39,31 @@
 </template>
 
 <script>
-// const $ = require("jquery");
-// const config = require("../utils/config");
+const $ = require("jquery");
+const config = require("../utils/config");
+const Loadding = require("../utils/loadding");
+
 import Vue from "vue";
 import VueRouter from 'vue-router';
+import User from "./User"
 import PaperManager from "./menus/PaperManager";
 import PaperEditor from "./menus/PaperEditor";
-import TagManager from './menus/TagManager'
-import MeetingManager from './menus/MeetingManager'
+import TagManager from './menus/TagManager';
+import MeetingManager from './menus/MeetingManager';
+import PlanManager from './menus/PlanManager';
+import PlanEditor from './menus/PlanEditor';
+
 Vue.use(VueRouter);
 
 const router = new VueRouter({
   routes: [
+    { path: '/user', component: User},
     { path: '/papermanager', component: PaperManager, alias:"/" },
     { path: '/papereditor/:md5_title', component: PaperEditor, props:true },
     { path: '/tagmanager', component: TagManager },
-    { path: '/meetingmanager', component: MeetingManager }
+    { path: '/meetingmanager', component: MeetingManager },
+    { path: '/planmanager', component: PlanManager },
+    {path: "/planeditor/:ntime",component:PlanEditor,props:true}
   ]
 })
 
@@ -68,7 +71,7 @@ const router = new VueRouter({
 
 export default {
 router:router,
-  name: 'login',
+  name: 'Main',
   props: {
     msg: String
   },
@@ -80,9 +83,9 @@ router:router,
   data(){
     return {
       title:"Paper管理",
-      username:"Arron",
-      password:"",
+      user_info:{},
       isRouterAlive:true,
+      aside_left:0,
       menu:[
           {
               idx:0,
@@ -108,11 +111,35 @@ router:router,
               icon:"el-icon-s-order",
               route:"/planmanager"
           },
+          {
+              idx:4,
+              title:"设置",
+              icon:"el-icon-setting",
+              route:"/setting"
+          },
       ]
     }
   },
   mounted:function(){
-
+    var that =this;
+      var first_loadding = new Loadding();
+    first_loadding.add_title("初始化");
+    first_loadding.__init__();
+    first_loadding.add_process(
+        "拉取数据",
+        function(){
+      $.ajax({
+            type:"GET",
+            url: config.server_host + "/api/user/info",
+            async:false,
+            dataType:"json",
+            success:function(returndata){
+                console.log(returndata)
+                that.user_info = returndata.data;
+            }
+        });
+        })
+        first_loadding.start();
   },
   methods:{
     reload:function(){
@@ -128,7 +155,7 @@ router:router,
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" rel="stylesheet/scss">
 @import "../assets/theme";
-$head_height:50px;
+$head_height:30px;
 #aside_bar .el-row{
     margin:0px;
 }
@@ -144,15 +171,21 @@ body{
 #main{
     background:white;
     position: relative;
+    margin-top: 30px;
 }
 .top_bar{
-    padding:5px;
-    height: $head_height;
-    background:$--color-primary;
+    padding: 0px;
+    height: 30px !important;
+    background: teal;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    z-index: 20;
+    width: calc(100% - 200px);
 }  
 .title_bar{
     line-height: $head_height;
-    font-size:1.3em;
+    font-size:1em;
     text-align: center;
     color: #EEE;
     font-weight:bold;   

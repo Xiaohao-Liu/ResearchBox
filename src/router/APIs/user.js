@@ -15,23 +15,15 @@ const loginVaildator = [
   body('password').isString().withMessage('密码类型错误')
 ]
 
-router.post('/first_set', loginVaildator, function (req, res, next) {
+router.post('/first_set', function (req, res, next) {
   const err =  (req)
-  
-  //如果验证错误,empty不为空
-  if (!err.isEmpty()) {
-    //获取错误信息
-    const [{ msg }] = err.errors
-    //抛出错误,交给我们自定义的统一异常处理程序进行错误返回 
-    next(boom.badRequest(msg))
-  } else {
+
     let { username, password } = req.body;
     Account.set_account(username,password).then(
       user => {
         if (!user || user.length === 0) {
           res.json({ code: -1, msg: '初始化出错', data: {} })
         } else {
-          //登录成功，签发一个token并返回给前端
           const token = jwt.sign(
             //playload：签发的 token 里面要包含的一些数据。
             { username },
@@ -43,7 +35,6 @@ router.post('/first_set', loginVaildator, function (req, res, next) {
           res.redirect('/page/main');
         }
     })
-  }
 })
 
 router.post('/login',function (req, res, next) {
@@ -79,6 +70,11 @@ router.post('/login',function (req, res, next) {
   }
 })
 
+router.get('/info',function(req,res,next){
+  Account.get_account().then(userinfo=>{
+    res.json({ code: 401, msg: 'User_Info', data: userinfo });
+  })
+})
 // //查询用户信息
 // router.get('/info', function (req, res, next) {
 //   //解析token,并且token存在

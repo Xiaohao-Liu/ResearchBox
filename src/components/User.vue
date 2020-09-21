@@ -1,61 +1,17 @@
 <template>
   <el-main style="position:absolute;height:100%;width:100%;top:0px;left:0px;">
-      <el-select style="width:calc(100% - 20px);margin:10px;" v-model="select_tag" :change="handlePush(select_tag)" clearable autocomplete default-first-option filterable placeholder="请搜索">
-        <el-option
-        v-for="item in tags_list"
-        :key="item.split('+').join(' ')"
-        :label="item.split('+').join(' ')"
-        :value="item.split('+').join(' ')">
-        </el-option>
-    </el-select>
-      <el-card class="tag_list">
-          <el-row>
-            <el-col >
-                <el-tag v-for="tag in tags_list" :key="tag" v-show="tag!=''" v-on:click="handlePush(tag)" size="mini">{{tag.split("+").join(" ")}}</el-tag>
-            </el-col>
-        </el-row>
-      </el-card>
-      <el-card class="tag_search">
-          <el-row>
-            <el-col >
-                <el-tag v-for="tag in search_tags" :key="tag" v-show="tag!=''" closable @close="handleClose(tag)">{{tag.split("+").join(" ")}}</el-tag>
-            </el-col>
-        </el-row>
-      </el-card>
-      <el-card class="paper" v-for="paper in paper_list" :key="paper.Ntime">
-        <div slot="header" class="clearfix" style="cursor:pointer" v-on:click="$router.push('/papereditor/'+paper.md5_title)">
-            <span>{{paper.title}}</span>
-        </div>
-        <div class="meeting">
-            {{paper.meeting}}
-        </div>
-        <el-row>
-            <el-col :span="12" class="ptime">
-                <span style="font-size:10px;color:#999;">submitted:</span> {{new Date(parseInt(paper.Ptime)).getMonth()+1}},{{new Date(parseInt(paper.Ptime)).getFullYear()}} 
-            </el-col>   
-        </el-row>
-        <!-- <div v-for="o in 4" :key="o" class="text item">
-            {{'列表内容 ' + o }}
-        </div> -->
-        
-        <el-row>
-            <el-col :span="24"  v-for="tag in paper.tags" :key="tag">
-                <el-tag class='micro_tag'>{{tag}}</el-tag>
-            </el-col>
-        </el-row>
-        <div class="status_bar" v-bind:style="{width:paper.process + '%'}"></div>
-        </el-card>
+
   </el-main>
 </template>
 
 <script>
 const $ = require("jquery");
-const config = require("../../utils/config");
-const Loadding = require("../../utils/loadding");
+const config = require("../utils/config");
+const Loadding = require("../utils/loadding");
 
 export default {
     inject:['reload'],
-  name: 'login',
+  name: 'User',
   props: {
     msg: String
   },
@@ -134,19 +90,6 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" rel="stylesheet/scss">
-@import "../../assets/theme";
-.tag_list{
+@import "../assets/theme";
 
-}
-.tag_list .el-tag{
-        cursor: pointer;
-    margin: 2px 5px;
-    border-radius: 10px;
-    padding: 0px 20px;
-}
-.tag_search{
-    box-shadow: 0px 0px 0 0 black !important;
-    background: transparent !important;
-    border: 0px !important;
-}
 </style>

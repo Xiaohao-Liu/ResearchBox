@@ -6,7 +6,9 @@
     </el-row>
     <el-card  class="paper_info">
         <el-row>
-            <el-col :span="24" class="paper_ntime" > {{new Date(parseInt(edit_form.Ntime)).getMonth() + 1}},{{new Date(parseInt(edit_form.Ntime)).getFullYear()}} </el-col>
+            <el-col :span="12" class="paper_link" > <el-link v-bind:href="edit_form.link" target="_blank">{{edit_form.link}}</el-link> </el-col>
+            <el-col :span="12" style="text-align:right;" > {{new Date(parseInt(edit_form.Ntime)).getFullYear()}} - {{new Date(parseInt(edit_form.Ntime)).getMonth() + 1}} </el-col>
+
         </el-row>
         <div class="status_bar" v-bind:style="{width:edit_form.process + '%'}"></div>
         <el-row>
@@ -76,6 +78,8 @@
             </el-form-item>
             <el-form-item label="引用量">
                 <el-input placeholder="请输入内容" v-model="edit_form.cite" clearable class="paper_edit_cite"> </el-input>
+            </el-form-item><el-form-item label="链接">
+                <el-input placeholder="请输入内容" v-model="edit_form.link" clearable class="paper_edit_link"> </el-input>
             </el-form-item>
         </el-form>
 
@@ -196,7 +200,7 @@ export default {
       },
 
       handleInputConfirm:function() {
-        let inputValue = this.inputValue;
+        let inputValue = this.inputValue.toLowerCase();
         if (inputValue) {
           this.edit_form.tags.push(inputValue);
         }
@@ -220,6 +224,7 @@ export default {
     font-size: 1.2em;
     font-weight: bold;
     text-align: center;
+    margin-top: 10px;
     text-shadow: 2px 2px 6px #ddd;
 }
 .paper_author{

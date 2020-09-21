@@ -55,6 +55,7 @@
                     <el-dropdown-menu slot="dropdown">
                         <el-dropdown-item v-bind:command="{'type':'d','params':paper.md5_title}" >删除</el-dropdown-item>
                         <el-dropdown-item v-bind:command="{'type':'e','params':paper.md5_title}" >编辑</el-dropdown-item>
+                        <el-dropdown-item v-bind:command="{'type':'a','param1':paper.md5_title,'param2':paper.title}" >添加至...</el-dropdown-item>
                     </el-dropdown-menu>
                     </el-dropdown>
             </el-col>
@@ -69,7 +70,29 @@
             </el-col>
         </el-row>
         <div class="status_bar" v-bind:style="{width:paper.process + '%'}"></div>
-        </el-card>
+    </el-card>
+    <el-card class="add_to_table" v-show="show_add_to_table">
+        <el-row>
+            <el-col :span="24" style="text-align:center;font-size:1.2em;font-weight:bold;">添加至</el-col>
+        </el-row>
+        <el-row>
+            <el-col :span="24" style="font-size:10px;margin-top:10px;">Paper: <strong>{{add_to_table.paper_title}}</strong></el-col>
+        </el-row>
+        <el-row>
+            <el-col :span="24" style="font-size:10px;margin-top:10px;">Table: <strong>{{add_to_table.table_title}}</strong></el-col>
+        </el-row>
+        <el-row>
+            <el-collapse style="margin:10px 0px;" accordion>
+                <el-collapse-item title="选择需要添加至的Table">
+                    <el-tag style="cursor:pointer;" v-for="table in now_tables" :key="table.Ntime" v-on:click="add_to_table_table(table.title,table.Ntime)">{{table.title}}</el-tag>
+                </el-collapse-item>
+            </el-collapse>
+        </el-row>
+        <el-row>
+            <el-button type="primary" @click="add_to_table_fun">立即添加</el-button>
+            <el-button v-on:click="show_add_to_table=false">取消</el-button>
+        </el-row>
+    </el-card>
   </el-main>
 </template>
 
@@ -93,6 +116,16 @@ export default {
     }
     return {
         show_add_paper:false,
+        show_add_to_table:false,
+        now_tables:[],
+        now_tables_title:[],
+        add_to_table:{
+            paper_title:"",
+            paper_md5_title:"",
+            table_title:"",
+            table_ntime:"",
+        },
+
         add_form:{
             title:"",
             author1:"",
@@ -118,7 +151,7 @@ export default {
     first_loadding.add_title("初始化");
     first_loadding.__init__();
     first_loadding.add_process(
-        "拉取数据",
+        "拉取paper数据",
         function(){
              $.ajax({
                 type:"GET",
@@ -138,6 +171,24 @@ export default {
             });
         }
     );
+    first_loadding.add_process(
+        "拉取table数据",
+        function(){
+             $.ajax({
+                type:"GET",
+                url: config.server_host + "/api/plan/by_ntime",
+                async:false,
+                dataType:"json",
+                success:function(returndata){
+                    console.log(returndata)
+                    for(var ntime in returndata.data){
+                        that.now_tables.push({"Ntime":ntime,"title":returndata.data[ntime]})
+                        that.now_tables_title.push(returndata.data[ntime]);
+                    }
+                }
+            });
+        }
+    );
     first_loadding.start();
      
   },
@@ -146,24 +197,24 @@ export default {
           var that = this;
           console.log(that.add_form);
           var loadding = new Loadding();
-    loadding.add_title("初始化");
-    loadding.__init__();
-    loadding.add_process(
-        "添加Paper",
-        function(){
-            $.ajax({
-                type:"POST",
-                url: config.server_host + "/api/paper/add",
-                async:false,
-                data:{"title":that.add_form.title,"author1":that.add_form.author1,"Ptime":that.add_form.Ptime},
-                dataType:"json",
-                success:function(returndata){
-                    that.show_add_paper=false;
-                    console.log(returndata);
-                    that.reload();
-                }
-            });
-        })
+            loadding.add_title("初始化");
+            loadding.__init__();
+            loadding.add_process(
+                "添加Paper",
+                function(){
+                    $.ajax({
+                        type:"POST",
+                        url: config.server_host + "/api/paper/add",
+                        async:false,
+                        data:{"title":that.add_form.title,"author1":that.add_form.author1,"Ptime":that.add_form.Ptime},
+                        dataType:"json",
+                        success:function(returndata){
+                            that.show_add_paper=false;
+                            console.log(returndata);
+                            that.reload();
+                        }
+                });
+            })
         loadding.start();
       },
       del_paper:function(md5_title){
@@ -191,11 +242,60 @@ export default {
       handleCommand:function(command){
           if(command.type=='e'){
               this.$router.push('/papereditor/'+command.params);
+              return;
           }
           if(command.type=='d'){
-              this.del_paper(command.params)
+              this.del_paper(command.params);
+              return;
           }
+          if(command.type=="a"){
+              this.add_to_table_paper(command.param2,command.param1);
+              this.show_add_to_table=true;
+              return;
+          }
+      },
+      add_to_table_table:function(title, ntime){
+          this.add_to_table.table_title = title;
+          this.add_to_table.table_ntime= ntime;
+      },
+      add_to_table_paper:function(title, md5_title){
+          this.add_to_table.paper_title = title;
+          this.add_to_table.paper_md5_title= md5_title;
+      },
+      add_to_table_fun:function(){
+          if(this.add_to_table.paper_md5_title=="" || this.add_to_table.table_ntime == ""){
+              this.$notify.error({
+                title: '添加至...',
+                message: '信息不全'
+                });
+                return;
+          }
+          var that = this;
+          console.log(that.add_to_table)
+          var loadding = new Loadding();
+            loadding.add_title("初始化");
+            loadding.__init__();
+            loadding.add_process(
+            "删除Paper",
+            function(){
+            $.ajax({
+                type:"POST",
+                url: config.server_host + "/api/plan/add_paper",
+                async:false,
+                data:{"md5_title":that.add_to_table.paper_md5_title,"ntime":that.add_to_table.table_ntime},
+                dataType:"json",
+                success:function(returndata){
+                    console.log(returndata);
+                    that.$notify({
+                        title: '成功',
+                        message: that.add_to_table.paper_title+"\nTO\n"+that.add_to_table.table_title
+                        });
+                }
+            });
+            })
+            loadding.start();
       }
+
   }
 }
 </script>
@@ -204,10 +304,16 @@ export default {
 <style lang="scss" rel="stylesheet/scss">
 @import "../../assets/theme";
 .add_board{
-    position:absolute;
-    width: 60%;
-    margin-top:10px;
+        position: fixed;
+    width: 40%;
+    margin-top: 10px;
     z-index: 100;
+}
+.add_to_table{
+        position: absolute;
+    z-index: 11;
+    width: 50%;
+    margin-left: 25%;
 }
 .add_board .el-form-item__label{
     line-height: 20px;
