@@ -1,110 +1,105 @@
-var { client } = require("./init");
-const md5 = require("../utils/md5")
+const { Sequelize, DataTypes } = require('sequelize');
+const {sequelize} = require("./init");
 
-function insert_meetings(meetings){
-    return new Promise((resolve,reject)=>{
-        client.sadd("RSB_Paper_Meetings",meetings,(err)=>{
-            if(err)console.log(err);
-            resolve(true);
-        })
-    })
+const Meeting = sequelize.define('Meeting', {
+  // Model attributes are defined here
+  id: {
+    type: DataTypes.BIGINT,
+    allowNull: false,
+    unique: true,
+    autoIncrement: true,
+    primaryKey: true
+  },
+  title: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+    // allowNull defaults to true
+  },
+  nums:{
+    type: DataTypes.INTEGER,
+    defaultValue:0
+  },
+  papers:{
+    type: DataTypes.TEXT
+  },
+  Ntime:{
+    type:DataTypes.DATE,
 }
-
-function del_meetings(meetings){
-    return new Promise((resolve,reject)=>{
-        client.srem("RSB_Paper_Meetings",meetings,(err)=>{
-            if(err)console.log(err);
-            resolve(true);
-        })
-    })
-}
+}, {
+    timestamps: true,
+    createdAt:"Ntime",
+  // Other model options go here
+});
+await Meeting.sync();
 
 function get_meetings(){
-    return new Promise((resolve,reject)=>{
-        client.smembers("RSB_Paper_Meetings",(err,value)=>{
-            if(err)console.log(err);
-            resolve(value);
-        })
-    })
+    var meetings = await Meeting.findAll();
+    return meetings.toJSON();
 }
 
-function get_papers_by_meetings(meetings){
-    var keys = [];
-    for(var i =0;i<meetings.length;i++)keys[i]="RSB_Papers_By_Meeting_"+meetings[i].replace(" ","+")
-    return new Promise((resolve,reject)=>{
-        client.sunion(keys,(err,value)=>{
-            if(err)console.log(err);
-            resolve(value);
-        })
-    })
-}
-
-function is_meeting(meeting){
-    return new Promise((resolve,reject)=>{
-        client.sismember("RSB_Paper_Meetings",meeting,(err,value)=>{
-            if(err)console.log(err);
-            resolve(value)
-        })
-    })
-}
-
-function del_paper_from_meeting(paper, meeting){
-    if(meeting == "")return Promise.all([]);
-    return Promise.all([
-        new Promise((resolve,reject)=>{
-            client.srem("RSB_Papers_By_Meeting_"+meeting,paper,(err)=>{
-                if(err)console.log(err);
-                resolve(true);
-            })
-        }),
-        new Promise((resolve,reject)=>{
-            client.scard("RSB_Papers_By_Meeting_"+meeting,(err,value)=>{
-                if(err)console.log(err);
-                resolve(value)
-            })
-        }).then(
-            num_left=>{
-                if(num_left==0){
-                    return del_meetings(meeting);
-                }else return Promise.resolve(true);
+function get_papers_by_meetings(ids){
+    var meetings = await Meeting.findAll({
+        attributes:['papers'],
+        where:{
+            id:{
+                [Op.or]:ids
             }
-        )
-    ])
+        }
+    });
+    var paper_ids = []
+    meetings.every(meeting=>{
+        paper_ids = paper_ids.concat(meeting.papers.split(';'))
+    })
+    return paper_ids;
 }
 
-function put_paper_to_meeting(paper, meeting){
-    return is_meeting(meeting).then(
-        ismeeting=>{
-            if(!ismeeting){
-                insert_meetings(meeting).then(
-                    status=>{
-                        if(status){
-                            return new Promise((resolve,reject)=>{
-                                client.sadd("RSB_Papers_By_Meeting_"+meeting,paper,(err)=>{
-                                    if(err)console.log(err);
-                                    resolve(true)
-                                })
-                            })
-                        }
-                    })
+function meeting_id(meetingtitle){
+    var meeting = await Meeting.findOne(
+        {
+            attributes:['id'],
+            where:{
+                title:meetingtitle
             }
-            return new Promise((resolve,reject)=>{
-                client.sadd("RSB_Papers_By_Meeting_"+meeting,paper,(err)=>{
-                    if(err)console.log(err);
-                    resolve(true)
-                })
-            })
-
         }
     )
+    return meeting != null?meeting.id:-1;
 }
 
+function del_paper_from_meeting(paperid,meetingtitle){
+    var meetingid = meeting_id(meetingtitle);
+    if(meetingid == -1)return null;
+    var meeting = await Meeting.findByPk(meetingid);
+    meeting.nums = meeting.nms - 1;
+    if(meeting.nums == 0){
+        return await meeting.destroy();
+    }
+    var paperlist = meeting.papers.split(';');
+    paperlist.splice(indexOf(paperid),1);
+    meeting.papers = paperlist.join(";");
+    return await meeting.save()
+}
+
+function put_paper_to_meeting(paperid, meetingtitle){
+    var meetingid = meeting_id(meetingtitle);
+    if(meetingid == -1){
+        var meeting = await Meeting.create({
+            title:meeting.toLowerCase(),
+        });
+    }else{
+        var meeting = await Meeting.findByPk(meetingid);
+    }
+    meeting.nums = meeting.nms +1;
+    var paperlist = meeting.papers.split(';');
+    paperlist.push(paperid)
+    meeting.papers = paperlist.join(";");
+    
+    return await meeting.save()
+}
 module.exports={
-    insert_meetings,
-    del_meetings,
     get_meetings,
     get_papers_by_meetings,
-    is_meeting,
+    meeting_id,
     put_paper_to_meeting,
     del_paper_from_meeting
 }

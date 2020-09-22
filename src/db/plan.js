@@ -139,6 +139,91 @@ function del_paper_from_table(ntime,md5_title){
     )
 }
 
+const { Sequelize, DataTypes } = require('sequelize');
+const {sequelize} = require("./init");
+
+const Plan = sequelize.define('Plan', {
+  // Model attributes are defined here
+  id: {
+    type: DataTypes.BIGINT,
+    allowNull: false,
+    unique: true,
+    autoIncrement: true,
+    primaryKey: true
+  },
+  title: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+    // allowNull defaults to true
+  },
+  nums:{
+    type: DataTypes.INTEGER,
+    defaultValue:0
+  },
+  papers:{
+    type: DataTypes.TEXT
+  },
+  Ntime:{
+    type:DataTypes.DATE,
+}
+}, {
+    timestamps: true,
+    createdAt:"Ntime",
+  // Other model options go here
+});
+await Meeting.sync();
+
+function insertTable(table){
+    var table_ = await Plan.create({
+        title:table.title
+    });
+    return table_.save();
+}
+
+function delTable(id){
+    var table = await Plan.findByPk(id);
+    return await table.destroy();
+}
+
+function getTablesByNtime(){
+    var tables = await Plan.findAll();
+    return tables.toJSON();
+}
+
+function getTablesInfo(ids){
+    var tables = await Plan.findAll({
+        where:{
+            id:{
+                [Op.or]:ids
+            }
+        }
+    });
+    return tables;
+}
+
+
+function del_paper_from_table(paperid,tableid){
+
+    var table = await Plan.findByPk(tableid);
+    table.nums = table.nms - 1;
+
+    var paperlist = table.papers.split(';');
+    paperlist.splice(indexOf(paperid),1);
+    table.papers = paperlist.join(";");
+    return await table.save()
+}
+
+function put_paper_to_table(paperid, tableid){
+    var table = await Plan.findByPk(tableid);
+    table.nums = table.nms +1;
+    var paperlist = table.papers.split(';');
+    paperlist.push(paperid)
+    table.papers = paperlist.join(";");
+    
+    return await table.save()
+}
+
 module.exports={
     insertTable,
     delTable,
@@ -146,6 +231,5 @@ module.exports={
     put_paper_to_table,
     del_paper_from_table,
     getTablesInfo,
-    setTitle,
-    setProcess
+
 }
