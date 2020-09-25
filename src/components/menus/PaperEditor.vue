@@ -381,6 +381,7 @@ vertical-align: bottom;
     width: 100%;
     border: 1px solid #ddd;
     border-radius: 5px;
+    padding: 10px 0px;
     margin: 10px 0;
     font-size: .8em;
     box-sizing: border-box;
