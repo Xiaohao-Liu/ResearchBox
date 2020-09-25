@@ -45,7 +45,7 @@
             </el-form>
         </el-card>
     </el-row>
-    <el-card class="paper" v-for="paper in paper_list" :key="paper.Ntime">
+    <el-card :class="'paper'+(paper.process==100?' finished':'')" v-for="paper in paper_list" :key="paper.Ntime">
         <div slot="header" class="clearfix" style="cursor:pointer" v-on:click="$router.push('/papereditor/'+paper.id)">
             <span>{{paper.title}}</span>
         </div>
@@ -423,5 +423,29 @@ export default {
     line-height: 20px !important;
     background:$--color-primary !important;
     color:white !important;
+}
+.finished{
+    box-shadow: 0 2px 8px -1px rgba(0, 0, 0, 0.1) inset !important;
+    background: white  !important;
+    border: 2px dashed teal  !important;
+    border-bottom: 0px  !important;
+    box-sizing: border-box  !important;
+}
+.finished::before{
+    content: "\e6da";
+    font-family: 'element-icons' !important;
+    position: absolute;
+    background: #43A047;
+    border-radius: 15px;
+    padding: 6px;
+    color: white;
+    height: 15px;
+    font-weight: bold;
+    box-shadow: 0px 2px 12px 0 rgba(0, 0, 0, 0.1);
+    top: 5px;
+    right: 5px;
+    width: 15px;
+    line-height: 15px;
+    text-align: center;
 }
 </style>
