@@ -84,14 +84,13 @@ async function  del_paper_from_meeting(paperid,meetingtitle){
         return await meeting.destroy();
     }
     var paperlist = meeting.papers.split(';');
-    paperlist.splice(paperlist.indexOf(paperid),1);
+    paperlist.splice(paperlist.indexOf(String(paperid)),1);
     meeting.papers = paperlist.join(";");
     return await meeting.save()
 }
 
 async function  put_paper_to_meeting(paperid, meetingtitle){
     var meetingid = await meeting_id(meetingtitle);
-    console.log(meetingid)
     if(meetingid == -1){
         var meeting = await Meeting.create({
             title:meetingtitle.toLowerCase(),
@@ -101,9 +100,9 @@ async function  put_paper_to_meeting(paperid, meetingtitle){
     }
     
     var paperlist = meeting.papers==null?[]:meeting.papers.split(';');
-    if(paperlist.indexOf(paperid)>=0) return null;
+    if(paperlist.indexOf(String(paperid))>=0) return null;
     meeting.nums = meeting.nums +1;
-    paperlist.push(paperid)
+    paperlist.push(String(paperid))
     meeting.papers = paperlist.join(";");
     return await meeting.save()
 }

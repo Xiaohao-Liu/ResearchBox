@@ -84,14 +84,13 @@ async function  del_paper_from_tag(paperid,tagtitle){
         return await tag.destroy();
     }
     var paperlist = tag.papers.split(';');
-    paperlist.splice(paperlist.indexOf(paperid),1);
+    paperlist.splice(paperlist.indexOf(String(paperid)),1);
     tag.papers = paperlist.join(";");
     return await tag.save()
 }
 
 async function  put_paper_to_tag(paperid, tagtitle){
     var tagid = await tag_id(tagtitle);
-    console.log(tagid)
     if(tagid == -1){
         var tag = await Tag.create({
             title:tagtitle.toLowerCase(),
@@ -101,7 +100,7 @@ async function  put_paper_to_tag(paperid, tagtitle){
     }
     
     var paperlist = tag.papers==null?[]:tag.papers.split(';');
-    if(paperlist.indexOf(paperid)>=0) return null;
+    if(paperlist.indexOf(String(paperid))>=0) return null;
     tag.nums = tag.nums +1;
     paperlist.push(paperid)
     tag.papers = paperlist.join(";");

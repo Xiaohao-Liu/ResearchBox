@@ -130,61 +130,31 @@ export default {
                 that.editForm["title"] = data["title"];
                 that.editForm["papers"] = data["papers"]==""?[]:data["papers"].split(";");
                 console.log(that.editForm)
+                axios.post(
+                    config.server_host + "/api/plan/paper_by_table",
+                    {ids:that.editForm["papers"]}
+                ).then(
+                    returndata=>{
+                        that.paper_list=[]
+                        var sum_process = 0;
+                        for(var i = 0; i< returndata.data.data.length;i++){
+                            if(returndata.data.data[i] ==null)continue;
+                            if(returndata.data.data[i]['tags'] != ''){
+                                returndata.data.data[i]['tags'] = returndata.data.data[i]['tags'].split(';');
+                            }else returndata.data.data[i]['tags']=[]
+                            returndata.data.data[i]['Ptime'] = new Date(returndata.data.data[i]['Ptime']).getTime();
+                            returndata.data.data[i]['Ntime'] = new Date(returndata.data.data[i]['Ntime']).getTime();
+                            returndata.data.data[i]['process'] = parseInt(returndata.data.data[i]['process']);
+                            sum_process = sum_process +  returndata.data.data[i]['process'];
+                            that.paper_list.push(returndata.data.data[i]);
+                        }
+                        that.everageWidth = sum_process / returndata.data.data.length;
+                        console.log(returndata.data.data)
+                    }
+                )
             }
         );
         })
-        first_loadding.add_process(
-        "获取Paper数据",
-        function(){
-            if(that.editForm["papers"].length == 0)return;
-
-        // $.ajax({
-        //     type:"POST",
-        //     url: config.server_host + "/api/plan/paper_by_table",
-        //     async:false,
-        //     data:{ids:that.editForm["papers"]},
-        //     dataType:"json",
-        //     success:function(returndata){
-        //         that.paper_list=[]
-        //         var sum_process = 0;
-        //         for(var i = 0; i< returndata.data.data.length;i++){
-        //             if(returndata.data.data[i] ==null)continue;
-        //             if(returndata.data.data[i]['tags'] != ''){
-        //                 returndata.data.data[i]['tags'] = returndata.data.data[i]['tags'].split(';');
-        //             }else returndata.data.data[i]['tags']=[]
-        //             returndata.data.data[i]['Ptime'] = new Date(returndata.data.data[i]['Ptime']).getTime();
-        //             returndata.data.data[i]['Ntime'] = new Date(returndata.data.data[i]['Ntime']).getTime();
-        //             returndata.data.data[i]['process'] = parseInt(returndata.data.data[i]['process']);
-        //             sum_process = sum_process +  returndata.data.data[i]['process'];
-        //             that.paper_list.push(returndata.data.data[i]);
-        //         }
-        //         that.everageWidth = sum_process / returndata.data.data.length;
-        //          console.log(returndata)
-        //     }
-        // });
-        axios.post(
-            config.server_host + "/api/plan/paper_by_table",
-            {ids:that.editForm["papers"]}
-        ).then(
-            returndata=>{
-                that.paper_list=[]
-                var sum_process = 0;
-                for(var i = 0; i< returndata.data.data.length;i++){
-                    if(returndata.data.data[i] ==null)continue;
-                    if(returndata.data.data[i]['tags'] != ''){
-                        returndata.data.data[i]['tags'] = returndata.data.data[i]['tags'].split(';');
-                    }else returndata.data.data[i]['tags']=[]
-                    returndata.data.data[i]['Ptime'] = new Date(returndata.data.data[i]['Ptime']).getTime();
-                    returndata.data.data[i]['Ntime'] = new Date(returndata.data.data[i]['Ntime']).getTime();
-                    returndata.data.data[i]['process'] = parseInt(returndata.data.data[i]['process']);
-                    sum_process = sum_process +  returndata.data.data[i]['process'];
-                    that.paper_list.push(returndata.data.data[i]);
-                }
-                that.everageWidth = sum_process / returndata.data.data.length;
-                 console.log(returndata)
-            }
-        )
-        });
         first_loadding.start()
   },
   methods:{

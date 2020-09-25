@@ -176,7 +176,8 @@ async function  set_paper_all(id, new_paper){
 async function add_to_table(paperid, tableid){
     var paper = await Paper.findByPk(paperid);
     var old_tables = paper.tables==null?[]:paper.tables.split(";");
-    if(old_tables.indexOf(tableid)<0){
+    if(old_tables.indexOf(String(tableid))<0){
+
         old_tables.push(tableid)
         paper.tables = old_tables.join(';');
         await put_paper_to_table(paperid,tableid);
@@ -188,7 +189,7 @@ async function add_to_table(paperid, tableid){
 async function rm_from_table(paperid, tableid){
     var paper = await Paper.findByPk(paperid);
     var old_tables = paper.tables==null?[]:paper.tables.split(";");
-    if(old_tables.indexOf(tableid)>=0){
+    if(old_tables.indexOf(String(tableid))>=0){
         old_tables.splice(old_tables.indexOf(tableid),1);
         paper.tables = old_tables.join(';');
         await del_paper_from_table(paperid,tableid);

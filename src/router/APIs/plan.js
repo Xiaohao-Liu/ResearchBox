@@ -50,7 +50,11 @@ router.get('/fetchone/:id', function (req, res, next) {
 
 
 router.post('/paper_by_table', function (req, res, next) {
-    let {ids} = req.body;
+    var {ids} = req.body;
+    if(ids.length==0){
+        res.json({ code: 401, msg: '查询paper  lite成功', data: [] });
+        return;
+    }
     Papers.getPapersSimpleInfo(ids).then(papers=>{
         res.json({ code: 401, msg: '查询paper  lite成功', data: papers });
     })
