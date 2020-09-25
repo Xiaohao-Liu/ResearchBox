@@ -1,7 +1,13 @@
 // const redis = require("redis")
 // const { exec } = require('child_process');
 const config = require("../utils/config")
+const log4js = require("log4js");
+log4js.configure({
+  appenders: { rsb: { type: "file", filename: "rsb.log" } },
+  categories: { default: { appenders: ["rsb"], level: "info" } }
+});
 
+const logger = log4js.getLogger("rsb");
 // var client = redis.createClient(config.redis_port,config.redis_host);
 
 // // 启动redis 并执行相关配置
@@ -47,8 +53,14 @@ const { Sequelize } = require('sequelize');
 // Option 2: Passing parameters separately (other dialects)
 const sequelize = new Sequelize(config.database, config.mysql_username, config.mysql_password, {
   host: config.mysql_host,
-  dialect: 'mysql' /* one of 'mysql' | 'mariadb' | 'postgres' | 'mssql' */
+  dialect: 'mysql' /* one of 'mysql' | 'mariadb' | 'postgres' | 'mssql' */,
+  logging:log
 });
+
+function log(s){
+  logger.info(s)
+}
+
 async function init(){
 try {
 await sequelize.authenticate();
