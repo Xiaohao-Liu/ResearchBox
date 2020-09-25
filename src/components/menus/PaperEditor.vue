@@ -112,7 +112,7 @@
     </el-row>
     <el-row :gutter="10">
         <el-col :span="show_md_editor?12:24">
-            <div id="md_editor" v-html="markdown.render(edit_form.md)"></div>
+            <div id="md_editor" class="markdown-body" v-html="markdown.render(edit_form.md)"></div>
         </el-col>
     <el-col :span="show_md_editor?12:0">
 <el-input
@@ -148,7 +148,8 @@ const config = require("../../utils/config");
 const Loadding = require("../../utils/loadding");
 import markdownIt from 'markdown-it'
 import markdownItLatex from 'markdown-it-latex'
-import 'markdown-it-latex/dist/index.css'
+import 'markdown-it-latex/dist/index.css';
+import '../../assets/github-markdown.min.css';
 const axios = require('axios');
 
 const md = markdownIt()
@@ -311,6 +312,8 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" rel="stylesheet/scss">
 @import "../../assets/theme";
+
+
 .paper_info{
     position: relative;
 }
@@ -395,5 +398,11 @@ vertical-align: bottom;
 #md_editor .katex .fontsize-ensurer.reset-size3.size1,#md_editor  .katex .sizing.reset-size3.size1 {
     font-size: 1em;
     transform: scale(.7);
+}
+#md_editor blockquote {
+    margin: 2px;
+    background: rgba(0,0,0,.02);
+    padding: 0px 1em;
+    border-radius: 0px;
 }
 </style>
