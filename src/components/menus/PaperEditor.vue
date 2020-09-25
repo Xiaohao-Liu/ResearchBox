@@ -379,11 +379,20 @@ vertical-align: bottom;
 
 #md_editor{
     width: 100%;
-    padding: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;
-    margin: 10px 0px;
+    margin: 10px 0;
+    font-size: .8em;
     box-sizing: border-box;
     box-shadow: 5px 5px 10px rgba(0,0,0,.1);
+}
+#md_editor .katex .katex-html {
+    display: inline-block;
+    white-space: break-spaces;
+    line-height: 2;
+}
+#md_editor .katex .fontsize-ensurer.reset-size3.size1,#md_editor  .katex .sizing.reset-size3.size1 {
+    font-size: 1em;
+    transform: scale(.7);
 }
 </style>
