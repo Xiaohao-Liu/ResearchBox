@@ -1,5 +1,5 @@
 // const redis = require("redis")
-const { exec } = require('child_process');
+// const { exec } = require('child_process');
 const config = require("../utils/config")
 
 // var client = redis.createClient(config.redis_port,config.redis_host);
@@ -41,21 +41,23 @@ const config = require("../utils/config")
 //     })
 // }
 
-// const { Sequelize } = require('sequelize');
+const { Sequelize } = require('sequelize');
 
 
 // Option 2: Passing parameters separately (other dialects)
-const sequelize = new Sequelize('RSB', 'root', '156321', {
-  host: '106.13.145.17',
+const sequelize = new Sequelize(config.database, config.mysql_username, config.mysql_password, {
+  host: config.mysql_host,
   dialect: 'mysql' /* one of 'mysql' | 'mariadb' | 'postgres' | 'mssql' */
 });
-
+async function init(){
 try {
 await sequelize.authenticate();
 console.log('Connection has been established successfully.');
 } catch (error) {
 console.error('Unable to connect to the database:', error);
 }
+}
+init();
 
 module.exports = {
     sequelize

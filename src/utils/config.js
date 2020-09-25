@@ -2,11 +2,14 @@
 module.exports = {
     cwd:process.cwd(),
     server_host:"http://localhost:9090",
-    redis_host: 'localhost',
-    // redis_host:"106.13.145.17", 
-    redis_port:6379,
-    user: 'root',
-    password: '123456',
-    database: 'admin_database'
+    mysql_host: 'localhost',
+    mysql_port:3306,
+    mysql_username:"root",
+    mysql_password:"123456",
+    database: 'RSB',
+    // login_path:"/ligin.html",
+    // main_path:"/main.html"
+    login_path:"/page/login",
+    main_path:"/page/main"
   }
   

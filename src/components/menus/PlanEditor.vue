@@ -1,5 +1,11 @@
 <template>
   <el-main style="position:absolute;height:100%;width:100%;top:0px;left:0px;">
+      <el-row style="margin:0px;"> 
+            <!-- <el-col class="user_bar" :span="4">
+                        <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
+            </el-col> -->
+            <el-col class="title_bar" :span="24" ><i class="el-icon-s-order"></i>计划管理 </el-col>
+        </el-row>
     <!-- {{editForm}} -->
     <el-row class="ops" style="margin:10px;">
         <el-button type="primary" icon="el-icon-back" v-on:click="$router.push('/planmanager')" circle></el-button>
@@ -11,6 +17,7 @@
         </el-col>
     </el-row>
     <el-card>
+        <div class="plan_process" v-bind:style="{width:everageWidth+'%'}"></div>
       <el-table
         :data="paper_list"
         style="width: 100%"
@@ -20,14 +27,14 @@
         prop="Ntime"
         label="新建日期"
         sortable
-        width="180"
+        :width="180"
         :formatter="Ntime_formate">
         </el-table-column>
         <el-table-column
         prop="Ptime"
         label="发布日期"
         sortable
-        width="180"
+        :width="180"
         :formatter="Ptime_formate">
         </el-table-column>
         <el-table-column
@@ -43,7 +50,7 @@
         prop="process"
         label="进度"
         sortable
-        width="180"
+        :width="180"
         >
         <template slot-scope="scope">
             <el-progress width=40 stroke-width=3 type="dashboard" :percentage="scope.row.process"></el-progress>
@@ -53,10 +60,10 @@
         <el-table-column
         fixed="right"
         label="操作"
-        width="120">
+        :width="120">
         <template slot-scope="scope">
             <el-button
-            @click.native.prevent="deleteRow(scope.$index, tableData)"
+            @click.native.prevent="deleteRow(scope.row.id)"
             type="text"
             size="small">
             移除
@@ -69,24 +76,26 @@
 </template>
 
 <script>
-const $ = require("jquery");
+// const $ = require("jquery");
 const config = require("../../utils/config");
 const Loadding = require("../../utils/loadding");
+const axios = require('axios');
 
 export default {
+    inject:['reload'],
   name: 'plan',
   props: 
-    ['ntime'],
+    ['id'],
   
   data(){
     return {
+        everageWidth:0,
         show_add_paper:false,
         not_inited:false,
         editForm:{
             Ntime:"",
             title:"",
-            process:0,
-            list:[]
+            papers:[]
         },
         paper_list:[]
     }
@@ -99,44 +108,82 @@ export default {
     first_loadding.add_process(
         "初始化数据",
         function(){
-            $.ajax({
-            type:"GET",
-            url: config.server_host + "/api/plan/fetchone/"+that.ntime,
-            async:false,
-            dataType:"json",
-            success:function(returndata){
-                
-                var data = returndata.data[0];
+        //     $.ajax({
+        //     type:"GET",
+        //     url: config.server_host + "/api/plan/fetchone/"+that.id,
+        //     async:false,
+        //     dataType:"json",
+        //     success:function(returndata){
+        //         var data = returndata.data.data[0];
+        //         that.editForm["Ntime"] = data["Ntime"];
+        //         that.editForm["title"] = data["title"];
+        //         that.editForm["papers"] = data["papers"]==""?[]:data["papers"].split(";");
+        //         console.log(that.editForm)
+        //     }
+        // });
+        axios.get(
+            config.server_host + "/api/plan/fetchone/"+that.id
+        ).then(
+            returndata=>{
+                var data = returndata.data.data[0];
                 that.editForm["Ntime"] = data["Ntime"];
                 that.editForm["title"] = data["title"];
-                that.editForm["process"] = parseInt(data["process"]);
-                that.editForm["list"] = data["list"]==""?[]:data["list"].split(";");
+                that.editForm["papers"] = data["papers"]==""?[]:data["papers"].split(";");
                 console.log(that.editForm)
             }
-        });
+        );
         })
         first_loadding.add_process(
         "获取Paper数据",
         function(){
-            if(that.editForm["list"].length == 0)return;
-        $.ajax({
-            type:"POST",
-            url: config.server_host + "/api/plan/paper_by_table",
-            async:false,
-            data:{md5_titles:that.editForm["list"]},
-            dataType:"json",
-            success:function(returndata){
-                console.log(returndata)
+            if(that.editForm["papers"].length == 0)return;
+
+        // $.ajax({
+        //     type:"POST",
+        //     url: config.server_host + "/api/plan/paper_by_table",
+        //     async:false,
+        //     data:{ids:that.editForm["papers"]},
+        //     dataType:"json",
+        //     success:function(returndata){
+        //         that.paper_list=[]
+        //         var sum_process = 0;
+        //         for(var i = 0; i< returndata.data.data.length;i++){
+        //             if(returndata.data.data[i] ==null)continue;
+        //             if(returndata.data.data[i]['tags'] != ''){
+        //                 returndata.data.data[i]['tags'] = returndata.data.data[i]['tags'].split(';');
+        //             }else returndata.data.data[i]['tags']=[]
+        //             returndata.data.data[i]['Ptime'] = new Date(returndata.data.data[i]['Ptime']).getTime();
+        //             returndata.data.data[i]['Ntime'] = new Date(returndata.data.data[i]['Ntime']).getTime();
+        //             returndata.data.data[i]['process'] = parseInt(returndata.data.data[i]['process']);
+        //             sum_process = sum_process +  returndata.data.data[i]['process'];
+        //             that.paper_list.push(returndata.data.data[i]);
+        //         }
+        //         that.everageWidth = sum_process / returndata.data.data.length;
+        //          console.log(returndata)
+        //     }
+        // });
+        axios.post(
+            config.server_host + "/api/plan/paper_by_table",
+            {ids:that.editForm["papers"]}
+        ).then(
+            returndata=>{
                 that.paper_list=[]
-                for(var i = 0; i< returndata.data.length;i++){
-                    if(returndata.data[i] ==null)continue;
-                    if(returndata.data[i]['tags'] != ''){
-                        returndata.data[i]['tags'] = returndata.data[i]['tags'].split(';');
-                    }else returndata.data[i]['tags']=[]
-                    that.paper_list.push(returndata.data[i]);
+                var sum_process = 0;
+                for(var i = 0; i< returndata.data.data.length;i++){
+                    if(returndata.data.data[i] ==null)continue;
+                    if(returndata.data.data[i]['tags'] != ''){
+                        returndata.data.data[i]['tags'] = returndata.data.data[i]['tags'].split(';');
+                    }else returndata.data.data[i]['tags']=[]
+                    returndata.data.data[i]['Ptime'] = new Date(returndata.data.data[i]['Ptime']).getTime();
+                    returndata.data.data[i]['Ntime'] = new Date(returndata.data.data[i]['Ntime']).getTime();
+                    returndata.data.data[i]['process'] = parseInt(returndata.data.data[i]['process']);
+                    sum_process = sum_process +  returndata.data.data[i]['process'];
+                    that.paper_list.push(returndata.data.data[i]);
                 }
+                that.everageWidth = sum_process / returndata.data.data.length;
+                 console.log(returndata)
             }
-        });
+        )
         });
         first_loadding.start()
   },
@@ -154,13 +201,54 @@ export default {
         var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1);
         return Y+M;
     },
+    deleteRow:function(paperid){
+        var that = this;
+                var loadding = new Loadding();
+    loadding.add_title("初始化");
+    loadding.__init__();
+    loadding.add_process(
+        "删除Paper table",
+        function(){
+        // $.ajax({
+        //     type:"POST",
+        //     url: config.server_host + "/api/paper/rm_paper_table",
+        //         async:false,
+        //         data:{"paperid":paperid,"tableid":that.id},
+        //     dataType:"json",
+        //     success:function(returndata){
+        //         console.log(returndata)
+        //         that.reload();
+        //     }
+        // });
+        axios.post(
+            config.server_host + "/api/paper/rm_paper_table",
+            {"paperid":paperid,"tableid":that.id}
+        ).then(
+            returndata=>{
+                console.log(returndata)
+                that.reload();
+            }
+        )
+        });
+        loadding.start();
+    }
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="scss">
-
-
+<style lang="scss" rel="stylesheet/scss">
+@import "../../assets/theme";
+.el-card .el-card__body{
+    position: relative;
+}
+.plan_process{
+    width: 80%;
+    position: absolute;
+    top: 0px;
+    height: 5px;
+    background: $--color-primary;
+    border-radius: 10px;
+}
 
 </style>

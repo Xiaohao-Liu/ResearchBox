@@ -34,25 +34,25 @@ router.get('/by_ntime', function (req, res, next) {
 
 })
 
-router.get('/fetchone/:ntime', function (req, res, next) {
+router.get('/fetchone/:id', function (req, res, next) {
 
-      Plan.getTablesInfo([req.params.ntime]).then(tables=>{
+      Plan.getTablesInfo([req.params.id]).then(tables=>{
         res.json({ code: 401, msg: '查询table成功', data: tables });
       })
 })
 
-router.post('/add_paper', function (req, res, next) {
-    var {md5_title, ntime} = req.body;
-    console.log(md5_title,ntime)
-    Plan.put_paper_to_table(ntime,md5_title).then(_=>{
-      res.json({ code: 401, msg: 'table添加paper成功', data: {} });
-    })
-})
+// router.post('/add_paper', function (req, res, next) {
+//     var {paperid, tableid} = req.body;
+//     Plan.put_paper_to_table(paperid,tableid).then(_=>{
+//       res.json({ code: 401, msg: 'table添加paper成功', data: {} });
+//     })
+// })
+
 
 router.post('/paper_by_table', function (req, res, next) {
-    let {md5_titles} = req.body;
-    Papers.getPapersInfo(md5_titles).then(papers=>{
-        res.json({ code: 401, msg: '查询paper成功', data: papers });
+    let {ids} = req.body;
+    Papers.getPapersSimpleInfo(ids).then(papers=>{
+        res.json({ code: 401, msg: '查询paper  lite成功', data: papers });
     })
 })
 

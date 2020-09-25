@@ -1,320 +1,10 @@
 // var { client } = require("./init");
 var  {put_paper_to_meeting,del_paper_from_meeting} = require("./meeting");
 var  {put_paper_to_tag,del_paper_from_tag} = require("./tags");
-
-const md5 = require("../utils/md5");
-
-// function insertPaper(paper,replace=false){
-//     var time = new Date().getTime();
-//     var RSB_Paper = {
-//         title:paper.title,
-//         author1:paper.author1,
-//         author2:"",
-//         cite:"",
-//         meeting:"",
-//         tags:"",
-//         process:'0',
-//         link:"",
-//         references:"",
-//         md5_title:md5(paper.title),
-//         Ptime:paper.Ptime,
-//         Ntime:time
-//     };
-//     if(replace){
-//         RSB_Paper = {
-//             title:paper.title,
-//             author1:paper.author1,
-//             author2:paper.author2,
-//             cite:paper.cite,
-//             meeting:paper.meeting,
-//             tags:paper.tags,
-//             process:paper.process,
-//             link:paper.link,
-//             md5_title:md5(paper.title),
-//             Ptime:paper.Ptime,
-//             Ntime:paper.Ntime
-//         };
-//     }
-//     return new Promise((resolve,reject)=>{
-//         client.hmset("RSB_Paper_"+RSB_Paper.md5_title,RSB_Paper,(err)=>{
-//             if(err) console.log(err);
-//             resolve(true);
-//         })
-//     }).then(
-//         res=>{
-//             return Promise.all([
-//                 new Promise((resolve,reject)=>{
-//                     client.zadd("RSB_Papers_By_Ntime",RSB_Paper.Ntime,RSB_Paper.md5_title,(err)=>{
-//                         if(err) console.log(err);
-//                         resolve(true);
-//                     })
-//                 }),
-//                 new Promise((resolve,reject)=>{
-//                     client.zadd("RSB_Papers_By_Ptime",RSB_Paper.Ptime,RSB_Paper.md5_title,(err)=>{
-//                         if(err) console.log(err);
-//                         resolve(true);
-//                     })
-//                 }),
-//                 new Promise((resolve,reject)=>{
-//                     client.hset("RSB_Papers",RSB_Paper.Ntime,RSB_Paper.md5_title,(err)=>{
-//                         if(err) console.log(err);
-//                         resolve(true);
-//                     })
-//                 })
-//             ])
-//         }
-//     )
-// }
-
-// function getPaperByNtime(){
-//     return new Promise((resolve,reject)=>{
-//         client.zrange("RSB_Papers_By_Ntime",0,(new Date().getTime()), (err,value)=>{
-//             if(err) {
-//                 console.log(err);
-//                 return; 
-//             }
-//             resolve(value)
-//         })
-//     })
-// }
-
-// function getPapersInfo(md5titles){
-//     var promise_stack=[];
-//     for(let i = 0;i < md5titles.length;i++){
-//         promise_stack[i] = new Promise((resolve,reject)=>{
-//             client.hgetall("RSB_Paper_"+md5titles[i],(err,value)=>{
-//                 if(err) console.log(err);  
-//                 resolve(value);
-
-//             })
-//         })
-//     }
-//     return Promise.all(promise_stack)
-// }
-
-// // function setPaperRecent(md5_title){
-// //     return new Promise((resolve, reject)=>{
-// //         client.get("RSB_Papers_Recent",(err,value)=>{
-// //             if(err)console.log(err);
-// //             resolve(value)
-// //         })
-// //     }).then(
-// //         res=>{
-            
-// //         }
-// //     );
-// // }
-
-// function deletePaper(md5_title){
-//     return Promise.all([
-//         new Promise((resolve,reject)=>{
-//             client.hget("RSB_Paper_"+md5_title,"tags",(err,value)=>{
-//                 if(err) console.log(err);
-//                 resolve(value.split(';'));
-//             })
-//         }).then(
-//             old_tags=>{
-//                 var stack = []
-//                 for(let i = 0;i<old_tags.length;i++){
-//                     stack[i] = del_paper_from_tag(md5_title,old_tags[i].replace(" ","+"));
-//                 }
-//                 return Promise.all(stack);
-//             }
-//         ),
-//         new Promise((resolve,reject)=>{
-//             client.hget("RSB_Paper_"+md5_title,"meeting",(err,value)=>{
-//                 if(err) console.log(err);
-//                 resolve(value)
-//             })
-//         }).then(
-//             old_meeting=>{
-//                 return del_paper_from_meeting(md5_title,old_meeting)
-//             }
-//         ),
-//         new Promise((resolve,reject)=>{
-//             client.del("RSB_Paper_"+md5_title,(err)=>{
-//                 if(err) console.log(err);
-//                 resolve(true);
-//             })
-//         }),
-//         new Promise((resolve,reject)=>{
-//             client.zrem("RSB_Papers_By_Ntime",md5_title,(err)=>{
-//                 if(err) console.log(err);
-//                 resolve(true);
-//             })
-//         }),
-//         new Promise((resolve,reject)=>{
-//             client.zrem("RSB_Papers_By_Ptime",md5_title,(err)=>{
-//                 if(err) console.log(err);
-//                 resolve(true);
-//             })
-//         }),
-//         new Promise((resolve,reject)=>{
-//             client.hget("RSB_Paper_"+md5_title,"Ntime",(err,value)=>{
-//                 if(err) console.log(err);
-//                 resolve(value)
-//             })
-//         }).then(
-//             res=>{
-//                 return new Promise((resolve,reject)=>{
-//                     client.hdel("RSB_Papers",res,(err)=>{
-//                         if(err) console.log(err);
-//                         resolve(true);
-//                     })
-//                 })
-//             }
-//         )
-        
-//     ])
-// }
+var {put_paper_to_table,del_paper_from_table} = require('./plan');
 
 
-// function set_paper_author1(md5_title,new_author1){
-//     return new Promise((resolve,reject)=>{
-//         client.hset("RSB_Paper_"+md5_title,"author1",new_author1,(err)=>{
-//             if(err) console.log(err);
-//             resolve(true);
-//         })
-//     })
-// }
-// function set_paper_author2(md5_title,new_author2){
-//     return new Promise((resolve,reject)=>{
-//         client.hset("RSB_Paper_"+md5_title,"author2",new_author2,(err)=>{
-//             if(err) console.log(err);
-//             resolve(true);
-//         })
-//     })
-    
-// }
-// function set_paper_cite(md5_title,new_cite){
-//     return new Promise((resolve,reject)=>{
-//         client.hset("RSB_Paper_"+md5_title,"cite",new_cite,(err)=>{
-//             if(err) console.log(err);
-//             resolve(true);
-//         })
-//     })
-// }
-// function set_paper_meeting(md5_title,new_meeting){
-    
-//     return new Promise((resolve,reject)=>{
-//         client.hget("RSB_Paper_"+md5_title,"meeting",(err,value)=>{
-//             if(err) console.log(err);
-//             resolve(value)
-//         })
-//     }).then(
-//         old_meeting=>{
-//             var stack =[]
-//             if(old_meeting.toLowerCase()!=new_meeting.toLowerCase()){
-//                 stack = [
-//                     del_paper_from_meeting(md5_title,old_meeting),
-//                     put_paper_to_meeting(md5_title,new_meeting)
-//                 ]
-//             }
-//             return Promise.all(stack).then(_=>{
-//                 client.hset("RSB_Paper_"+md5_title,"meeting",new_meeting,(err)=>{
-//                     if(err) console.log(err);
-//                     return Promise.resolve(true);
-//                 })
-//             })
-//         }
-//     )
-// }
-
-// function set_paper_tags(md5_title,new_tags){
-//     return new Promise((resolve,reject)=>{
-//         client.hget("RSB_Paper_"+md5_title,"tags",(err,value)=>{
-//             if(err) console.log(err);
-//             resolve(value.split(';'));
-//         })
-//     }).then(
-//         old_tags=>{
-//             var stack = [];
-//             var num=0;
-//             for(let i = 0;i<old_tags.length;i++){
-//                 if(new_tags.indexOf(old_tags[i])<0){
-//                     stack[num] = del_paper_from_tag(md5_title,old_tags[i].split(" ").join("+"));
-//                     num+=1;
-//                 }
-//             }
-//             for(let i = 0;i<new_tags.length;i++){
-//                 if(old_tags.indexOf(new_tags[i])<0){
-//                     stack[num] = put_paper_to_tag(md5_title,new_tags[i].split(" ").join("+"));
-//                     num +=1;
-//                 }
-//             }
-//             return Promise.all(stack).then(_=>{
-//                 client.hset("RSB_Paper_"+md5_title,"tags",new_tags.join(";"),(err)=>{
-//                     if(err) console.log(err);
-//                     return Promise.resolve(true)
-//                 })
-//             })
-//         }
-//     )
-    
-    
-// }
-
-// function set_paper_process(md5_title,new_process){
-//     return new Promise((resolve,reject)=>{
-//         client.hset("RSB_Paper_"+md5_title,"process",new_process,(err)=>{
-//             if(err) console.log(err);
-//             resolve(true)
-//         })
-//     })
-// }
-// function set_paper_link(md5_title,new_link){
-//     return new Promise((resolve,reject)=>{
-//         client.hset("RSB_Paper_"+md5_title,"link",new_link,(err)=>{
-//             if(err) console.log(err);
-//             resolve(true)
-//         })
-//     })
-// }
-// function set_paper_ptime(md5_title,new_ptime){
-//     return Promise.all([
-//         new Promise((resolve,reject)=>{
-//             client.zrem("RSB_Papers_By_Ptime",md5_title,(err)=>{
-//                 if(err) console.log(err);
-//                 resolve(true)
-//             })
-//         }),
-//         new Promise((resolve,reject)=>{
-//             client.zadd("RSB_Papers_By_Ptime",new_ptime,md5_title,(err)=>{
-//                 if(err) console.log(err);
-//                 resolve(true)
-//             })
-//         }),
-//         new Promise((resolve,reject)=>{
-//             client.hset("RSB_Paper_"+md5_title,"Ptime",new_ptime,(err)=>{
-//                 if(err) console.log(err);
-//                 resolve(true)
-//             })
-//         })
-//     ])
-// }
-
-
-// function set_paper_all(md5_title,new_paper){
-//     if(md5_title != md5(new_paper.title)){
-//         return Promise.all([
-//             deletePaper(md5_title),
-//             insertPaper(new_paper,replace=true)
-//         ])
-//     }
-//     return Promise.all([
-//         set_paper_author1(md5_title,new_paper.author1),
-//         set_paper_author2(md5_title,new_paper.author2),
-//         set_paper_cite(md5_title,new_paper.cite),
-//         set_paper_link(md5_title,new_paper.link),
-//         set_paper_meeting(md5_title,new_paper.meeting),
-//         set_paper_process(md5_title,new_paper.process),
-//         set_paper_ptime(md5_title,new_paper.Ptime),
-//         set_paper_tags(md5_title,new_paper.tags.split(";"))
-//     ])
-// }
-
-
-const { Sequelize, DataTypes } = require('sequelize');
+const { Sequelize, DataTypes,Op } = require('sequelize');
 const {sequelize} = require("./init");
 
 const Paper = sequelize.define('Paper', {
@@ -346,7 +36,17 @@ const Paper = sequelize.define('Paper', {
       type:DataTypes.STRING
   },
   tags:{
-      type:DataTypes.STRING
+      type:DataTypes.TEXT
+  },
+  tables:{
+    type:DataTypes.TEXT
+    },
+  md:{
+    type:DataTypes.TEXT
+    },
+  cite:{
+    type: DataTypes.INTEGER,
+    defaultValue:0
   },
   link:{
       type:DataTypes.STRING
@@ -363,49 +63,164 @@ const Paper = sequelize.define('Paper', {
     createdAt:"Ntime",
   // Other model options go here
 });
-await Paper.sync();
+async function init(){await Paper.sync();}init();
 
-function insertPaper(paper){
+async function  insertPaper(paper){
+    // console.log(paper.Ptime)
     var paper_ = await Paper.create({
         title:paper.title,
         author1:paper.author1,
-        Ptime:paper.Ptime
+        Ptime:parseInt(paper.Ptime)
     })
     return await paper_.save()
 }
 
-function getPaperByNtime(){
-    var papers = await Paper.findAll({attributes:['id']});
-    return papers.toJSON();
+async function  getPaperByNtime(){
+    var papers = await Paper.findAll(
+        {
+            attributes:['id'],
+            raw:true,
+        }
+        );
+    var ids = [];
+    for(var i =0 ;i < papers.length;i++){
+        ids.push(papers[i].id)
+    }
+    return ids;
 }
 
-function getPapersInfo(ids){
-    var papers = await Paper.findAll({
+async function  getPapersInfo(ids){
+    return await Paper.findAll({
         where:{
             id:{
                 [Op.or]:ids
             }
-        }
+        },
+        raw:true,
     });
-    return papers.toJSON();
+    // var jsons = [];
+    // await papers.every(paper=>{
+    //     jsons.push(paper.toJSON())
+    // })
+    // return jsons;
 }
 
-function deletePaper(id){
+async function  getPapersSimpleInfo(ids){
+    return await Paper.findAll({
+        attributes:['id','title','tags','meeting','Ptime','Ntime','process'],
+        where:{
+            id:{
+                [Op.or]:ids
+            }
+        },
+        raw:true,
+    });
+    // var jsons = [];
+    // await papers.every(paper=>{
+    //     jsons.push(paper.toJSON())
+    // })
+    // return jsons;
+}
+
+async function  deletePaper(id){
     var paper = await Paper.findByPk(id);
+    var old_tags = paper.tags==null?[]:paper.tags.split(";");
+    var old_tables = paper.tables == null?[]:paper.tables.split(";");
+    var old_meeting = paper.meeting;
+
+    var stack = []
+    for(let i = 0;i<old_tags.length;i++){
+        stack.push(del_paper_from_tag(id,old_tags[i].split(" ").join("+")));
+    }
+    for(let i = 0;i<old_tables.length;i++){
+        stack.push(del_paper_from_table(id,old_tables[i].split(" ").join("+")));
+    }
+    stack.push(del_paper_from_meeting(id,old_meeting));
+    await Promise.all(stack)
     return await paper.destroy()
 }
 
-function set_paper_all(id, new_paper){
+async function  set_paper_all(id, new_paper){
     var paper = await Paper.findByPk(id);
-    for(var key in new_paper) paper[key] = new_paper[key];
+    var old_tags = paper.tags==null?[]:paper.tags.split(";");
+    var new_tags = new_paper.tags==''?[]:new_paper.tags.split(";");
+    var old_meeting = paper.meeting==null?"":paper.meeting;
+    var new_meeting = new_paper.meeting;
+    new_paper.Ptime = parseInt(new_paper.Ptime);
+    new_paper.process = parseInt(new_paper.process);
+    new_paper.cite = parseInt(new_paper.cite);
+    // console.log(new_paper)
+    for(var key in new_paper){if(key=="Ntime"){continue;}paper[key] = new_paper[key];}
+
+    
+    var stack = []
+    for(let i = 0;i<old_tags.length;i++){
+        if(new_tags.indexOf(old_tags[i])<0){
+            stack.push(del_paper_from_tag(id,old_tags[i].split(" ").join("+")));
+        }
+    }
+    for(let i = 0;i<new_tags.length;i++){
+        if(old_tags.indexOf(new_tags[i])<0){
+            stack.push(put_paper_to_tag(id,new_tags[i].split(" ").join("+")));
+        }
+    }
+    // console.log(old_meeting,new_meeting)
+    if(old_meeting!=new_meeting){
+        if(old_meeting!='')stack.push(del_paper_from_meeting(id,old_meeting));
+        if(new_meeting!='')stack.push(put_paper_to_meeting(id,new_meeting));
+    }
+    await Promise.all(stack)
     return await paper.save();
+}
+
+async function add_to_table(paperid, tableid){
+    var paper = await Paper.findByPk(paperid);
+    var old_tables = paper.tables==null?[]:paper.tables.split(";");
+    if(old_tables.indexOf(tableid)<0){
+        old_tables.push(tableid)
+        paper.tables = old_tables.join(';');
+        await put_paper_to_table(paperid,tableid);
+        return await paper.save();
+    }
+    return null;
+};
+
+async function rm_from_table(paperid, tableid){
+    var paper = await Paper.findByPk(paperid);
+    var old_tables = paper.tables==null?[]:paper.tables.split(";");
+    if(old_tables.indexOf(tableid)>=0){
+        old_tables.splice(old_tables.indexOf(tableid),1);
+        paper.tables = old_tables.join(';');
+        await del_paper_from_table(paperid,tableid);
+        return await paper.save();
+    }
+    return null;
+};
+
+
+async function getNum(){
+    return await Paper.count();
+}
+
+async function getRecents(){
+    return await Paper.findAll({
+        attributes:['id','title','process','tags','updatedAt','author1'],
+        order:[
+            ['updatedAt','DESC']
+        ],
+        limit:5
+    })
 }
 
 module.exports={
     insertPaper,
     getPaperByNtime,
     getPapersInfo,
+    getNum,
+    getRecents,
+    getPapersSimpleInfo,
     deletePaper,
+    add_to_table,
     // set_paper_title,
     // set_paper_author1,
     // set_paper_author2,
@@ -415,5 +230,6 @@ module.exports={
     // set_paper_process,
     // set_paper_ptime,
     // set_paper_tags,
+    rm_from_table,
     set_paper_all
 }

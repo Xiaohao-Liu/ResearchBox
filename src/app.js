@@ -6,6 +6,7 @@ const routes = require("../src/router")
 const app = express()
 const port = 9090
 const config = require("./utils/config")
+
 app.use(express.static(config.cwd + "/dist"));
 
 //解析我们的form表单提交的数据,Content-Type: application/x-www-form-urlencoded

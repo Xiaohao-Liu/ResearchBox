@@ -1,5 +1,11 @@
 <template>
   <el-main style="position:absolute;height:100%;width:100%;top:0px;left:0px;">
+      <el-row style="margin:0px;"> 
+            <!-- <el-col class="user_bar" :span="4">
+                        <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
+            </el-col> -->
+            <el-col class="title_bar" :span="24" ><i class="el-icon-paperclip"></i>Paper管理 </el-col>
+        </el-row>
     <el-row class="ops" style="margin:10px;">
         <el-button type="primary" icon="el-icon-back" v-on:click="$router.push('/papermanager')" circle></el-button>
         <el-button type="primary" icon="el-icon-finished" v-on:click="upload_all()" circle></el-button>
@@ -47,10 +53,12 @@
             </el-col>
         </el-row>
     </el-card>
-    <el-card  class="paper_edit">
+    <el-row :gutter="10">
+        <el-col :span="8">
+            <el-card  class="paper_edit">
         <el-form ref="form" :model="edit_form" label-position="top" label-width="80px">
             <el-form-item label="阅读进度">
-                <el-slider v-model="edit_form.process" :step="10" show-stops></el-slider>
+                <el-slider v-model="edit_form.process" :step="20" show-stops></el-slider>
             </el-form-item>
             <el-form-item label="标题">
                 <el-input placeholder="请输入内容" v-model="edit_form.title" clearable class="paper_edit_title"> </el-input>
@@ -67,11 +75,11 @@
             <el-form-item label="发表时间">
                 <el-row>
                     <el-col :span="12" class="block">
-                        <el-date-picker v-model="edit_form.Ptime" type="year" value-format="timestamp" placeholder="选择年">
+                        <el-date-picker style="width: calc(100% - 10px);" v-model="edit_form.Ptime" type="year" value-format="timestamp" placeholder="选择年">
                         </el-date-picker>
                     </el-col>
                     <el-col :span="12" class="block">
-                        <el-date-picker v-model="edit_form.Ptime" type="month" value-format="timestamp" placeholder="选择月">
+                        <el-date-picker style="width: calc(100% - 10px);" v-model="edit_form.Ptime" type="month" value-format="timestamp" placeholder="选择月">
                         </el-date-picker>
                     </el-col>
                 </el-row>
@@ -84,19 +92,73 @@
         </el-form>
 
     </el-card>
+        </el-col>
+        <el-col :span="16">
+<el-card style="margin-top:10px;">
+    <el-row>
+        <el-col :span="16">
+            <span style="
+                line-height: 30px;
+                font-weight: bold;
+                font-size: 18px;
+            ">内容编辑</span>
+        </el-col>
+        <el-col :span="8">
+            <el-button style="    float: right;
+    padding: 10px;
+    margin-right: 10px;
+    " type="primary" :icon="'el-icon-'+(show_md_editor?'check':'edit')" circle @click="show_md_editor=!show_md_editor;"></el-button>    
+        </el-col>
+    </el-row>
+    <el-row :gutter="10">
+        <el-col :span="show_md_editor?12:24">
+            <div id="md_editor" v-html="markdown.render(edit_form.md)"></div>
+        </el-col>
+    <el-col :span="show_md_editor?12:0">
+<el-input
+style="box-shadow: 5px 5px 10px rgba(0,0,0,.1);margin:10px 0px;"
+        type="textarea"
+        autosize
+        placeholder="请输入内容"
+        v-model="edit_form.md">
+        </el-input>
+    </el-col>
+
+        </el-row>
+        <el-row>
+            <el-col>
+                <!-- <el-input
+                    type="textarea"
+                    autosize
+                    placeholder="请输入内容"
+                    v-model="edit_form.md">
+                    </el-input> -->
+            </el-col>
+        </el-row>
+    </el-card>
+        </el-col>
+    </el-row>
+    
   </el-main>
 </template>
 
 <script>
-const $ = require("jquery");
+// const $ = require("jquery");
 const config = require("../../utils/config");
 const Loadding = require("../../utils/loadding");
+import markdownIt from 'markdown-it'
+import markdownItLatex from 'markdown-it-latex'
+import 'markdown-it-latex/dist/index.css'
+const axios = require('axios');
+
+const md = markdownIt()
+md.use(markdownItLatex)
+
 
 export default {
   name: 'login',
   props: 
-    ['md5_title'],
-  
+    ['id'],
   data(){
     var checkNull = (rule, value, callback) => {
         if (!value) {
@@ -106,6 +168,8 @@ export default {
         }
     }
     return {
+        markdown:md,
+        show_md_editor:true,
         show_add_paper:false,
         edit_form:{
             title:"",
@@ -117,7 +181,8 @@ export default {
             process:"",
             link:"",
             Ptime:"",
-            Ntime:""
+            Ntime:"",
+            md:""
         },
         inputVisible:false,
         inputValue:"",
@@ -141,24 +206,46 @@ export default {
     first_loadding.add_process(
         "拉取数据",
         function(){
-      $.ajax({
-            type:"GET",
-            url: config.server_host + "/api/paper/fetchone/"+that.md5_title,
-            async:false,
-            dataType:"json",
-            success:function(returndata){
-                var data = returndata.data[0];
-                var s = ['title','author1','author2','cite','Ptime','Ntime','meeting','link',]
+    //   $.ajax({
+    //         type:"GET",
+    //         url: config.server_host + "/api/paper/fetchone/"+that.id,
+    //         async:false,
+    //         dataType:"json",
+    //         success:function(returndata){
+    //             var data = returndata.data.data[0];
+    //             var s = ['title','author1','author2','cite','Ptime','Ntime','meeting','link']
+    //             that.source_title = data["title"]
+    //             for(var i =0;i<s.length;i++)that.edit_form[s[i]] = data[s[i]];
+    //             if(data['tags'] != null){
+    //                 that.edit_form['tags'] =data['tags']==''?[]:data['tags'].split(';');
+    //                 console.log(data['tags'])
+    //             }else that.edit_form['tags']=[]
+    //             that.edit_form['process'] = parseInt(data['process']);
+    //             that.edit_form['md'] = data['md'] == null?'':data['md']
+    //             that.edit_form['Ptime'] = new Date(data['Ptime']).getTime();
+    //             that.edit_form['Ntime'] = new Date(data['Ntime']).getTime();
+    //             console.log(that.edit_form)
+    //         }
+    //     });
+        axios.get(
+            config.server_host + "/api/paper/fetchone/"+that.id
+        ).then(
+            returndata=>{
+                var data = returndata.data.data[0];
+                var s = ['title','author1','author2','cite','Ptime','Ntime','meeting','link']
                 that.source_title = data["title"]
                 for(var i =0;i<s.length;i++)that.edit_form[s[i]] = data[s[i]];
-                if(data['tags'] != ''){
-                    that.edit_form['tags'] = data['tags'].split(';');
+                if(data['tags'] != null){
+                    that.edit_form['tags'] =data['tags']==''?[]:data['tags'].split(';');
                     console.log(data['tags'])
                 }else that.edit_form['tags']=[]
                 that.edit_form['process'] = parseInt(data['process']);
+                that.edit_form['md'] = data['md'] == null?'':data['md']
+                that.edit_form['Ptime'] = new Date(data['Ptime']).getTime();
+                that.edit_form['Ntime'] = new Date(data['Ntime']).getTime();
                 console.log(that.edit_form)
             }
-        });
+        )
         })
         first_loadding.start()
   },
@@ -174,16 +261,25 @@ export default {
         var form = {}
         for(var key in that.edit_form)form[key] = that.edit_form[key]
         form["tags"] = form["tags"].join(";")
-        $.ajax({
-            type:"POST",
-            url: config.server_host + "/api/paper/uploadone",
-            async:false,
-            data:{"md5_title":that.md5_title,"new_paper":form},
-            dataType:"json",
-            success:function(returndata){
-                that.$router.push('/papereditor/'+returndata.data.md5_title)
+        // console.log(form)
+        // $.ajax({
+        //     type:"POST",
+        //     url: config.server_host + "/api/paper/uploadone",
+        //     async:false,
+        //     data:{"id":that.id,"new_paper":form},
+        //     dataType:"json",
+        //     success:function(){
+
+        //     }
+        // });
+        axios.post(
+            config.server_host + "/api/paper/uploadone",
+            {"id":that.id,"new_paper":form}
+        ).then(
+            returndata=>{
+                console.log(returndata)
             }
-        });
+        )
         })
         loadding.start();
       },
@@ -213,7 +309,8 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="scss">
+<style lang="scss" rel="stylesheet/scss">
+@import "../../assets/theme";
 .paper_info{
     position: relative;
 }
@@ -260,7 +357,10 @@ export default {
     border-radius: 10px;
 }
 
-
+.el-textarea__inner{
+    background:#333 !important;
+    color:white !important;
+}
 .el-tag + .el-tag {
 margin-left: 10px;
 }
@@ -275,5 +375,15 @@ padding-bottom: 0;
 width: 150px !important;
 margin-left: 10px;
 vertical-align: bottom;
+}
+
+#md_editor{
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin: 10px 0px;
+    box-sizing: border-box;
+    box-shadow: 5px 5px 10px rgba(0,0,0,.1);
 }
 </style>

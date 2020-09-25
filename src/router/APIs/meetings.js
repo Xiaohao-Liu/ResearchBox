@@ -18,9 +18,9 @@ router.get('/get', function (req, res, next) {
 
 router.post('/paper_by_meetings', function (req, res, next) {
       let {meetings} = req.body;
-      Meeting.get_papers_by_meetings(meetings).then(md5_titles => {
-        Papers.getPapersInfo(md5_titles).then(papers=>{
-            res.json({ code: 401, msg: '查询paper成功', data: papers });
+      Meeting.get_papers_by_meetings(meetings).then(ids => {
+        Papers.getPapersSimpleInfo(ids).then(papers=>{
+            res.json({ code: 401, msg: '查询paper  lite成功', data: papers });
           })
       })
   })

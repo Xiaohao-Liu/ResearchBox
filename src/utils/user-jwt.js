@@ -10,12 +10,12 @@ const jwtAuth = expressJwt({
   //设置密钥
   secret: PRIVATE_KEY,
   //设置为true表示校验，false表示不校验
-  credentialsRequired: false,
+  credentialsRequired: true,
   //自定义获取token的函数
-  algorithms: ['RS256'],
+  algorithms: ['HS256'],
   getToken: (req) => {
-    
     if (req.headers.authorization) {
+      // console.log(req.headers.authorization)
       return req.headers.authorization
     } else if (req.query && req.query.token) {
       return req.query.token
@@ -27,8 +27,10 @@ const jwtAuth = expressJwt({
     '/',
     '/api/user/login',
     '/api/user/first_set',
+    '/page/main',
     '/page/login',
-    '/page/first_set'   
+    '/page/first_set',
+    "/static/uploads/sidepic.jpg"
   ]
 })
 

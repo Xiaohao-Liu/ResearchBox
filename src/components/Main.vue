@@ -1,31 +1,24 @@
 <template>
   <el-container style="height:100%;width:100%;position:absolute;top:0px;left:0px;">
-    <el-header class="top_bar">
-        <el-row style="margin:0px;"> 
-            <!-- <el-col class="user_bar" :span="4">
-                        <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
-            </el-col> -->
-            <el-col class="title_bar" :span="24">{{title}}</el-col>
-        </el-row>
-    </el-header>
+    
     <el-container style="height:calc(100% - 20px);background:red;padding:0px;"> 
         <el-aside id="aside_bar" width="200px" >
             <el-row class="menu_top">
                 <el-col :span="24">
                     <el-card>
-                        <div class="image" v-bind:style="{backgroundImage:'url(https://dss0.baidu.com/94o3dSag_xI4khGko9WTAnF6hhy/forum/crop=0,245,1383,858/sign=5f869109adec08fa324f49e764de115f/a9d3fd1f4134970a98cb259998cad1c8a6865dcf.jpg)'}"/>
+                        <div class="image" v-bind:style="{backgroundImage:'url('+config.server_host+'/static/uploads/sidepic.jpg)'}"/>
                         <el-row style="position: absolute;width: 100%;bottom: 0px;padding: 5px 10px;color: white;line-height: 50px;text-align: left;">
                             <el-col :span="18"  style="text-indent:10px;text-shadow: 0px 0px 5px black;">{{user_info.username}}</el-col>
                             <el-col :span="6">
-                                <el-button  style="background: rgba(0,0,0,.2);padding: 10px;font-size: 10px;color: white;border: 0px;    backdrop-filter: blur(10px);box-shadow: 0px 0px 10px -2px black;" v-on:click="$router.push('/user');title='用户管理'" icon="el-icon-edit" circle></el-button>
+                                <el-button  style="background: rgba(0,0,0,.2);padding: 10px;font-size: 10px;color: white;border: 0px;    backdrop-filter: blur(10px);box-shadow: 0px 0px 10px -2px black;" v-on:click="$router.push('/user');defaultPageIdx=0;" icon="el-icon-edit" circle></el-button>
                             </el-col>
                         </el-row>
                     </el-card>
                 </el-col>
             </el-row>
-            <el-row class="menu_item" v-for="item in menu" :key="item.idx">
+            <el-row class="menu_item" v-for="item in menu" :key="item.idx" v-show="item.idx>0">
                 <el-col :span="24">
-                    <el-button v-on:click="$router.push(item.route);title=item.title;">
+                    <el-button v-on:click="$router.push(item.route);defaultPageIdx=item.idx;">
                         <i v-bind:class="item.icon"></i> {{item.title}}
                     </el-button>
                 </el-col>
@@ -39,7 +32,8 @@
 </template>
 
 <script>
-const $ = require("jquery");
+// const $ = require("jquery");
+const axios = require('axios');
 const config = require("../utils/config");
 const Loadding = require("../utils/loadding");
 
@@ -52,6 +46,7 @@ import TagManager from './menus/TagManager';
 import MeetingManager from './menus/MeetingManager';
 import PlanManager from './menus/PlanManager';
 import PlanEditor from './menus/PlanEditor';
+import Analysis from './menus/Analysis';
 
 Vue.use(VueRouter);
 
@@ -59,11 +54,12 @@ const router = new VueRouter({
   routes: [
     { path: '/user', component: User},
     { path: '/papermanager', component: PaperManager, alias:"/" },
-    { path: '/papereditor/:md5_title', component: PaperEditor, props:true },
+    { path: '/papereditor/:id', component: PaperEditor, props:true },
     { path: '/tagmanager', component: TagManager },
     { path: '/meetingmanager', component: MeetingManager },
     { path: '/planmanager', component: PlanManager },
-    {path: "/planeditor/:ntime",component:PlanEditor,props:true}
+    {path: "/planeditor/:id",component:PlanEditor,props:true},
+    {path: "/analysis",component:Analysis}
   ]
 })
 
@@ -82,62 +78,96 @@ router:router,
   },
   data(){
     return {
-      title:"Paper管理",
+        config:config,
+      defaultPageIdx:0,
       user_info:{},
       isRouterAlive:true,
       aside_left:0,
+      menu_indexOf:['user','papermanager','tagmanager','meetingmanager','planmanager','analysis'],
       menu:[
           {
               idx:0,
+              title:"用户管理",
+              icon:"el-icon-user",
+              route:"/user"
+          },
+          {
+              idx:1,
               title:"Paper管理",
               icon:"el-icon-paperclip",
               route:"/papermanager"
           },
           {
-              idx:1,
+              idx:2,
               title:"标签管理",
               icon:"el-icon-price-tag",
               route:"/tagmanager"
           },
           {
-              idx:2,
+              idx:3,
               title:"会议管理",
               icon:"el-icon-receiving",
               route:"/meetingmanager"
           },
           {
-              idx:3,
+              idx:4,
               title:"计划管理",
               icon:"el-icon-s-order",
               route:"/planmanager"
           },
           {
-              idx:4,
-              title:"设置",
-              icon:"el-icon-setting",
-              route:"/setting"
+              idx:5,
+              title:"统计分析",
+              icon:"el-icon-data-analysis",
+              route:"/analysis"
           },
       ]
     }
   },
   mounted:function(){
     var that =this;
+    that.defaultPageIdx = that.menu_indexOf.indexOf(location.hash.substring(2).split("/")[0]);
+    axios.interceptors.request.use(request => {
+    const jwt_token = window.localStorage.getItem('jwt_token');
+    if (jwt_token) {
+    // 此处有坑，下方记录
+    request.headers['Authorization'] =`${jwt_token}`;
+    }
+    return request;
+});
+
+// 拦截响应，遇到token不合法则报错
+axios.interceptors.response.use(
+    response => {
+    if (response.data.token) {
+        console.log('jwt_token:', response.data.token);
+        window.localStorage.setItem('jwt_token', response.data.token);
+    }
+    return response;
+    },
+    error => {
+    const errRes = error.response;
+    if (errRes.status === 401) {
+        window.localStorage.removeItem('jwt_token');
+        window.location.href = config.login_path;
+    }
+    return Promise.reject(error.message);   // 返回接口返回的错误信息
+    });
       var first_loadding = new Loadding();
     first_loadding.add_title("初始化");
     first_loadding.__init__();
     first_loadding.add_process(
         "拉取数据",
         function(){
-      $.ajax({
-            type:"GET",
-            url: config.server_host + "/api/user/info",
-            async:false,
-            dataType:"json",
-            success:function(returndata){
+        axios.get(
+            config.server_host + "/api/user/info"
+        ).then(
+            returndata=>{
                 console.log(returndata)
-                that.user_info = returndata.data;
+                that.user_info = returndata.data.data;
             }
-        });
+        );
+
         })
         first_loadding.start();
   },
@@ -171,24 +201,25 @@ body{
 #main{
     background:white;
     position: relative;
-    margin-top: 30px;
 }
 .top_bar{
-    padding: 0px;
-    height: 30px !important;
-    background: teal;
-    position: absolute;
+    height: 50px !important;
+    background: white;
+    color: black;
+    position: relative;
     top: 0px;
-    right: 0px;
-    z-index: 20;
-    width: calc(100% - 200px);
+    left: 0px;
+    z-index: 0;
+    margin: 0px;
+    padding: 0px;
+    margin-bottom: 15px;
 }  
 .title_bar{
-    line-height: $head_height;
-    font-size:1em;
-    text-align: center;
-    color: #EEE;
-    font-weight:bold;   
+        line-height: 30px;
+    font-size: 1.5em;
+    color: black;
+    font-weight: bold;
+    margin: 10px;
 }
 #aside_bar{
     width: 200px;
@@ -235,6 +266,7 @@ $menu_item_h:20px;
     text-align: center;
     padding:10px;
         width: calc(100% - 20px);
+        line-height: 20px;
 }
 
 .menu_item i{

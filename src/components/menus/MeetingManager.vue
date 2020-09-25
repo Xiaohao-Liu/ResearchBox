@@ -1,24 +1,32 @@
 <template>
   <el-main style="position:absolute;height:100%;width:100%;top:0px;left:0px;">
+      <el-row style="margin:0px;"> 
+            <!-- <el-col class="user_bar" :span="4">
+                        <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
+            </el-col> -->
+            <el-col class="title_bar" :span="24" ><i class="el-icon-receiving"></i>会议管理 </el-col>
+        </el-row>
       <el-select style="width:calc(100% - 20px);margin:10px;" v-model="select_meeting" :change="handlePush(select_meeting)" clearable autocomplete default-first-option filterable placeholder="请搜索">
         <el-option
         v-for="item in meetings_list"
-        :key="item.split('+').join(' ')"
-        :label="item.split('+').join(' ')"
-        :value="item.split('+').join(' ')">
+        :key="item.id"
+        :label="item.title==null?'':item.title.split('+').join(' ')"
+        :value="item.id">
         </el-option>
     </el-select>
       <el-card class="meeting_list">
           <el-row>
             <el-col >
-                <el-tag v-for="meeting in meetings_list" :key="meeting" v-show="meeting!=''" v-on:click="handlePush(meeting)" size="mini">{{meeting}}</el-tag>
+                    <el-badge  class="nums" v-for="meeting in meetings_list" :key="meeting.id" :value="meeting.nums" type="primary">
+                        <el-tag v-show="meeting!=''" v-on:click="handlePush(meeting.id)" size="mini">{{meeting.title==null?'':meeting.title.split('+').join(' ')}}</el-tag>
+                    </el-badge>
             </el-col>
         </el-row>
       </el-card>
       <el-card class="meeting_search">
           <el-row>
             <el-col >
-                <el-tag v-for="meeting in search_meetings" :key="meeting" v-show="meeting!=''" closable @close="handleClose(meeting)">{{meeting}}</el-tag>
+                <el-tag v-for="meeting in search_meetings" :key="meeting" v-show="meeting!=''" closable @close="handleClose(meeting.id)">{{meeting_id_title[meeting.id]==null?'':meeting_id_title[meeting.id].split('+').join(' ')}}</el-tag>
             </el-col>
         </el-row>
       </el-card>
@@ -49,10 +57,10 @@
 </template>
 
 <script>
-const $ = require("jquery");
+// const $ = require("jquery");
 const config = require("../../utils/config");
 const Loadding = require("../../utils/loadding");
-
+const axios = require('axios');
 export default {
     inject:['reload'],
   name: 'login',
@@ -63,7 +71,9 @@ export default {
     return {
         select_meeting:"",
         meetings_list:[],
+        meeting_id_title:{},
         search_meetings:[],
+        search_meetings_id:[],
         paper_list:[],
     }
   },
@@ -75,26 +85,44 @@ export default {
     first_loadding.add_process(
         "拉取数据",
         function(){
-      $.ajax({
-            type:"GET",
-            url: config.server_host + "/api/meeting/get",
-            async:false,
-            dataType:"json",
-            success:function(returndata){
-                that.meetings_list = returndata.data;
+    //   $.ajax({
+    //         type:"GET",
+    //         url: config.server_host + "/api/meeting/get",
+    //         async:false,
+    //         dataType:"json",
+    //         success:function(returndata){
+    //             console.log(returndata)
+    //             for(let i = 0; i < returndata.data.data.length;i++){
+    //                 that.meetings_list.push(returndata.data.data[i])
+    //                 that.meeting_id_title[returndata.data.data[i].id] = returndata.data.data[i].title;
+    //             }
+    //         }
+    //     });
+        axios.get(
+            config.server_host + "/api/meeting/get"
+        ).then(
+            returndata=>{
+                console.log(returndata)
+                for(let i = 0; i < returndata.data.data.length;i++){
+                    that.meetings_list.push(returndata.data.data[i])
+                    that.meeting_id_title[returndata.data.data[i].id] = returndata.data.data[i].title;
+                }
             }
-        });
+        )
         })
         first_loadding.start()
   },
   methods:{
-    handleClose(meeting) {
-        this.search_meetings.splice(this.search_meetings.indexOf(meeting), 1);
+    handleClose(meetingid) {
+        this.search_meetings.splice(this.search_meetings_id.indexOf(meetingid), 1);
+        this.search_meetings_id.splice(this.search_meetings_id.indexOf(meetingid), 1);
         this.get_papers_by_search_meetings();
     },
-    handlePush(meeting) {
-        if(this.search_meetings.indexOf(meeting)>=0)return;
-        this.search_meetings.push(meeting);
+    handlePush(meetingid) {
+        if(String(meetingid)=='')return;
+        if(this.search_meetings_id.indexOf(meetingid)>=0)return;
+        this.search_meetings.push({id:meetingid});
+        this.search_meetings_id.push(meetingid);
         this.get_papers_by_search_meetings();
     },
 
@@ -102,29 +130,47 @@ export default {
         var that = this;
         if(that.search_meetings.length==0){return;}
         var loadding = new Loadding();
-    loadding.add_title("初始化");
+    loadding.add_title("Papers");
     loadding.__init__();
     loadding.add_process(
         "获取Paper数据",
         function(){
-        $.ajax({
-            type:"POST",
-            url: config.server_host + "/api/meeting/paper_by_meetings",
-            async:false,
-            data:{meetings:that.search_meetings},
-            dataType:"json",
-            success:function(returndata){
+        // $.ajax({
+        //     type:"POST",
+        //     url: config.server_host + "/api/meeting/paper_by_meetings",
+        //     async:false,
+        //     data:{meetings:that.search_meetings_id},
+        //     dataType:"json",
+        //     success:function(returndata){
+        //         console.log(returndata)
+        //         that.paper_list=[]
+        //         for(var i = 0; i< returndata.data.data.length;i++){
+        //             if(returndata.data.data[i] ==null)continue;
+        //             if(returndata.data.data[i]['tags'] != ''){
+        //                 returndata.data.data[i]['tags'] = returndata.data.data[i]['tags'].split(';');
+        //             }else returndata.data.data[i]['tags']=[]
+        //             returndata.data.data[i]['Ptime'] = new Date(returndata.data.data[i]['Ptime']).getTime();
+        //             that.paper_list.push(returndata.data.data[i]);
+        //         }
+        //     }
+        // });
+        axios.post(
+            config.server_host + "/api/meeting/paper_by_meetings",
+            {meetings:that.search_meetings_id}
+        ).then(
+            returndata=>{
                 console.log(returndata)
                 that.paper_list=[]
-                for(var i = 0; i< returndata.data.length;i++){
-                    if(returndata.data[i] ==null)continue;
-                    if(returndata.data[i]['tags'] != ''){
-                        returndata.data[i]['tags'] = returndata.data[i]['tags'].split(';');
-                    }else returndata.data[i]['tags']=[]
-                    that.paper_list.push(returndata.data[i]);
+                for(var i = 0; i< returndata.data.data.length;i++){
+                    if(returndata.data.data[i] ==null)continue;
+                    if(returndata.data.data[i]['tags'] != ''){
+                        returndata.data.data[i]['tags'] = returndata.data.data[i]['tags'].split(';');
+                    }else returndata.data.data[i]['tags']=[]
+                    returndata.data.data[i]['Ptime'] = new Date(returndata.data.data[i]['Ptime']).getTime();
+                    that.paper_list.push(returndata.data.data[i]);
                 }
             }
-        });
+        )
         })
         loadding.start();
     }
@@ -148,5 +194,8 @@ export default {
     box-shadow: 0px 0px 0 0 black !important;
     background: transparent !important;
     border: 0px !important;
+}
+.meeting_list .nums .el-badge__content{
+    margin:5px;
 }
 </style>

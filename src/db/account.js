@@ -1,38 +1,7 @@
 // var { client } = require("./init");
 const md5 = require("../utils/md5");
 
-// function is_built(){
-//     return new Promise((resolve, reject)=>{
-//         client.hget("RSB_USER","built",(err,value)=>{
-//             if(err)console.log(err);
-//             resolve(value)
-//         })
-//     })
-// }
-
-// function set_account(username,password){
-//     var RSB_USER = {
-//         username:username,
-//         password:md5(password),
-//         built:true  
-//     }
-//     return new Promise((resolve, reject)=>{
-//         client.hmset("RSB_USER",RSB_USER,(err)=>{
-//             if(err)console.log(err)
-//             resolve(true)
-//         })
-//     })
-// }
-
-// function get_account(){    
-//     return new Promise((resolve, reject)=>{
-//             client.hgetall("RSB_USER",(err,value)=>{
-//                 if(err)console.log(err);
-//                 resolve(value)
-//             })
-//         })
-// }
-const { Sequelize, DataTypes } = require('sequelize');
+const { Sequelize, DataTypes,Op } = require('sequelize');
 const {sequelize} = require("./init");
 
 const User = sequelize.define('User', {
@@ -57,13 +26,13 @@ const User = sequelize.define('User', {
 }, {
   // Other model options go here
 });
-await User.sync();
+async function init(){await User.sync();}init();
 
-function is_built(){
+async function  is_built(){
     return (await User.findAll()).length >= 0;
 }
 
-function set_account(username,password){
+async function  set_account(username,password){
     var user = await User.create({
         username:username,
         password:md5(password)
@@ -71,12 +40,25 @@ function set_account(username,password){
     await user.save()
 }
 
-function get_account(){
+async function  set_username(username){
+  var user = await User.findOne();
+  user.username=username;
+  await user.save()
+}
+async function  set_password(password){
+  var user = await User.findOne();
+  user.password=md5(password);
+  await user.save()
+}
+
+async function  get_account(){
     var user = await User.findOne();
     return user.toJSON();
 }
 module.exports={
     is_built,
     set_account,
-    get_account
+    get_account,
+    set_username,
+    set_password
 }

@@ -8,7 +8,11 @@ const { PRIVATE_KEY, JWT_EXPIRED } = require('../../utils/constant')
 const { decode } = require('../../utils/user-jwt')
 const {Account} = require('../../db')
 const { user } = require('../../utils/config')
-
+var multer = require('multer');//接收图片
+const fs = require("fs");
+var upload = multer({
+    dest: './uploads'
+});//定义图片上传的临时目录
 //登录
 const loginVaildator = [
   body('username').isString().withMessage('用户名类型错误'),
@@ -24,29 +28,13 @@ router.post('/first_set', function (req, res, next) {
         if (!user || user.length === 0) {
           res.json({ code: -1, msg: '初始化出错', data: {} })
         } else {
-          const token = jwt.sign(
-            //playload：签发的 token 里面要包含的一些数据。
-            { username },
-            //私钥
-            PRIVATE_KEY,
-            //设置过期时间
-            { expiresIn: JWT_EXPIRED }
-          )
-          res.redirect('/page/main');
+          res.redirect('/page/login');
         }
     })
 })
 
 router.post('/login',function (req, res, next) {
-  const err = validationResult(req)
-  
-  //如果验证错误,empty不为空
-  if (!err.isEmpty()) {
-    //获取错误信息
-    const [{ msg }] = err.errors
-    //抛出错误,交给我们自定义的统一异常处理程序进行错误返回 
-    next(boom.badRequest(msg))
-  } else {
+
     let { username, password } = req.body;
     //md5加密
     password = md5(password)
@@ -61,13 +49,13 @@ router.post('/login',function (req, res, next) {
           { username },
           //私钥
           PRIVATE_KEY,
+          { algorithm: 'HS256' },
           //设置过期时间
           { expiresIn: JWT_EXPIRED }
         )
-        res.json({ code: 401, msg: 'Login', data: token });
+        res.json({ code: 401, msg: 'Login', data: {},'token':token });
       }
     })
-  }
 })
 
 router.get('/info',function(req,res,next){
@@ -75,6 +63,34 @@ router.get('/info',function(req,res,next){
     res.json({ code: 401, msg: 'User_Info', data: userinfo });
   })
 })
+router.post('/setusername',function(req,res,next){
+  let { username } = req.body;
+  Account.set_username(username).then(_=>{
+    res.json({ code: 401, msg: 'set username 成功', data: {} });
+  })
+})
+router.post('/setpassword',function(req,res,next){
+  let { password } = req.body;
+  Account.set_password(password).then(_=>{
+    res.json({ code: 401, msg: 'set password 成功', data: {} });
+  })
+})
+
+router.post('/uploadsidepic',upload.single('file'), function(req, res, next) {
+  // req.file 是 前端表单name=="imageFile" 的文件信息（不是数组）
+  // console.log(req.file)
+  fs.rename(req.file.path,  "uploads/sidepic.jpg", function(err) {
+      if (err) {
+          throw err;
+      }
+      // console.log('上传成功!');
+  })
+  res.writeHead(200, {
+      "Access-Control-Allow-Origin": "*"
+  });
+  res.end(JSON.stringify(req.file)+JSON.stringify(req.body));
+})
+
 // //查询用户信息
 // router.get('/info', function (req, res, next) {
 //   //解析token,并且token存在

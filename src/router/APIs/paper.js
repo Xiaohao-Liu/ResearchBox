@@ -34,47 +34,52 @@ router.post('/add', add_new_Vaildator, function (req, res, next) {
 })
 
 router.post('/del', function (req, res, next) {
-  const err = validationResult(req)
-  
-  //如果验证错误,empty不为空
-  if (!err.isEmpty()) {
-    //获取错误信息
-    const [{ msg }] = err.errors
-    //抛出错误,交给我们自定义的统一异常处理程序进行错误返回 
-    next(boom.badRequest(msg))
-  } else {
-    let md5_title = req.body.md5_title;
-    Papers.deletePaper(md5_title).then(_ => {
+
+    let id = req.body.id;
+    Papers.deletePaper(id).then(_ => {
         res.json({ code: 401, msg: '删除paper成功', data: {} });
     })
-  }
 })
 
 router.get('/by_ntime', function (req, res, next) {
   Papers.getPaperByNtime().then(
     ntimelist=>{
-      Papers.getPapersInfo(ntimelist).then(papers=>{
-        res.json({ code: 401, msg: '查询paper成功', data: papers });
+      Papers.getPapersSimpleInfo(ntimelist).then(papers=>{
+        res.json({ code: 401, msg: '查询paper lite成功', data: papers });
       })
     }
   )
 
 })
 
-router.get('/fetchone/:md5_title', function (req, res, next) {
+router.get('/fetchone/:id', function (req, res, next) {
 
-      Papers.getPapersInfo([req.params.md5_title]).then(papers=>{
+      Papers.getPapersInfo([req.params.id]).then(papers=>{
         res.json({ code: 401, msg: '查询paper成功', data: papers });
       })
 })
 
 router.post('/uploadone', function (req, res, next) {
-  Papers.set_paper_all(req.body.md5_title, req.body.new_paper).then(
+  Papers.set_paper_all(req.body.id, req.body.new_paper).then(
     _=>{
-      res.json({ code: 401, msg: '更新paper成功', data: {md5_title:md5(req.body.new_paper.title)} });
+      res.json({ code: 401, msg: '更新paper成功', data: {}});
     }
   )
 
+})
+
+router.post('/add_paper_table', function (req, res, next) {
+    var {paperid, tableid} = req.body;
+    Papers.add_to_table(paperid,tableid).then(_=>{
+      res.json({ code: 401, msg: 'table添加paper成功', data: {} });
+    })
+})
+
+router.post('/rm_paper_table', function (req, res, next) {
+  var {paperid, tableid} = req.body;
+  Papers.rm_from_table(paperid,tableid).then(_=>{
+    res.json({ code: 401, msg: 'table删除paper成功', data: {} });
+  })
 })
 
 // //查询用户信息

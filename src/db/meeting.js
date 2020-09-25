@@ -1,4 +1,4 @@
-const { Sequelize, DataTypes } = require('sequelize');
+const { Sequelize, DataTypes,Op } = require('sequelize');
 const {sequelize} = require("./init");
 
 const Meeting = sequelize.define('Meeting', {
@@ -31,30 +31,39 @@ const Meeting = sequelize.define('Meeting', {
     createdAt:"Ntime",
   // Other model options go here
 });
-await Meeting.sync();
+async function init(){await Meeting.sync();}init();
 
-function get_meetings(){
-    var meetings = await Meeting.findAll();
-    return meetings.toJSON();
+async function  get_meetings(){
+    return await Meeting.findAll({
+        raw:true,
+    });
+    // var jsons = []
+    // await meetings.every(meeting=>{
+    //     jsons.push(meeting.toJSON());
+    // })
+
+    // console.log(jsons)
+    // return jsons;
 }
 
-function get_papers_by_meetings(ids){
+async function  get_papers_by_meetings(ids){
     var meetings = await Meeting.findAll({
         attributes:['papers'],
         where:{
             id:{
                 [Op.or]:ids
             }
-        }
+        },
+        raw:true,
     });
     var paper_ids = []
-    meetings.every(meeting=>{
-        paper_ids = paper_ids.concat(meeting.papers.split(';'))
-    })
+    for(var i =0;i<meetings.length;i++){
+        paper_ids = paper_ids.concat(meetings[i].papers.split(';'))
+    }
     return paper_ids;
 }
 
-function meeting_id(meetingtitle){
+async function  meeting_id(meetingtitle){
     var meeting = await Meeting.findOne(
         {
             attributes:['id'],
@@ -66,40 +75,59 @@ function meeting_id(meetingtitle){
     return meeting != null?meeting.id:-1;
 }
 
-function del_paper_from_meeting(paperid,meetingtitle){
-    var meetingid = meeting_id(meetingtitle);
+async function  del_paper_from_meeting(paperid,meetingtitle){
+    var meetingid = await meeting_id(meetingtitle);
     if(meetingid == -1)return null;
     var meeting = await Meeting.findByPk(meetingid);
-    meeting.nums = meeting.nms - 1;
-    if(meeting.nums == 0){
+    meeting.nums = meeting.nums - 1;
+    if(meeting.nums <= 0){
         return await meeting.destroy();
     }
     var paperlist = meeting.papers.split(';');
-    paperlist.splice(indexOf(paperid),1);
+    paperlist.splice(paperlist.indexOf(paperid),1);
     meeting.papers = paperlist.join(";");
     return await meeting.save()
 }
 
-function put_paper_to_meeting(paperid, meetingtitle){
-    var meetingid = meeting_id(meetingtitle);
+async function  put_paper_to_meeting(paperid, meetingtitle){
+    var meetingid = await meeting_id(meetingtitle);
+    console.log(meetingid)
     if(meetingid == -1){
         var meeting = await Meeting.create({
-            title:meeting.toLowerCase(),
+            title:meetingtitle.toLowerCase(),
         });
     }else{
         var meeting = await Meeting.findByPk(meetingid);
     }
-    meeting.nums = meeting.nms +1;
-    var paperlist = meeting.papers.split(';');
+    
+    var paperlist = meeting.papers==null?[]:meeting.papers.split(';');
+    if(paperlist.indexOf(paperid)>=0) return null;
+    meeting.nums = meeting.nums +1;
     paperlist.push(paperid)
     meeting.papers = paperlist.join(";");
-    
     return await meeting.save()
 }
+
+async function getNum(){
+    return await Meeting.count();
+}
+
+async function getTop10(){
+    return await Meeting.findAll({
+        attributes:['id','title','nums'],
+        order:[
+            ['nums','DESC']
+        ],
+        limit:10
+    })
+}
+
 module.exports={
     get_meetings,
     get_papers_by_meetings,
     meeting_id,
+    getNum,
+    getTop10,
     put_paper_to_meeting,
     del_paper_from_meeting
 }

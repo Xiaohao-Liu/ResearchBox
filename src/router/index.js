@@ -4,10 +4,14 @@ const boom = require('boom')
 const apiRouter = require('./api')
 //page路由模块
 const pageRouter = require('./pages')
+
+const staticRouter = require('./static')
+
 //导入jwt认证函数
 const { jwtAuth } = require('../utils/user-jwt')
-const { renderSync } = require('node-sass')
-const {is_built} = require("../db/account");
+// const { renderSync } = require('node-sass')
+
+// const {is_built} = require("../db/account");
 //注册路由 
 const router = express.Router()
 
@@ -20,17 +24,16 @@ router.get("/",(req,res)=>{
 //加入用户模块路由
 router.use('/api', apiRouter)
 router.use('/page', pageRouter)
-
+router.use('/static', staticRouter)
 //自定义统一异常处理中间件，需要放在代码最后
 router.use((err, req, res, next) => {
   //自定义用户认证失败的错误返回
   if (err && err.name === 'UnauthorizedError') {
-    is_built().then(built=>{
-      if(built=="false") res.redirect('/page/firstsetting');
-      else res.redirect('/page/login');
+    const errCode = 401;
+    res.status(errCode).json({
+      code: errCode,
+      msg: "UnauthorizedError" 
     })
-    
-    
   } else {
     const { output } = err || {}
     //错误码和错误信息
