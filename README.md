@@ -1,24 +1,29 @@
-# researchpages
+# ResearchBox
 
-## Project setup
-```
+## 安装依赖
+
+```shell
 npm install
 ```
 
-### Compiles and hot-reloads for development
+## 运行后台
+
+```shell
+npm run backend
 ```
+
+## 运行服务器
+
+```shell
 npm run serve
 ```
 
-### Compiles and minifies for production
-```
+## 打包前端
+
+```shell
 npm run build
 ```
+## 配置文件
 
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+./src/utils/config.js
+./src/utils/constant.js
