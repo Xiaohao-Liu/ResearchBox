@@ -25,5 +25,6 @@ npm run build
 ```
 ## 配置文件
 
-./src/utils/config.js
-./src/utils/constant.js
+`./src/utils/config.js`
+
+`./src/utils/constant.js`
