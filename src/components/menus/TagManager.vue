@@ -31,17 +31,17 @@
             </el-col>
         </el-row>
       </el-card>
-      <el-card class="paper" v-for="paper in paper_list" :key="paper.Ntime">
-        <div slot="header" class="clearfix" style="cursor:pointer" v-on:click="$router.push('/papereditor/'+paper.md5_title)">
+         <el-card :class="'paper'+(paper.process==100?' finished':'')" v-for="paper in paper_list" :key="paper.Ntime">
+        <div slot="header" class="clearfix" style="cursor:pointer" v-on:click="$router.push('/papereditor/'+paper.id)">
             <span>{{paper.title}}</span>
         </div>
         <div class="meeting">
             {{paper.meeting}}
         </div>
         <el-row>
-            <el-col :span="12" class="ptime">
+            <el-col :span="24" class="ptime">
                 <span style="font-size:10px;color:#999;">submitted:</span> {{new Date(parseInt(paper.Ptime)).getMonth()+1}},{{new Date(parseInt(paper.Ptime)).getFullYear()}} 
-            </el-col>   
+            </el-col>
         </el-row>
         <!-- <div v-for="o in 4" :key="o" class="text item">
             {{'列表内容 ' + o }}
@@ -53,7 +53,7 @@
             </el-col>
         </el-row>
         <div class="status_bar" v-bind:style="{width:paper.process + '%'}"></div>
-        </el-card>
+    </el-card>
   </el-main>
 </template>
 

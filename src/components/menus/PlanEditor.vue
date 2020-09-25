@@ -42,7 +42,7 @@
         label="标题"
         >
         <template slot-scope="scope">
-            <strong>{{scope.row.title}}</strong>
+            <strong style="cursor:pointer;" @click="$router.push('/papereditor/'+scope.row.id)">{{scope.row.title}}</strong>
             <!-- <span style="background:red;">{{ scope.row.process }}</span> -->
         </template>
         </el-table-column>
@@ -53,7 +53,7 @@
         :width="180"
         >
         <template slot-scope="scope">
-            <el-progress width=40 stroke-width=3 type="dashboard" :percentage="scope.row.process"></el-progress>
+            <el-progress :width="40" :stroke-width="3" type="dashboard" :percentage="scope.row.process"></el-progress>
             <!-- <span style="background:red;">{{ scope.row.process }}</span> -->
         </template>
         </el-table-column>
@@ -216,6 +216,7 @@ export default {
     width: 80%;
     position: absolute;
     top: 0px;
+    left:0px;
     height: 5px;
     background: $--color-primary;
     border-radius: 10px;
