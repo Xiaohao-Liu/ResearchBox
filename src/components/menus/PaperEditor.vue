@@ -316,6 +316,7 @@ export default {
 
 .paper_info{
     position: relative;
+    transition: ease .5s;
 }
 .ops .el-button i{
     font-weight: bold;
@@ -389,6 +390,7 @@ vertical-align: bottom;
     font-size: .8em;
     box-sizing: border-box;
     box-shadow: 5px 5px 10px rgba(0,0,0,.1);
+    transition: ease .5s;
 }
 #md_editor .katex .katex-html {
     display: inline-block;
@@ -404,5 +406,68 @@ vertical-align: bottom;
     background: rgba(0,0,0,.02);
     padding: 0px 1em;
     border-radius: 0px;
+}
+
+
+#main-app.dark-mode{
+    .paper_info{
+        background: #333;
+    }
+    .paper_title{
+        text-shadow: 0px 0px 0px;
+    }
+    .el-textarea__inner{
+        border:1px solid #555;
+    }
+    #md_editor{
+        background: #444;
+        color: #eee;
+        border: 1px solid #555;
+    }
+    #md_editor .katex .katex-html {
+        display: inline-block;
+        white-space: break-spaces;
+        line-height: 2;
+    }
+    #md_editor .katex .fontsize-ensurer.reset-size3.size1,#md_editor  .katex .sizing.reset-size3.size1 {
+        font-size: 1em;
+        transform: scale(.7);
+    }
+    #md_editor blockquote {
+        margin: 2px;
+        background: rgba(0,0,0,.02);
+        padding: 0px 1em;
+        border-radius: 0px;
+    }
+    .el-tag{
+        background: rgba(255,255,255,.2);
+        color: #eee;
+    }
+    .el-tag__close{
+        color: #eee;
+    }
+    .left_table .el-tag__close{
+        background: rgba(255,255,255,.1);
+    }
+    .el-table th{
+        background: #333 !important;
+        color:#eee;
+    }
+    .el-table tr{
+        background: #333 !important;
+        color:#eee;
+    }
+    .el-table tr:hover{
+        color:#555;
+        border-radius: 10px;
+    }
+    .el-divider__text{
+        background: #222;
+        color:#eee;
+    }
+    // .th{
+    //     background: #333;
+    //     color:#eee;
+    // }
 }
 </style>

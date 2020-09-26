@@ -1,7 +1,7 @@
 <template>
-  <el-container style="height:100%;width:100%;position:absolute;top:0px;left:0px;">
+  <el-container id="main-app" :class="darkMode?'dark-mode':''"  style="height:100%;width:100%;position:absolute;top:0px;left:0px;">
     
-    <el-container style="height:calc(100% - 20px);background:red;padding:0px;"> 
+    <el-container style="padding:0px;"> 
         <el-aside id="aside_bar" width="200px" >
             <el-row class="menu_top">
                 <el-col :span="24">
@@ -23,6 +23,13 @@
                     </el-button>
                 </el-col>
             </el-row>
+            <div id='dark-mode-control'>
+                <el-button :icon="darkMode?'el-icon-moon':'el-icon-sunny'" circle v-on:click="darkMode=!darkMode"></el-button>
+                <div>
+                    <div style="font-weight: bold;font-size: 14px;margin-top: 10px;">深色模式</div>
+                    <div class="dark-mode-status">{{darkMode?'打开':'关闭'}}</div>
+                </div>
+            </div>
         </el-aside>
         <el-main id="main">
             <router-view v-if="isRouterAlive"></router-view>
@@ -79,6 +86,7 @@ router:router,
   data(){
     return {
         config:config,
+        darkMode:false,
       defaultPageIdx:0,
       user_info:{},
       isRouterAlive:true,
@@ -201,10 +209,11 @@ body{
 #main{
     background:white;
     position: relative;
+    transition:ease .5s;
 }
 .top_bar{
     height: 50px !important;
-    background: white;
+    background: transparent;
     color: black;
     position: relative;
     top: 0px;
@@ -231,6 +240,7 @@ body{
     left: 0px;
     position: relative;
     z-index: 10;
+    transition:ease .5s;
 }
 
 .image{
@@ -243,7 +253,7 @@ body{
 .menu_top .el-card{
     margin: 0px;
     margin-bottom: 10px;
-    border:1px;
+    border:0px !important;
     border-radius: 0px;
 }
 .menu_top .el-card__body{
@@ -335,4 +345,74 @@ $menu_item_h:20px;
     text-align: left;
     text-indent: 10px;
 }
+#dark-mode-control{
+    position: absolute;
+    z-index: 101;
+    left: 0px;
+    text-align: center;
+    color:black;
+    bottom: 0px;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    .el-button{
+        background: #F9A825;
+        border:0px;
+        transition:ease .5s;
+        float: left;
+        margin-left: 10px;
+        i{
+            font-size: 20px;
+            color: white;
+            font-weight: bold;
+        }
+    }
+    .dark-mode-status{
+        font-size:12px;
+        color:black;
+    }
+}
+
+// dark-mode
+$dark-mode-bg:#222;
+$dark-mode-font-color:#EEE;
+#main-app.dark-mode{
+    #main{
+        background:$dark-mode-bg;
+    }
+    #dark-mode-control{
+        color:#eee;
+        .el-button{
+            background: #333;
+        }
+        .dark-mode-status{
+            color:#eee;
+        }
+    }
+    .top_bar{
+        color: $dark-mode-font-color;
+    }  
+    .title_bar{
+        color: $dark-mode-font-color;
+    }
+    #aside_bar{
+        background: $dark-mode-bg;
+        box-shadow: 2px 0px 0px #343434;
+    }
+
+    .menu_item .el-button{
+        border: 1px solid #343434;
+
+        background: rgba(255,255,255,.2);
+        color: $dark-mode-font-color;
+    }
+
+    .Loadding_board{
+        background: $dark-mode-bg;
+    }
+    .Loadding_title{
+        color: $dark-mode-font-color;
+    }
+}
+
 </style>

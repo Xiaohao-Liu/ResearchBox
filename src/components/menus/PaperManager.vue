@@ -378,12 +378,14 @@ export default {
     width: 40%;
     margin-top: 10px;
     z-index: 100;
+    transition: ease .5s;
 }
 .add_to_table{
         position: absolute;
     z-index: 11;
     width: 50%;
     margin-left: 25%;
+    transition: ease .5s;
 }
 .add_board .el-form-item__label{
     line-height: 20px;
@@ -394,6 +396,7 @@ export default {
     float: left;
     position: relative;
     min-width: 150px;
+    transition:ease .5s;
 }
 .paper .el-card__header{
     font-weight: bold;
@@ -423,6 +426,7 @@ export default {
     line-height: 20px !important;
     background:$--color-primary !important;
     color:white !important;
+    border:0px !important;
 }
 .finished{
     box-shadow: 0 2px 8px -1px rgba(0, 0, 0, 0.1) inset !important;
@@ -447,5 +451,74 @@ export default {
     width: 15px;
     line-height: 15px;
     text-align: center;
+}
+.el-collapse-item__content{padding: 10px !important;}
+.el-collapse-item__header,.el-collapse-item__content{
+    transition: ease .5s;
+}
+#main-app.dark-mode{
+    .el-card{
+        background: #333;
+        border: 1px solid #444;
+        color: #eee;
+    }
+    .add_board{
+        background: #333;
+        border: 1px solid #444;
+        color: #eee;
+    }
+    .add_to_table{
+        background: #333;
+        border: 1px solid #444;
+        color: #eee;
+    }
+    .el-collapse-item__header{
+        background: #333;
+        border-bottom: 1px solid #444;
+        color: #eee;
+    }
+    .el-collapse-item__content{
+        background: #333;
+        color: #eee;
+        border-bottom: 1px solid #444;
+    }
+    .el-collapse-item__wrap{
+        border-bottom: 1px solid #444;
+    }
+    .el-collapse{
+        border-top: 1px solid #444;
+    }
+    .el-form-item{
+        .el-form-item__label{
+            color: #eee;
+        }
+    }
+    .el-input__inner{
+        color: #eee;
+        background: #444;
+        border: 1px solid #666;
+    }
+    .el-card__header{
+        border-bottom: 1px solid #444;
+    }
+    .el-button--default{
+        color: #eee;
+        background: #444;
+        border: 1px solid #666;
+    }
+    .paper .meeting{
+        color: #eee;
+    }
+    .micro_tag{
+        color:#eee !important;
+    }
+    .finished{
+            background: #333 !important;
+            color: white !important;
+    }
+    .paper{
+        background: #333 !important;
+        color: white !important;
+    }
 }
 </style>
