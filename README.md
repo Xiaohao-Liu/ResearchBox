@@ -1,5 +1,5 @@
 # ResearchBox
-
+![](https://raw.githubusercontent.com/WYKXLDZ/ResearchBox/master/main.png)
 ## 功能介绍
 采用express、mysql、vue构建了一个Paper管理器，支持以下功能
 - Paper管理
