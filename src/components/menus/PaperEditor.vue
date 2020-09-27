@@ -115,8 +115,20 @@
         </el-col>
     </el-row>
     <el-row :gutter="10">
+        <el-col :span="12" style="max-width:500px;">
+            <el-slider
+            v-model="md_size"
+            :step="0.1"
+            :min=".5"
+            :max="1.2"
+            show-stops
+            show-input>
+            </el-slider>
+        </el-col>
+    </el-row>
+    <el-row :gutter="10">
         <el-col :span="show_md_editor?12:24">
-            <div id="md_editor" class="markdown-body" v-html="markdown.render(edit_form.md)"></div>
+            <div id="md_editor" class="markdown-body" :style="{fontSize:md_size+'em'}" v-html="markdown.render(edit_form.md)"></div>
         </el-col>
     <el-col :span="show_md_editor?12:0">
 <el-input
@@ -142,7 +154,6 @@ style="box-shadow: 5px 5px 10px rgba(0,0,0,.1);margin:10px 0px;"
     </el-card>
         </el-col>
     </el-row>
-    
   </el-main>
 </template>
 
@@ -177,6 +188,7 @@ export default {
         show_md_editor:true,
         show_add_paper:false,
         full_editor:false,
+        md_size:.8,
         edit_form:{
             title:"",
             author1:"",
@@ -409,7 +421,7 @@ vertical-align: bottom;
     width: 100%;
     border: 1px solid #ddd;
     border-radius: 5px;
-    padding: 10px 0px;
+    padding: 10px 10px;
     margin: 10px 0;
     font-size: .8em;
     box-sizing: border-box;
@@ -432,7 +444,17 @@ vertical-align: bottom;
     border-radius: 0px;
 }
 
+.el-slider__runway,.el-slider__stop{
+background: rgba(255,255,255,.5);
+}
 
+
+thead tr th,.el-table tr ,.el-table,thead, thead tr{
+    background:transparent !important;
+}
+.el-divider__text{
+        transition: ease .5s;
+    }
 #main-app.dark-mode{
     .paper_info{
         background: #333;
@@ -474,11 +496,11 @@ vertical-align: bottom;
         background: rgba(255,255,255,.1);
     }
     .el-table th{
-        background: #333 !important;
+        //background: #333 !important;
         color:#eee;
     }
     .el-table tr{
-        background: #333 !important;
+        //background: #333 !important;
         color:#eee;
     }
     .el-table tr:hover{
@@ -488,6 +510,16 @@ vertical-align: bottom;
     .el-divider__text{
         background: #222;
         color:#eee;
+    }
+    .el-input-number__increase{
+        background: #333;
+    color: #eee;
+    border-left: 1px solid #555;
+    }
+    .el-input-number__decrease{
+            background: #333;
+    color: #eee;
+    border-right: 1px solid #555;
     }
     // .th{
     //     background: #333;
