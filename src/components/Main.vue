@@ -2,7 +2,8 @@
   <el-container id="main-app" :class="darkMode?'dark-mode':''"  style="height:100%;width:100%;position:absolute;top:0px;left:0px;">
     
     <el-container style="padding:0px;"> 
-        <el-aside id="aside_bar" width="200px" >
+        <el-aside id="aside_bar" :class="show_aside?'':'aside_active'" width="200px">
+            <el-button  id="menu-btn" :icon="'el-icon-'+(show_aside?'s-fold':'s-unfold')" :style="{left:show_aside?'140px':'0px'}" @click="show_aside=!show_aside" circle></el-button>
             <el-row class="menu_top">
                 <el-col :span="24">
                     <el-card>
@@ -10,7 +11,7 @@
                         <el-row style="position: absolute;width: 100%;bottom: 0px;padding: 5px 10px;color: white;line-height: 50px;text-align: left;">
                             <el-col :span="18"  style="text-indent:10px;text-shadow: 0px 0px 5px black;">{{user_info.username}}</el-col>
                             <el-col :span="6">
-                                <el-button  style="background: rgba(0,0,0,.2);padding: 10px;font-size: 10px;color: white;border: 0px;    backdrop-filter: blur(10px);box-shadow: 0px 0px 10px -2px black;" v-on:click="$router.push('/user');defaultPageIdx=0;" icon="el-icon-edit" circle></el-button>
+                                <el-button  style="background: teal;padding: 10px;font-size: 10px;color: white;border: 0px;box-shadow: 0px 0px 10px -2px black;" v-on:click="$router.push('/user');defaultPageIdx=0;" icon="el-icon-edit" circle></el-button>
                             </el-col>
                         </el-row>
                     </el-card>
@@ -19,16 +20,16 @@
             <el-row class="menu_item" v-for="item in menu" :key="item.idx" v-show="item.idx>0">
                 <el-col :span="24">
                     <el-button v-on:click="$router.push(item.route);defaultPageIdx=item.idx;">
-                        <i v-bind:class="item.icon"></i> {{item.title}}
+                        <i v-bind:class="item.icon"></i> <span>{{item.title}}</span>
                     </el-button>
                 </el-col>
             </el-row>
             <div id='dark-mode-control'>
                 <el-button :icon="darkMode?'el-icon-moon':'el-icon-sunny'" circle v-on:click="change_mode"></el-button>
-                <div>
+                <!-- <div>
                     <div style="font-weight: bold;font-size: 14px;margin-top: 10px;">深色模式</div>
                     <div class="dark-mode-status">{{darkMode?'打开':'关闭'}}</div>
-                </div>
+                </div> -->
             </div>
         </el-aside>
         <el-main id="main">
@@ -87,6 +88,7 @@ router:router,
     return {
         config:config,
         darkMode:false,
+        show_aside:true,
       defaultPageIdx:0,
       user_info:{},
       isRouterAlive:true,
@@ -221,6 +223,18 @@ body{
     position: relative;
     transition:ease .5s;
 }
+#menu-btn{
+background: teal !important;
+    padding: 10px;
+    font-size: 10px;
+    color: white;
+    border: 0px !important;
+    box-shadow: black 0px 0px 10px -2px;
+    transition: ease .5s;
+    margin: 10px;
+        position: fixed;
+    z-index: 1001;
+}
 .top_bar{
     height: 50px !important;
     background: transparent;
@@ -244,12 +258,11 @@ body{
     width: 200px;
     background: white;
     box-shadow: 4px 0px 10px rgba(0,0,0,.1);
-    //  position: absolute;
+    position: relative;
     height: 100%;
     top: 0px;
     left: 0px;
-    position: relative;
-    z-index: 10;
+    z-index: 100;
     transition:ease .5s;
 }
 
@@ -259,7 +272,10 @@ body{
     background-size: cover;
     background-position: center;
 }
-
+.menu_top{
+    height: auto;
+    overflow: hidden;
+}
 .menu_top .el-card{
     margin: 0px;
     margin-bottom: 10px;
@@ -282,6 +298,7 @@ $menu_item_h:20px;
     margin: 2px 10px;
     border-radius: 5px;
     border: 1px solid #ddd;
+    overflow: hidden;
     cursor: pointer;
     text-align: center;
     padding:10px;
@@ -363,14 +380,14 @@ $menu_item_h:20px;
     color:black;
     bottom: 0px;
     width: 100%;
-    padding: 10px;
+    margin-bottom: 10px;
+    padding: 0px;
     box-sizing: border-box;
+    overflow: hidden;
     .el-button{
         background: #F9A825;
         border:0px;
         transition:ease .5s;
-        float: left;
-        margin-left: 10px;
         i{
             font-size: 20px;
             color: white;
@@ -382,7 +399,41 @@ $menu_item_h:20px;
         color:black;
     }
 }
-
+.aside_active{
+    width:50px !important;
+    .menu_top {
+        height: 0px;
+        margin-bottom: 160px !important;
+    }
+    .menu_item .el-button{
+        margin: 2px 2px;
+        width: 45px;
+        span i{
+            float:none;
+        }
+        span span{
+            display: none;
+        }
+    }
+    #dark-mode-control{
+            padding: 0px;
+            button{
+                    width: 50px;
+                    border-radius: 0px;
+    margin-left: 0px;
+            }
+            div{
+                display:none;
+            }
+    }
+    #menu-btn{
+    margin: 0;
+    border-radius: 0px;
+    width: 50px;
+    height: 50px;
+    font-size: 16px;
+    }
+}
 // dark-mode
 $dark-mode-bg:#222;
 $dark-mode-font-color:#EEE;
