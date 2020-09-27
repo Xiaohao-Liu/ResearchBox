@@ -19,7 +19,7 @@ const router = express.Router()
 router.use(jwtAuth)
 
 router.get("/",(req,res)=>{
-  res.send("This is the backend of ResearchBox.");
+  res.redirect("/page/main");
 })
 //加入用户模块路由
 router.use('/api', apiRouter)
