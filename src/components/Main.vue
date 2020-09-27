@@ -24,7 +24,7 @@
                 </el-col>
             </el-row>
             <div id='dark-mode-control'>
-                <el-button :icon="darkMode?'el-icon-moon':'el-icon-sunny'" circle v-on:click="darkMode=!darkMode"></el-button>
+                <el-button :icon="darkMode?'el-icon-moon':'el-icon-sunny'" circle v-on:click="change_mode"></el-button>
                 <div>
                     <div style="font-weight: bold;font-size: 14px;margin-top: 10px;">深色模式</div>
                     <div class="dark-mode-status">{{darkMode?'打开':'关闭'}}</div>
@@ -137,6 +137,12 @@ router:router,
     that.defaultPageIdx = that.menu_indexOf.indexOf(location.hash.substring(2).split("/")[0]);
     axios.interceptors.request.use(request => {
     const jwt_token = window.localStorage.getItem('jwt_token');
+    var _darkMode = localStorage.getItem('RSB_darkMode');
+    if(_darkMode){
+        this.darkMode = _darkMode=="false"?false:true;
+    }else{
+        localStorage.setItem("RSB_darkMode",this.darkMode);
+    }
     if (jwt_token) {
     // 此处有坑，下方记录
     request.headers['Authorization'] =`${jwt_token}`;
@@ -185,6 +191,10 @@ axios.interceptors.response.use(
         this.$nextTick(function(){
             this.isRouterAlive=true;
         })
+    },
+    change_mode:function(){
+        this.darkMode = !this.darkMode;
+        localStorage.setItem("RSB_darkMode",this.darkMode);
     }
   }
 }

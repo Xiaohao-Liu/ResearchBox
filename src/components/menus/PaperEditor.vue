@@ -94,20 +94,24 @@
     </el-card>
         </el-col>
         <el-col :span="16">
-<el-card style="margin-top:10px;">
+<el-card style="margin-top:10px;" :class="full_editor?'full-screen':''">
     <el-row>
         <el-col :span="16">
             <span style="
                 line-height: 30px;
                 font-weight: bold;
                 font-size: 18px;
-            ">内容编辑</span>
+            ">{{full_editor?edit_form.title:'内容编辑'}}</span>
         </el-col>
         <el-col :span="8">
             <el-button style="    float: right;
     padding: 10px;
     margin-right: 10px;
-    " type="primary" :icon="'el-icon-'+(show_md_editor?'check':'edit')" circle @click="show_md_editor=!show_md_editor;"></el-button>    
+    " type="primary" :icon="'el-icon-'+(show_md_editor?'check':'edit')" circle @click="change_show_md_editor"></el-button>    
+    <el-button style="    float: right;
+    padding: 10px;
+    margin-right: 10px;
+    " type="primary" :icon="'el-icon-'+(full_editor?'bottom-right':'top-left')" circle @click="full_editor=!full_editor;"></el-button>  
         </el-col>
     </el-row>
     <el-row :gutter="10">
@@ -172,6 +176,7 @@ export default {
         markdown:md,
         show_md_editor:true,
         show_add_paper:false,
+        full_editor:false,
         edit_form:{
             title:"",
             author1:"",
@@ -204,6 +209,12 @@ export default {
       var first_loadding = new Loadding();
     first_loadding.add_title("初始化");
     first_loadding.__init__();
+    var _show_md_editor = localStorage.getItem('RSB_show_md_editor');
+    if(_show_md_editor){
+        this.show_md_editor = _show_md_editor=="false"?false:true;
+    }else{
+        localStorage.setItem("RSB_show_md_editor",this.show_md_editor);
+    }
     first_loadding.add_process(
         "拉取数据",
         function(){
@@ -303,7 +314,11 @@ export default {
         }
         this.inputVisible = false;
         this.inputValue = '';
-      }
+      },
+      change_show_md_editor:function(){
+        this.show_md_editor = !this.show_md_editor;
+        localStorage.setItem("RSB_show_md_editor",this.show_md_editor);
+    }
     
   }
 }
@@ -313,7 +328,16 @@ export default {
 <style lang="scss" rel="stylesheet/scss">
 @import "../../assets/theme";
 
-
+.full-screen{
+    margin-top: 0px !important;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    z-index: 10000;
+    margin: 0px;
+    height: 100%;
+    width: 100%;
+}
 .paper_info{
     position: relative;
     transition: ease .5s;

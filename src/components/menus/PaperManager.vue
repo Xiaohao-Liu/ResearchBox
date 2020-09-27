@@ -391,7 +391,7 @@ export default {
     line-height: 20px;
 }
 .paper{
-        max-width: calc(25% - 30px);
+        max-width: calc(25% - 12px);
     margin: 5px;
     float: left;
     position: relative;
@@ -454,6 +454,9 @@ export default {
 }
 .el-collapse-item__content{padding: 10px !important;}
 .el-collapse-item__header,.el-collapse-item__content{
+    transition: ease .5s;
+}
+.el-card{
     transition: ease .5s;
 }
 #main-app.dark-mode{
