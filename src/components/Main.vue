@@ -145,6 +145,12 @@ router:router,
     }else{
         localStorage.setItem("RSB_darkMode",this.darkMode);
     }
+    var _show_aside = localStorage.getItem('RSB_show_aside');
+    if(_show_aside){
+        this.show_aside = _show_aside=="false"?false:true;
+    }else{
+        localStorage.setItem("RSB_show_aside",this.show_aside);
+    }
     if (jwt_token) {
     // 此处有坑，下方记录
     request.headers['Authorization'] =`${jwt_token}`;
@@ -197,6 +203,10 @@ axios.interceptors.response.use(
     change_mode:function(){
         this.darkMode = !this.darkMode;
         localStorage.setItem("RSB_darkMode",this.darkMode);
+    },
+    change_show_aside:function(){
+        this.show_aside = !this.show_aside;
+        localStorage.setItem("RSB_show_aside",this.show_aside);
     }
   }
 }
