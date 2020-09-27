@@ -3,7 +3,7 @@
     
     <el-container style="padding:0px;"> 
         <el-aside id="aside_bar" :class="show_aside?'':'aside_active'" width="200px">
-            <el-button  id="menu-btn" :icon="'el-icon-'+(show_aside?'s-fold':'s-unfold')" :style="{left:show_aside?'140px':'0px'}" @click="show_aside=!show_aside" circle></el-button>
+            <el-button  id="menu-btn" :icon="'el-icon-'+(show_aside?'s-fold':'s-unfold')" :style="{left:show_aside?'140px':'0px'}" @click="change_show_aside" circle></el-button>
             <el-row class="menu_top">
                 <el-col :span="24">
                     <el-card>
