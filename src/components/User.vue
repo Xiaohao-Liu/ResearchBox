@@ -44,6 +44,21 @@
                         <el-col :span="12"><el-button @click="resetForm('ruleForm')">重置</el-button></el-col>
                     </el-row>
                   </el-collapse-item>
+                  <el-collapse-item title="github (照片资源收录)" name="2">
+                    <el-form-item label="UserName">
+                        <el-input type="text" v-model="ruleForm.github_username" autocomplete="off"></el-input>
+                    </el-form-item>
+                    <el-form-item label="Repos">
+                        <el-input type="text" v-model="ruleForm.github_repos" autocomplete="off"></el-input>
+                    </el-form-item>
+                    <el-form-item label="Token">
+                        <el-input type="text" v-model="ruleForm.github_token" autocomplete="off"></el-input>
+                    </el-form-item>
+                    <el-row :gutter="20" style="margin:10px 10%;margin-left:100px;">
+                        <el-col :span="12"><el-button type="primary" icon="el-icon-user-solid" v-on:click="set_github()">提交信息</el-button></el-col>
+                        <el-col :span="12"><el-button @click="resetForm('ruleForm')">重置</el-button></el-col>
+                    </el-row>
+                  </el-collapse-item>
                 </el-collapse>
                 
             </el-form>
@@ -100,7 +115,11 @@ export default {
           name:'',
           pass: '',
           checkPass: '',
+          github_username:"",
+          github_repos:"",
+          github_token:"",
         },
+        user_info:{},
         rules: {
 
           pass: [
@@ -130,6 +149,14 @@ export default {
             returndata=>{
                 console.log(returndata)
                 that.user_info = returndata.data.data;
+                if(that.user_info.github_info == null){
+                  console.log("no github_info was settled.")
+                }else{
+                  that.user_info.github_info = JSON.parse(that.user_info.github_info);
+                  that.ruleForm.github_username = that.user_info.github_info.username;
+                  that.ruleForm.github_repos = that.user_info.github_info.repos;
+                  that.ruleForm.github_token = that.user_info.github_info.token;
+                }
                 that.ruleForm.name = that.user_info.username;
             }
         );
@@ -205,6 +232,26 @@ export default {
           axios.post(
               config.server_host + "/api/user/setpassword",
               {password:that.ruleForm.pass}
+          ).then(
+              returndata=>{
+                  console.log(returndata)
+              }
+          );
+
+          })
+          loadding.start();
+    },
+    set_github:function(){
+      var that = this;
+      var loadding = new Loadding();
+      loadding.add_title("设置Github");
+      loadding.__init__();
+      loadding.add_process(
+          "设置Github",
+          function(){
+          axios.post(
+              config.server_host + "/api/user/setgithub",
+              {username:that.ruleForm.github_username,repos:that.ruleForm.github_repos,token:that.ruleForm.github_token}
           ).then(
               returndata=>{
                   console.log(returndata)

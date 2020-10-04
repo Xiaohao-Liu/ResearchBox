@@ -14,6 +14,9 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING
     // allowNull defaults to true
   },
+  github_info:{
+    type:DataTypes.TEXT
+  },
   avatar:{
     type: DataTypes.STRING
   },
@@ -55,10 +58,17 @@ async function  get_account(){
     var user = await User.findOne();
     return user.toJSON();
 }
+
+async function set_github_info(github_info){
+    var user = await User.findOne();
+    user.github_info = JSON.stringify(github_info);
+    await user.save()
+}
 module.exports={
     is_built,
     set_account,
     get_account,
+    set_github_info,
     set_username,
     set_password
 }

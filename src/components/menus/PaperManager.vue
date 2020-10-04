@@ -9,7 +9,7 @@
         </el-row>
     </el-header>
     <el-row class="ops" style="margin:10px;">
-        <el-button type="primary" icon="el-icon-document-add" v-on:click="show_add_paper==true?show_add_paper=false:show_add_paper=true;">添加Paper</el-button>
+        <el-button type="primary" icon="el-icon-document-add" style="float: left;" v-on:click="show_add_paper==!show_add_paper">添加Paper</el-button>
         <el-card class="add_board" v-show="show_add_paper">
             <el-form label-position="top" label-width="80px" :model="add_form" :rules="rules">
                 <el-form-item label="标题" prop="add_title">
@@ -44,8 +44,9 @@
                 </el-form-item>
             </el-form>
         </el-card>
+        <el-col :span="4" style="line-height:40px;padding:0px 10px;"><el-checkbox v-model="include_finished" @change="change_finished">已完成</el-checkbox></el-col>
     </el-row>
-    <el-card :class="'paper'+(paper.process==100?' finished':'')" v-for="paper in paper_list" :key="paper.Ntime">
+    <el-card :class="'paper'+(paper.process==100?' finished':'')" v-for="paper in paper_list" :key="paper.Ntime" v-show="(paper.process!=100 || include_finished)">
         <div slot="header" class="clearfix" style="cursor:pointer" v-on:click="$router.push('/papereditor/'+paper.id)">
             <span>{{paper.title}}</span>
         </div>
@@ -127,6 +128,7 @@ export default {
     return {
         show_add_paper:false,
         show_add_to_table:false,
+        include_finished:false,
         now_tables:[],
         now_tables_title:[],
         add_to_table:{
@@ -158,6 +160,7 @@ export default {
   mounted:function(){
       var that =this;
       var first_loadding = new Loadding();
+      that.include_finished = localStorage.getItem("RSB_paperManager_finished") == "true"?true:false;
     first_loadding.add_title("初始化");
     first_loadding.__init__();
     first_loadding.add_process(
@@ -364,6 +367,9 @@ export default {
             )
             })
             loadding.start();
+      },
+      change_finished:function(changedValue){
+          localStorage.setItem("RSB_paperManager_finished",String(changedValue));
       }
 
   }
@@ -391,11 +397,11 @@ export default {
     line-height: 20px;
 }
 .paper{
-        max-width: calc(25% - 12px);
+    width: calc(25% - 12px);
     margin: 5px;
     float: left;
     position: relative;
-    min-width: 150px;
+    // min-width: 150px;
     transition:ease .5s;
 }
 .paper .el-card__header{
@@ -476,7 +482,7 @@ export default {
         color: #eee;
     }
     .el-collapse-item__header{
-        background: #333;
+        background: transparent;
         border-bottom: 1px solid #444;
         color: #eee;
     }

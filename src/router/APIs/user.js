@@ -76,6 +76,13 @@ router.post('/setpassword',function(req,res,next){
   })
 })
 
+router.post('/setgithub',function(req,res,next){
+  let github_info = req.body;
+  Account.set_github_info(github_info).then(_=>{
+    res.json({ code: 401, msg: 'set github info 成功', data: {} });
+  })
+})
+
 router.post('/uploadsidepic',upload.single('file'), function(req, res, next) {
   // req.file 是 前端表单name=="imageFile" 的文件信息（不是数组）
   // console.log(req.file)

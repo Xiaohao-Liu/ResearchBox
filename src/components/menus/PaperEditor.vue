@@ -103,7 +103,7 @@
                 font-size: 18px;
             ">{{full_editor?edit_form.title:'内容编辑'}}</span>
         </el-col>
-        <el-col :span="8">
+        <el-col :span="8" style="position: relative;">
             <el-button style="    float: right;
     padding: 10px;
     margin-right: 10px;
@@ -111,7 +111,27 @@
     <el-button style="    float: right;
     padding: 10px;
     margin-right: 10px;
-    " type="primary" :icon="'el-icon-'+(full_editor?'bottom-right':'top-left')" circle @click="full_editor=!full_editor;"></el-button>  
+    " type="primary" :icon="'el-icon-'+(full_editor?'bottom-right':'top-left')" circle @click="full_editor=!full_editor;"></el-button> 
+    
+    <el-button style="    float: right;
+    padding: 10px;
+    margin-right: 10px;
+    " type="primary" icon="el-icon-picture" circle @click="push_pic_show = !push_pic_show"></el-button>
+    <el-button style="    float: right;
+    padding: 10px;
+    margin-right: 10px;
+    " type="primary" icon="el-icon-plus" circle @click="open('https://github.com/'+github_info.username+'/'+github_info.repos+'/tree/master')"></el-button>  
+            <el-card v-show="push_pic_show" id="push-pic-board" v-loading="push_pic.loadding">
+                <img :src="push_pic.base64" style="width:100%;max-height:300px;"/>  
+                <p v-show="push_pic.base64==''  && !push_pic.pushed" style="text-align:center;">NO IMAGE!</p>   
+                <p v-show="push_pic.base64=='' && push_pic.pushed" style="text-align:center;">COPY THE LINK!</p>   
+                <el-input placeholder="照片名称" v-model="push_pic.name" v-show="!push_pic.pushed">
+                    <el-button slot="append" icon="el-icon-upload" v-on:click="push_a_pic"></el-button>
+                </el-input>
+                <el-input v-model="push_pic.raw" v-show="push_pic.pushed">
+                </el-input>
+            </el-card>
+
         </el-col>
     </el-row>
     <el-row :gutter="10">
@@ -158,7 +178,7 @@ style="box-shadow: 5px 5px 10px rgba(0,0,0,.1);margin:10px 0px;"
 </template>
 
 <script>
-// const $ = require("jquery");
+const $ = require("jquery");
 const config = require("../../utils/config");
 const Loadding = require("../../utils/loadding");
 import markdownIt from 'markdown-it'
@@ -188,6 +208,13 @@ export default {
         show_md_editor:true,
         show_add_paper:false,
         full_editor:false,
+        push_pic_show:false,
+        push_pic:{
+            name:"",
+            base64:"",
+            raw:"",
+            loadding:false,
+        },
         md_size:.8,
         edit_form:{
             title:"",
@@ -213,6 +240,11 @@ export default {
             { validator: checkNull, trigger: 'blur' }
           ],
 
+        },
+        github_info:{
+            username:"",
+            repos:"",
+            token:""
         }
     }
   },
@@ -230,27 +262,6 @@ export default {
     first_loadding.add_process(
         "拉取数据",
         function(){
-    //   $.ajax({
-    //         type:"GET",
-    //         url: config.server_host + "/api/paper/fetchone/"+that.id,
-    //         async:false,
-    //         dataType:"json",
-    //         success:function(returndata){
-    //             var data = returndata.data.data[0];
-    //             var s = ['title','author1','author2','cite','Ptime','Ntime','meeting','link']
-    //             that.source_title = data["title"]
-    //             for(var i =0;i<s.length;i++)that.edit_form[s[i]] = data[s[i]];
-    //             if(data['tags'] != null){
-    //                 that.edit_form['tags'] =data['tags']==''?[]:data['tags'].split(';');
-    //                 console.log(data['tags'])
-    //             }else that.edit_form['tags']=[]
-    //             that.edit_form['process'] = parseInt(data['process']);
-    //             that.edit_form['md'] = data['md'] == null?'':data['md']
-    //             that.edit_form['Ptime'] = new Date(data['Ptime']).getTime();
-    //             that.edit_form['Ntime'] = new Date(data['Ntime']).getTime();
-    //             console.log(that.edit_form)
-    //         }
-    //     });
         axios.get(
             config.server_host + "/api/paper/fetchone/"+that.id
         ).then(
@@ -271,9 +282,41 @@ export default {
             }
         )
         })
+        first_loadding.add_process(
+        "添加粘贴事件",
+            function(){
+            that.add_paste_event();
+            })
+        first_loadding.add_process(
+        "拉取Github数据",
+        function(){
+        axios.get(
+            config.server_host + "/api/user/info"
+        ).then(
+            returndata=>{
+                console.log(returndata)
+                that.user_info = returndata.data.data;
+                if(that.user_info.github_info == null){
+                  console.log("no github_info was settled.")
+                }else{
+                  that.user_info.github_info = JSON.parse(that.user_info.github_info);
+                  that.github_info.username = that.user_info.github_info.username;
+                  that.github_info.repos = that.user_info.github_info.repos;
+                  that.github_info.token = that.user_info.github_info.token;
+                }
+                console.log(that.github_info)
+            }
+        );
+
+        })
         first_loadding.start()
+
+        
   },
   methods:{
+      open:function(link){
+          window.open(link);
+      },
       upload_all:function(){
         var that =this;
         var loadding = new Loadding();
@@ -330,6 +373,83 @@ export default {
       change_show_md_editor:function(){
         this.show_md_editor = !this.show_md_editor;
         localStorage.setItem("RSB_show_md_editor",this.show_md_editor);
+    },
+    add_paste_event:function(){
+        var that = this;
+        const stopwords = ",.'\":; "
+        document.addEventListener('paste', function (event) {
+            if(!that.push_pic_show){
+                return;
+            }
+            
+            var items = event.clipboardData && event.clipboardData.items;
+            var file = null;
+            var reader  = new FileReader();
+            if (items && items.length) {
+                // 检索剪切板items
+                for (var i = 0; i < items.length; i++) {
+                    if (items[i].type.indexOf('image') !== -1) {
+                        file = items[i].getAsFile();
+                        break;
+                    }
+                }
+            }
+            var name = that.edit_form.title.substring(0,15).toLowerCase();
+            for(var w =0;w<stopwords.length;w++){
+                name = name.split(stopwords[w]).join("_")
+            }
+            name= that.id+"_"+name+"_1.png"
+            reader.onload = function(event){
+                that.push_pic.base64 = event.target.result;
+                that.push_pic.name = name;
+                that.push_pic.pushed = false;
+            }
+            if(file){
+                reader.readAsDataURL(file)
+            }
+        });
+    },
+    push_a_pic:function(){
+        var that = this;
+        that.push_pic.loadding=true;
+        if(that.github_info.username == "" || that.github_info.repos == "" || that.github_info.token == ""){
+            that.$notify({
+                title: ' 失败',
+                message: "Github 信息有误"
+            });
+            return;
+        }
+        $.ajax({
+                url:"https://api.github.com/repos/"+that.github_info.username+"/"+that.github_info.repos+"/contents/"+that.push_pic.name,
+                type:"PUT",
+                contentType:"application/json",
+                dataType:"json",
+                data:JSON.stringify({
+                    "message": "upload a pic named "+ that.push_pic.name,
+                    "content": that.push_pic.base64.substring(22)
+                    }),
+                headers:{"Authorization":"token "+that.github_info.token},
+                success:function(returndata){
+                    // console.log(returndata)
+                    that.$notify({
+                        title: '成功',
+                        message: that.push_pic.name+" 上传成功！"
+                    });
+                    that.push_pic.raw = returndata.content.download_url;
+                    that.push_pic.base64="";
+                    that.push_pic.pushed = true;
+                    that.push_pic.loadding=false;
+                },
+                error:function(returndata){
+                    that.$notify({
+                        title: ' 失败',
+                        message: returndata.responseJSON.message
+                    });
+                    that.push_pic.loadding=false;
+                }
+                
+
+            })
     }
     
   }
@@ -349,6 +469,7 @@ export default {
     margin: 0px;
     height: 100%;
     width: 100%;
+    overflow: auto !important;
 }
 .paper_info{
     position: relative;
@@ -448,6 +569,15 @@ vertical-align: bottom;
 background: rgba(255,255,255,.5);
 }
 
+#push-pic-board{
+    position: absolute;
+    top:calc(100% + 10px);
+    width:calc(100% - 20px);
+    z-index: 100;
+}
+#push-pic-board .el-card__body{
+    padding:0px;
+}
 
 thead tr th,.el-table tr ,.el-table,thead, thead tr{
     background:transparent !important;
