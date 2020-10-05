@@ -30,6 +30,7 @@ const jwtAuth = expressJwt({
     '/page/main',
     '/page/login',
     '/page/first_set',
+    '/api/tool/translate_cn',
     "/static/uploads/sidepic.jpg"
   ]
 })

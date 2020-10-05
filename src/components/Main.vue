@@ -64,12 +64,26 @@
       </el-main>
     </el-container>
 
-    <div id='float_board' :class="(frame_hidden?'hidden':'')" v-show="!frame_closed">
+    <div id='float_board' :class="(frame_hidden?'hidden':'')" v-show="!frame_closed" 
+    :style="{
+      height:float_frames[frame_idx].height,
+      minHeight:float_frames[frame_idx].minHeight,
+      width:float_frames[frame_idx].width,
+      minWidth:float_frames[frame_idx].minWidth
+    }"
+    >
     <div class="hidden_circle" v-on:click="frame_hidden=false" :style="{backgroundImage:'url('+float_frames[frame_idx].icon+')'}"></div>
       <div class="top_line">
         <div class="dragger_haddle"></div>
-        <div class="hidden_btn" v-on:click="frame_hidden=true;"></div>
-        <div class="close_btn" v-on:click="frame_closed=true;"></div>
+        <el-dropdown trigger="click" style="float:left;" @command="handleFrameCommand">
+                <div class="choices_btn"><i class="el-icon-plus"></i></div>
+
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item v-bind:command="{'type':'frame','params':frame.idx}" v-for="frame in float_frames" :key="frame.idx"><div class="little_icon" :style="{backgroundImage:'url('+frame.icon+')'}"></div>{{frame.name}}</el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+        <div class="hidden_btn" v-on:click="frame_hidden=true;"><i class="el-icon-minus"></i></div>
+        <!-- <div class="close_btn" v-on:click="frame_closed=true;"><i class="el-icon-close"></i></div> -->
       </div>
       <div class="main_board">
           <iframe :src="float_frames[frame_idx].link"></iframe>
@@ -125,14 +139,28 @@ export default {
   data() {
     return {
         frame_idx:0,
-        frame_hidden:false,
-        frame_closed:true,
+        frame_hidden:true,
+        // frame_closed:false,
         float_frames:[
             {
                 idx:0,
-                name:"baidu",
-                link:"https://fanyi.baidu.com/?aldtype=16047#auto/zh/",
-                icon:"https://www.baidu.com/favicon.ico"
+                name:"tanslate",
+                link:"http://localhost:8080/translate.html",
+                icon:"https://www.gstatic.cn/translate/ic_translate_googblue600_20dp.svg",
+                height:"calc(20% - 20px)",
+                minHeight:"150px",
+                width:"40%",
+                minWidth:"500px"
+            },
+            {
+                idx:1,
+                name:"MD5加密",
+                link:"http://localhost:8080/crypto.html",
+                icon:"https://image.flaticon.com/icons/png/128/891/891403.png",
+                height:"120px",
+                minHeight:"100px",
+                width:"40%",
+                minWidth:"500px"
             }
         ],
       config: config,
@@ -282,18 +310,29 @@ export default {
             console.log("mousedown")
             var startX = ev.pageX,startY = ev.pageY;
             var dom = this.parentElement.parentElement;
+            var topline = this.parentElement;
             var dom_x = dom.offsetLeft, dom_y = dom.offsetTop;
             var frame_board_move_flag = true;
-            
+            dom.style.transform = "scale(.8) translate(0px,calc(-10%))";
+            dom.style.marginTop = "-15px";
+            topline.style.height = "100%"
             $(document).on("mousemove",function(d_ev){
                 if(!frame_board_move_flag){
                     return;
                 }
+                dom.style.transition = "none";
                 dom.style.left = (d_ev.pageX - startX + dom_x) + 'px';
                 dom.style.top = (d_ev.pageY - startY + dom_y) + 'px';
             })
             $(document).on("mouseup",function(d_ev2){
+                    if(!frame_board_move_flag){
+                        return;
+                    }
                     frame_board_move_flag = false;
+                    dom.style.transition = "ease .3s";
+                    dom.style.transform = "scale(1)";
+                    dom.style.marginTop = "0";
+                    topline.style.height = "30px"
                     if(d_ev2.pageX > window.innerWidth/2){
                         dom.style.left = 'auto';
                         dom.style.right = '10px';
@@ -311,7 +350,14 @@ export default {
                 }
                 )
         })
-    }
+    },
+    handleFrameCommand:function(command){
+          if(command.type=="frame"){
+            console.log(command)
+              this.frame_idx = parseInt(command.params)
+              return;
+          }
+      },
   }
 };
 </script>
@@ -520,30 +566,39 @@ $menu_item_h: 20px;
   height: calc(50% - 20px);
   width: 40%;
   background: white;
-  z-index: 10001;
+  z-index: 2000;
   left: 10px;
   overflow: hidden;
   border-radius: 10px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  transition:ease .2s;
   .hidden_circle{
-        height: 40px;
-        width: 40px;
-        background-size: cover;
+        height: 100%;
+    width: 100%;
+        background-size: 50%;
         border-radius: 40px;
         background-repeat: no-repeat;
         background-position: center;
         display: none;
   }
   .top_line {
-    position: relative;
-    background: rgba(0, 0, 0, 0.03);
+    position: absolute;
+    background: #eee;
     height: 30px;
+    width: 100%;
+    z-index: 1;
+    opacity: 0;
+    transition: ease .2s;
+  }
+  .top_line:hover{
+    opacity: 1;
   }
   .dragger_haddle{
-          height: 100%;
-    width: calc(100% - 80px);
+          height: 30px;
+    width: calc(100% - 120px);
     position:relative;
     float: left;
+        cursor: move;
   }
   .dragger_haddle:before{
           content: "";
@@ -563,10 +618,16 @@ $menu_item_h: 20px;
     background: #80CBC4;
     margin: 7px;
     border-radius: 10px;
+    font-size: 5px;
+    color: transparent;
+    line-height: 14px;
+    text-align: center;
+    font-weight: bold;
     cursor: pointer;
   }
   .hidden_btn:hover{
       background: #009688;
+      color: black;
   }
   .close_btn{
           height: 14px;
@@ -575,15 +636,39 @@ $menu_item_h: 20px;
     background: #E57373;
     margin: 7px;
     border-radius: 10px;
+    font-size: 5px;
+    color: transparent;
+    line-height: 14px;
+    text-align: center;
+    font-weight: bold;
     cursor: pointer;
   }
   .close_btn:hover{
       background: #D32F2F;
+      color: black;
   }
-
+  .choices_btn{
+          height: 14px;
+    width: 14px;
+    float: left;
+    background: #FFE082;
+    margin: 7px;
+    border-radius: 10px;
+    font-size: 5px;
+    color: transparent;
+    line-height: 14px;
+    text-align: center;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .choices_btn:hover{
+      background: #FFC107;
+      color: black;
+  }
   .main_board{
-    height: calc(100% - 30px);
+    height: 100%;
     width: 100%;
+    // margin-top:30px;
     iframe{
         border: 0px;
     height: 100%;
@@ -592,14 +677,26 @@ $menu_item_h: 20px;
   }
 }
 #float_board.hidden {
-    width: 40px;
-    height: 40px;
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
     border-radius: 100px;
     .hidden_circle{display: block;}
     .top_line {display: none;}
     .main_board {display: none;}
 }
 
+.el-dropdown-menu__item .little_icon{
+    height: 20px;
+    width: 20px;
+    float: left;
+    background-position: center;
+    background-size: cover;
+    border-radius: 20px;
+        margin: 8px 0px;
+    margin-right: 10px;
+  }
 .aside_active {
   width: 50px !important;
   .menu_top {
