@@ -145,7 +145,7 @@ export default {
             {
                 idx:0,
                 name:"tanslate",
-                link:"http://localhost:8080/translate.html",
+                link:config.tool_translate,
                 icon:"https://www.gstatic.cn/translate/ic_translate_googblue600_20dp.svg",
                 height:"calc(20% - 20px)",
                 minHeight:"150px",
@@ -155,7 +155,7 @@ export default {
             {
                 idx:1,
                 name:"MD5加密",
-                link:"http://localhost:8080/crypto.html",
+                link:config.tool_crypto,
                 icon:"https://image.flaticon.com/icons/png/128/891/891403.png",
                 height:"120px",
                 minHeight:"100px",
