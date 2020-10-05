@@ -15,9 +15,11 @@
 - 深色模式切换
 
 **2020.10.04 update**
+
 - 增加github contents API(自动获取剪切板图片上传至repos，获取图片链接进行md的编写)
 
 **need to update**
+
 添加tool（翻译）
 
 ## Installation 
