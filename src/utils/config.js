@@ -5,11 +5,13 @@ module.exports = {
     mysql_host: 'localhost',
     mysql_port:3306,
     mysql_username:"root",
-    mysql_password:"123456",
+    mysql_password:"156321",
     database: 'RSB',
     // login_path:"/ligin.html",
     // main_path:"/main.html"
     login_path:"/page/login",
-    main_path:"/page/main"
+    main_path:"/page/main",
+    tool_translate:"/page/tool/translate",
+    tool_crypto:"/page/tool/crypto"
   }
   

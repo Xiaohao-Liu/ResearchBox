@@ -35,5 +35,14 @@ router.get('/main', function (req, res, next) {
     res.send(html);
 })
 
+router.get('/tool/translate', function (req, res, next) {
+    var html = fs.readFileSync(config.cwd+'/dist/translate.html', 'utf-8');
+    res.send(html);
+})
+router.get('/tool/crypto', function (req, res, next) {
+    var html = fs.readFileSync(config.cwd+'/dist/crypto.html', 'utf-8');
+    res.send(html);
+})
+
 module.exports = router
 
