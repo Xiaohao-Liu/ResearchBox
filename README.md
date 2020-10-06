@@ -18,9 +18,10 @@
 
 - 增加github contents API(自动获取剪切板图片上传至repos，获取图片链接进行md的编写)
 
-**need to update**
+**2020.10.06 update**
 
-添加tool（翻译）
+- 添加tool（翻译、MD5）
+- 添加分页和搜索
 
 ## Installation 
 
