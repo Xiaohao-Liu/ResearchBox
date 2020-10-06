@@ -7,7 +7,7 @@
             <el-col class="title_bar" :span="24" ><i class="el-icon-data-analysis"></i>统计分析 </el-col>
         </el-row>
       <el-row :gutter=10 style="margin-top:10px;">
-          <el-col :span="6">
+          <el-col :span="6" :xs="24">
             <el-card>
               <div class="analysis_title">总数：</div>
                 <div class="num_item" v-for="item in items" :key="item.idx" v-on:click="$router.push(item.route)">
@@ -15,7 +15,7 @@
                 </div>
             </el-card>
           </el-col>
-          <el-col :span="18">
+          <el-col :span="18"  :xs="24">
             <el-card>
               <div class="analysis_title">最近编辑：</div>
               <el-row class="paper_recent"  v-for="paper in paperRecents" :key="paper">
@@ -28,7 +28,7 @@
           </el-col>
       </el-row>
       <el-row :gutter=10 style="margin-top:10px;">
-          <el-col :span="8">
+          <el-col :span="8"  :xs="24">
             <el-card class="top10">
               <div class="analysis_title">Tag TOP10：</div>
               <div class="top10_line" v-for="tag in tag_top10" :key="tag.id">
@@ -49,7 +49,7 @@
               </div>
             </el-card>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="8"  :xs="24">
             <el-card class="top10">
               <div class="analysis_title">Meeting TOP10：</div>
               <div class="top10_line" v-for="meeting in meeting_top10" :key="meeting.id">
@@ -70,7 +70,7 @@
               </div>
             </el-card>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="8"  :xs="24">
             <el-card class="top10">
               <div class="analysis_title">Table TOP10：</div>
               <div class="top10_line" v-for="table in table_top10" :key="table.id">

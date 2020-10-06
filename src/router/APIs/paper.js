@@ -31,15 +31,18 @@ router.post('/del', function (req, res, next) {
     })
 })
 
-router.get('/by_ntime', function (req, res, next) {
-  Papers.getPaperByNtime().then(
-    ntimelist=>{
-      Papers.getPapersSimpleInfo(ntimelist).then(papers=>{
-        res.json({ code: 401, msg: '查询paper lite成功', data: papers });
-      })
-    }
-  )
+router.get('/by_ntime_query', function (req, res, next) {
+    Papers.getPapersQueryInfo().then(papers=>{
+      res.json({ code: 401, msg: '查询paper query成功', data: papers });
+    })
+})
 
+router.get('/by_page/:pagenum', function (req, res, next) {
+  Papers.getPapersIDsByPage(req.params.pagenum).then(idlist=>{
+      Papers.getPapersSimpleInfo(idlist).then(papers=>{
+      res.json({ code: 401, msg: '查询paper lite', data: papers });
+    })
+  })
 })
 
 router.get('/fetchone/:id', function (req, res, next) {

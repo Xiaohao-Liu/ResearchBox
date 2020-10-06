@@ -45,8 +45,23 @@
             </el-form>
         </el-card>
         <el-col :span="4" style="line-height:40px;padding:0px 10px;"><el-checkbox v-model="include_finished" @change="change_finished">已完成</el-checkbox></el-col>
+        <el-col :span="12">
+            <el-select style="width:calc(100% - 20px);" v-model="select_paper_lite" :change="handlePush(select_paper_lite)" clearable autocomplete default-first-option filterable placeholder="请搜索">
+                <el-option 
+                style="margin:5px"
+                v-for="item in paper_lite_list"
+                :key="item.id"
+                :label="item.title"
+                :value="item.id">
+                <div class="paper_query_item" :style="{width:item.process + '%'}">
+                    {{item.title}}
+                </div>
+                </el-option>
+
+            </el-select>
+        </el-col>
     </el-row>
-    <el-card :class="'paper'+(paper.process==100?' finished':'')" v-for="paper in paper_list" :key="paper.Ntime" v-show="(paper.process!=100 || include_finished)">
+    <el-card  :class="'paper'+(paper.process==100?' finished':'')" v-for="paper in paper_list" :key="paper.Ntime" v-show="(paper.process!=100 || include_finished)">
         <div slot="header" class="clearfix" style="cursor:pointer" v-on:click="$router.push('/papereditor/'+paper.id)">
             <span>{{paper.title}}</span>
         </div>
@@ -102,6 +117,24 @@
             <el-button v-on:click="show_add_to_table=false">取消</el-button>
         </el-row>
     </el-card>
+    <el-row style="position: fixed;bottom: 10px;right:30px;">
+        <el-col :span="24"
+        style="    text-align: center;
+    background: rgb(255 255 255);
+    border-radius: 10px;
+    padding: 5px;
+    box-shadow: 0px 0px 10px rgba(0,0,0,.1);" 
+    >
+            <el-pagination
+            background
+            :current-page="pagenum"
+            layout="prev, pager, next"
+            :page-size="papers_per_page"
+            :total="paper_lite_list.length"
+            @current-change="toPage">
+            </el-pagination>
+        </el-col>
+    </el-row>
   </el-main>
 </template>
 
@@ -114,9 +147,7 @@ const axios = require('axios');
 export default {
     inject:['reload'],
   name: 'login',
-  props: {
-    msg: String
-  },
+  props: ["pagenum"],
   data(){
     var checkNull = (rule, value, callback) => {
         if (!value) {
@@ -146,6 +177,9 @@ export default {
             PtimeMon:""
         },
         paper_list:[],
+        paper_lite_list:[],
+        select_paper_lite:'',
+        papers_per_page:config.papers_per_page,
         rules: {
           add_title: [
             { validator: checkNull, trigger: 'blur' }
@@ -166,25 +200,8 @@ export default {
     first_loadding.add_process(
         "拉取paper数据",
         function(){
-            //  $.ajax({
-            //     type:"GET",
-            //     url: config.server_host + "/api/paper/by_ntime",
-            //     async:false,
-            //     dataType:"json",
-            //     success:function(returndata){
-            //         console.log(returndata)
-            //         for(var i = 0; i< returndata.data.data.length;i++){
-            //             if(returndata.data.data[i] ==null)continue;
-            //             if(returndata.data.data[i]['tags'] != null){
-            //                 returndata.data.data[i]['tags'] = returndata.data.data[i]['tags']==''?[]:returndata.data.data[i]['tags'].split(';');
-            //             }else returndata.data.data[i]['tags']=[]
-            //             returndata.data.data[i]['Ptime'] = new Date(returndata.data.data[i]['Ptime']).getTime();
-            //             that.paper_list.push(returndata.data.data[i]);
-            //         }
-            //     }
-            // });
             axios.get(
-                config.server_host + "/api/paper/by_ntime"
+                config.server_host + "/api/paper/by_page/"+that.pagenum
             ).then(
                 returndata=>{
                     console.log(returndata)
@@ -196,6 +213,19 @@ export default {
                         returndata.data.data[i]['Ptime'] = new Date(returndata.data.data[i]['Ptime']).getTime();
                         that.paper_list.push(returndata.data.data[i]);
                     }
+                }
+            )
+        }
+    );
+    first_loadding.add_process(
+        "拉取paper数据",
+        function(){
+            axios.get(
+                config.server_host + "/api/paper/by_ntime_query"
+            ).then(
+                returndata=>{
+                    console.log(returndata)
+                        that.paper_lite_list=returndata.data.data;
                 }
             )
         }
@@ -233,6 +263,14 @@ export default {
      
   },
   methods:{
+      handlePush(paperid) {
+        if(String(paperid)=='' || String(paperid)=='-1')return;
+        this.$router.push('/papereditor/'+paperid)
+    },
+    toPage:function(pageidx){
+        this.$router.push('/papermanager/'+pageidx);
+        this.reload()
+    },
       add_paper:function(){
           var that = this;
           console.log(that.add_form);
@@ -404,6 +442,41 @@ export default {
     // min-width: 150px;
     transition:ease .5s;
 }
+
+@media only screen and (max-width: 767px){
+    .paper{
+        width: calc(100% - 12px);
+    }
+    #aside_bar{
+        position: absolute !important;
+    }
+    #main{
+        margin-left:40px;
+    }
+    .paper_tags .el-tag{
+        margin: 2px;
+        margin-left: 10px;
+    }
+    #float_board{display: none;}
+}
+
+@media only screen and  (min-width: 767px) and (max-width: 1024px)
+{
+    .paper{
+        width: calc(50% - 12px);
+    }
+    #aside_bar{
+        position: absolute !important;
+    }
+    #main{
+        margin-left:40px;
+    }
+    .paper_tags .el-tag{
+        margin: 2px;
+        margin-left: 10px;
+    }
+    #float_board{display: none;}
+}
 .paper .el-card__header{
     font-weight: bold;
     font-size: 1em;
@@ -424,7 +497,14 @@ export default {
     line-height: 1.6em;
     font-weight: bold;
 }
+.paper_query_item{
+    background-color:rgba(0,128,128,.1);
+    border-radius: 10px;
+    text-indent: 10px;
+}
+
 .micro_tag{
+
     font-size: 8px !important;
     border-radius: 10px !important;
     padding: 0px 10px !important;

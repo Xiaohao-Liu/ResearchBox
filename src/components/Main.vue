@@ -64,7 +64,7 @@
       </el-main>
     </el-container>
 
-    <div id='float_board' :class="(frame_hidden?'hidden':'')" v-show="!frame_closed" 
+    <div id='float_board' :class="(frame_hidden?'hidden':'')"
     :style="{
       height:float_frames[frame_idx].height,
       minHeight:float_frames[frame_idx].minHeight,
@@ -115,7 +115,7 @@ Vue.use(VueRouter);
 const router = new VueRouter({
   routes: [
     { path: "/user", component: User },
-    { path: "/papermanager", component: PaperManager, alias: "/" },
+    { path: "/papermanager/:pagenum", component: PaperManager, alias: "/", props: true },
     { path: "/papereditor/:id", component: PaperEditor, props: true },
     { path: "/tagmanager", component: TagManager },
     { path: "/meetingmanager", component: MeetingManager },
@@ -193,7 +193,7 @@ export default {
           idx: 1,
           title: "Paper管理",
           icon: "el-icon-paperclip",
-          route: "/papermanager"
+          route: "/papermanager/1"
         },
         {
           idx: 2,

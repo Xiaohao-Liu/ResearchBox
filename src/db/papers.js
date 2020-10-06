@@ -6,6 +6,7 @@ var {put_paper_to_table,del_paper_from_table} = require('./plan');
 
 const { Sequelize, DataTypes,Op } = require('sequelize');
 const {sequelize} = require("./init");
+const {papers_per_page} = require("../utils/config");
 
 const Paper = sequelize.define('Paper', {
   // Model attributes are defined here
@@ -115,12 +116,32 @@ async function  getPapersSimpleInfo(ids){
         },
         raw:true,
     });
-    // var jsons = [];
-    // await papers.every(paper=>{
-    //     jsons.push(paper.toJSON())
-    // })
-    // return jsons;
 }
+
+async function  getPapersQueryInfo(){
+    return await Paper.findAll({
+        attributes:['id','title','process'],
+        raw:true,
+    });
+}
+
+async function  getPapersIDsByPage(pagenum){
+    var papers =  await Paper.findAll({
+        attributes:['id'],
+        offset:(pagenum-1)*papers_per_page,
+        limit:papers_per_page,
+        raw:true,
+        order:[
+            ['updatedAt','DESC']
+        ],
+    });
+    var ids = [];
+    for(var i =0 ;i < papers.length;i++){
+        ids.push(papers[i].id)
+    }
+    return ids;
+}
+
 
 async function  deletePaper(id){
     var paper = await Paper.findByPk(id);
@@ -222,6 +243,8 @@ module.exports={
     getPapersSimpleInfo,
     deletePaper,
     add_to_table,
+    getPapersQueryInfo,
+    getPapersIDsByPage,
     // set_paper_title,
     // set_paper_author1,
     // set_paper_author2,

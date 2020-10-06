@@ -7,13 +7,13 @@
             <el-col class="title_bar" :span="24" ><i class="el-icon-paperclip"></i>Paper管理 </el-col>
         </el-row>
     <el-row class="ops" style="margin:10px;">
-        <el-button type="primary" icon="el-icon-back" v-on:click="$router.push('/papermanager')" circle></el-button>
+        <el-button type="primary" icon="el-icon-back" v-on:click="$router.push('/papermanager/1')" circle></el-button>
         <el-button type="primary" icon="el-icon-finished" v-on:click="upload_all()" circle></el-button>
     </el-row>
     <el-card  class="paper_info">
         <el-row>
-            <el-col :span="12" class="paper_link" > <el-link v-bind:href="edit_form.link" target="_blank">{{edit_form.link}}</el-link> </el-col>
-            <el-col :span="12" style="text-align:right;" > {{new Date(parseInt(edit_form.Ntime)).getFullYear()}} - {{new Date(parseInt(edit_form.Ntime)).getMonth() + 1}} </el-col>
+            <el-col :span="12"  :xs="24" :md="12" class="paper_link" > <el-link v-bind:href="edit_form.link" target="_blank">{{edit_form.link}}</el-link> </el-col>
+            <el-col :span="12"  :xs="0" :md="12" style="text-align:right;" > {{new Date(parseInt(edit_form.Ntime)).getFullYear()}} - {{new Date(parseInt(edit_form.Ntime)).getMonth() + 1}} </el-col>
 
         </el-row>
         <div class="status_bar" v-bind:style="{width:edit_form.process + '%'}"></div>
@@ -54,7 +54,7 @@
         </el-row>
     </el-card>
     <el-row :gutter="10">
-        <el-col :span="8">
+        <el-col :span="8" :xs="24" :md="8">
             <el-card  class="paper_edit">
         <el-form ref="form" :model="edit_form" label-position="top" label-width="80px">
             <el-form-item label="阅读进度">
@@ -93,17 +93,17 @@
 
     </el-card>
         </el-col>
-        <el-col :span="16">
+        <el-col :span="16"  :xs="24"  :md="16">
 <el-card style="margin-top:10px;" :class="full_editor?'full-screen':''">
     <el-row>
-        <el-col :span="16">
+        <el-col :span="16" :xs="24"  :md="16">
             <span style="
                 line-height: 30px;
                 font-weight: bold;
                 font-size: 18px;
             ">{{full_editor?edit_form.title:'内容编辑'}}</span>
         </el-col>
-        <el-col :span="8" style="position: relative;">
+        <el-col :span="8"  :xs="0" :md="8" style="position: relative;">
             <el-button style="    float: right;
     padding: 10px;
     margin-right: 10px;
@@ -135,7 +135,7 @@
         </el-col>
     </el-row>
     <el-row :gutter="10">
-        <el-col :span="12" style="max-width:500px;">
+        <el-col :span="12" style="max-width:500px;" :xs="24" :md="12">
             <el-slider
             v-model="md_size"
             :step="0.1"
@@ -147,10 +147,10 @@
         </el-col>
     </el-row>
     <el-row :gutter="10">
-        <el-col :span="show_md_editor?12:24">
+        <el-col :span="show_md_editor?12:24" :xs="24" :md="show_md_editor?12:24">
             <div id="md_editor" class="markdown-body" :style="{fontSize:md_size+'em'}" v-html="markdown.render(edit_form.md)"></div>
         </el-col>
-    <el-col :span="show_md_editor?12:0">
+    <el-col :span="show_md_editor?12:0"  :xs="0"  :md="show_md_editor?12:0" >
 <el-input
 style="box-shadow: 5px 5px 10px rgba(0,0,0,.1);margin:10px 0px;"
         type="textarea"
