@@ -564,7 +564,10 @@ vertical-align: bottom;
     padding: 0px 1em;
     border-radius: 0px;
 }
-
+#md_editor a img{
+    height: 1.5em;
+    transform: translate(0px, .3em);
+}
 .el-slider__runway,.el-slider__stop{
 background: rgba(255,255,255,.5);
 }

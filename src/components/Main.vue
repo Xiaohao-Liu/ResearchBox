@@ -114,8 +114,10 @@ Vue.use(VueRouter);
 
 const router = new VueRouter({
   routes: [
+    
+    {path: '/', redirect: '/papermanager/1'},
     { path: "/user", component: User },
-    { path: "/papermanager/:pagenum", component: PaperManager, alias: "/", props: true },
+    { path: "/papermanager/:pagenum", component: PaperManager, props: true },
     { path: "/papereditor/:id", component: PaperEditor, props: true },
     { path: "/tagmanager", component: TagManager },
     { path: "/meetingmanager", component: MeetingManager },

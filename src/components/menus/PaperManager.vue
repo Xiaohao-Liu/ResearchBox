@@ -9,7 +9,7 @@
         </el-row>
     </el-header>
     <el-row class="ops" style="margin:10px;">
-        <el-button type="primary" icon="el-icon-document-add" style="float: left;" v-on:click="show_add_paper==!show_add_paper">添加Paper</el-button>
+        <el-button type="primary" icon="el-icon-document-add" style="float: left;" v-on:click="show_add_paper=!show_add_paper">添加Paper</el-button>
         <el-card class="add_board" v-show="show_add_paper">
             <el-form label-position="top" label-width="80px" :model="add_form" :rules="rules">
                 <el-form-item label="标题" prop="add_title">
@@ -420,7 +420,7 @@ export default {
 .add_board{
         position: fixed;
     width: 40%;
-    margin-top: 10px;
+    margin-top: 50px;
     z-index: 100;
     transition: ease .5s;
 }
