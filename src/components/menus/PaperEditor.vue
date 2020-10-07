@@ -96,7 +96,7 @@
         <el-col :span="16"  :xs="24"  :md="16">
 <el-card  style="margin-top:10px;" :class="full_editor?'full-screen':''">
     <el-row class='editor_header' >
-        <el-col :span="12" :xs="24"  :md="12">
+        <el-col :span="12" :xs="24"  :md="12" class="text_wrap">
             <span style="
                 line-height: 30px;
                 font-weight: bold;

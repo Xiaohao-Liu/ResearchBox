@@ -42,7 +42,7 @@
         label="标题"
         >
         <template slot-scope="scope">
-            <strong style="cursor:pointer;" @click="$router.push('/papereditor/'+scope.row.id)">{{scope.row.title}}</strong>
+            <strong class="text_wrap" style="cursor:pointer;" @click="$router.push('/papereditor/'+scope.row.id)">{{scope.row.title}}</strong>
             <!-- <span style="background:red;">{{ scope.row.process }}</span> -->
         </template>
         </el-table-column>
