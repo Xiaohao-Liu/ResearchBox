@@ -41,29 +41,29 @@
         </el-row>
         <el-row class="menu_item" v-for="item in menu" :key="item.idx" v-show="item.idx>0">
           <el-col :span="24">
-            <el-button v-on:click="$router.push(item.route);defaultPageIdx=item.idx;">
+            <el-button v-on:click="$router.push(item.route);defaultPageIdx=item.idx;reload()">
               <i v-bind:class="item.icon"></i>
               <span>{{item.title}}</span>
             </el-button>
           </el-col>
         </el-row>
-        <div id="dark-mode-control">
-          <el-button
-            :icon="darkMode?'el-icon-moon':'el-icon-sunny'"
-            circle
-            v-on:click="change_mode"
-          ></el-button>
-          <!-- <div>
-                    <div style="font-weight: bold;font-size: 14px;margin-top: 10px;">深色模式</div>
-                    <div class="dark-mode-status">{{darkMode?'打开':'关闭'}}</div>
-          </div>-->
-        </div>
       </el-aside>
       <el-main id="main">
         <router-view v-if="isRouterAlive"></router-view>
       </el-main>
     </el-container>
 
+    <div id="dark-mode-control">
+      <el-button
+        :icon="darkMode?'el-icon-moon':'el-icon-sunny'"
+        circle
+        v-on:click="change_mode"
+      ></el-button>
+      <!-- <div>
+                <div style="font-weight: bold;font-size: 14px;margin-top: 10px;">深色模式</div>
+                <div class="dark-mode-status">{{darkMode?'打开':'关闭'}}</div>
+      </div>-->
+    </div>
     <div id='float_board' :class="(frame_hidden?'hidden':'')"
     :style="{
       height:float_frames[frame_idx].height,
@@ -535,21 +535,21 @@ $menu_item_h: 20px;
   text-indent: 10px;
 }
 #dark-mode-control {
-  position: absolute;
-  z-index: 101;
-  left: 0px;
-  text-align: center;
-  color: black;
-  bottom: 0px;
-  width: 100%;
-  margin-bottom: 10px;
-  padding: 0px;
-  box-sizing: border-box;
-  overflow: hidden;
+      position: fixed;
+    z-index: 2001;
+    right: 20px;
+    text-align: center;
+    color: black;
+    bottom: 0px;
+    margin-bottom: 10px;
+    padding: 10px;
+    box-sizing: border-box;
+    overflow: hidden;
   .el-button {
     background: #f9a825;
     border: 0px;
     transition: ease 0.5s;
+    box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.1);
     i {
       font-size: 20px;
       color: white;
@@ -563,7 +563,7 @@ $menu_item_h: 20px;
 }
 
 #float_board {
-  top: 10px;
+  bottom: 10px;
   position: fixed;
   height: calc(50% - 20px);
   width: 40%;

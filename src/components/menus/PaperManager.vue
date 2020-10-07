@@ -45,7 +45,7 @@
             </el-form>
         </el-card>
         <el-col :span="4" style="line-height:40px;padding:0px 10px;"><el-checkbox v-model="include_finished" @change="change_finished">已完成</el-checkbox></el-col>
-        <el-col :span="12">
+        <el-col :span="12" :xs="24">
             <el-select style="width:calc(100% - 20px);" v-model="select_paper_lite" :change="handlePush(select_paper_lite)" clearable autocomplete default-first-option filterable placeholder="请搜索">
                 <el-option 
                 style="margin:5px"
@@ -117,14 +117,8 @@
             <el-button v-on:click="show_add_to_table=false">取消</el-button>
         </el-row>
     </el-card>
-    <el-row style="position: fixed;bottom: 10px;right:30px;">
-        <el-col :span="24"
-        style="    text-align: center;
-    background: rgb(255 255 255);
-    border-radius: 10px;
-    padding: 5px;
-    box-shadow: 0px 0px 10px rgba(0,0,0,.1);" 
-    >
+    <el-row style="position: fixed;bottom: 10px;right:30px;z-index: 10;">
+        <el-col :span="24" class='pagination_board' >
             <el-pagination
             background
             :current-page="pagenum"
@@ -159,7 +153,7 @@ export default {
     return {
         show_add_paper:false,
         show_add_to_table:false,
-        include_finished:false,
+        include_finished:true,
         now_tables:[],
         now_tables_title:[],
         add_to_table:{
@@ -442,7 +436,9 @@ export default {
     // min-width: 150px;
     transition:ease .5s;
 }
-
+.paper .el-card__body{
+    position: unset !important;
+}
 @media only screen and (max-width: 767px){
     .paper{
         width: calc(100% - 12px);
@@ -502,7 +498,13 @@ export default {
     border-radius: 10px;
     text-indent: 10px;
 }
-
+.pagination_board{
+text-align: center;
+    background: white;
+    border-radius: 10px;
+    padding: 5px;
+    box-shadow: 0px 0px 10px rgba(0,0,0,.1);
+}
 .micro_tag{
 
     font-size: 8px !important;
@@ -561,6 +563,9 @@ export default {
         border: 1px solid #444;
         color: #eee;
     }
+    .pagination_board{
+        background:#444;
+    }
     .el-collapse-item__header{
         background: transparent;
         border-bottom: 1px solid #444;
@@ -582,6 +587,7 @@ export default {
             color: #eee;
         }
     }
+    
     .el-input__inner{
         color: #eee;
         background: #444;

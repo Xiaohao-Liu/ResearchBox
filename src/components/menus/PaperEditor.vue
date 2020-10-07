@@ -94,32 +94,36 @@
     </el-card>
         </el-col>
         <el-col :span="16"  :xs="24"  :md="16">
-<el-card style="margin-top:10px;" :class="full_editor?'full-screen':''">
-    <el-row>
-        <el-col :span="16" :xs="24"  :md="16">
+<el-card  style="margin-top:10px;" :class="full_editor?'full-screen':''">
+    <el-row class='editor_header' >
+        <el-col :span="12" :xs="24"  :md="12">
             <span style="
                 line-height: 30px;
                 font-weight: bold;
                 font-size: 18px;
             ">{{full_editor?edit_form.title:'内容编辑'}}</span>
         </el-col>
-        <el-col :span="8"  :xs="0" :md="8" style="position: relative;">
+        <el-col :span="12"  :xs="0" :md="12" style="position: relative;">
+            <el-button 
+             style="    float: right;
+    padding: 10px;
+    margin-right: 10px;
+    background: #00695C;
+    " type="primary" icon="el-icon-upload" v-on:click="upload_all()" circle></el-button>
             <el-button style="    float: right;
     padding: 10px;
     margin-right: 10px;
     " type="primary" :icon="'el-icon-'+(show_md_editor?'check':'edit')" circle @click="change_show_md_editor"></el-button>    
     <el-button style="    float: right;
     padding: 10px;
-    margin-right: 10px;
+    
     " type="primary" :icon="'el-icon-'+(full_editor?'bottom-right':'top-left')" circle @click="full_editor=!full_editor;"></el-button> 
     
     <el-button style="    float: right;
     padding: 10px;
-    margin-right: 10px;
     " type="primary" icon="el-icon-picture" circle @click="push_pic_show = !push_pic_show"></el-button>
     <el-button style="    float: right;
     padding: 10px;
-    margin-right: 10px;
     " type="primary" icon="el-icon-plus" circle @click="open('https://github.com/'+github_info.username+'/'+github_info.repos+'/tree/master')"></el-button>  
             <el-card v-show="push_pic_show" id="push-pic-board" v-loading="push_pic.loadding">
                 <img :src="push_pic.base64" style="width:100%;max-height:300px;"/>  
@@ -134,7 +138,7 @@
 
         </el-col>
     </el-row>
-    <el-row :gutter="10">
+    <el-row class="under-editor-header" :gutter="10">
         <el-col :span="12" style="max-width:500px;" :xs="24" :md="12">
             <el-slider
             v-model="md_size"
@@ -465,15 +469,34 @@ export default {
     position: fixed;
     top: 0px;
     left: 0px;
-    z-index: 10000;
+    z-index: 2000;
     margin: 0px;
     height: 100%;
     width: 100%;
     overflow: auto !important;
+    .editor_header{
+        position: fixed;
+    z-index: 2000;
+    background: white;
+    width: 100%;
+    top: 0px;
+    left: 0px;
+    padding:10px 20px;
+    box-shadow: 0px 3px 10px rgba(0,0,0,.1);
+    }
+    .under-editor-header{
+        margin-top:50px;
+    }
+
 }
 .paper_info{
     position: relative;
     transition: ease .5s;
+}
+.ops{
+        margin: 0px;
+    padding: 10px;
+    margin-bottom: 10px;
 }
 .ops .el-button i{
     font-weight: bold;
@@ -561,12 +584,13 @@ vertical-align: bottom;
 #md_editor blockquote {
     margin: 2px;
     background: rgba(0,0,0,.02);
-    padding: 0px 1em;
+    padding: 1em;
     border-radius: 0px;
 }
 #md_editor a img{
     height: 1.5em;
     transform: translate(0px, .3em);
+    background:transparent;
 }
 .el-slider__runway,.el-slider__stop{
 background: rgba(255,255,255,.5);
@@ -598,6 +622,9 @@ thead tr th,.el-table tr ,.el-table,thead, thead tr{
     .el-textarea__inner{
         border:1px solid #555;
     }
+    .full-screen .editor_header{
+        background:#444;
+    }
     #md_editor{
         background: #444;
         color: #eee;
@@ -614,9 +641,20 @@ thead tr th,.el-table tr ,.el-table,thead, thead tr{
     }
     #md_editor blockquote {
         margin: 2px;
-        background: rgba(0,0,0,.02);
-        padding: 0px 1em;
+        background: rgba(255,255,255,.1);
         border-radius: 0px;
+        border-color: #333;
+        color: #aaa;
+    }
+    #md_editor a{
+        color:#64B5F6;
+    }
+    #md_editor thead tr th{
+        background: #333 !important;
+    color: white;
+    }
+    #md_editor table th{
+        border: 1px solid #333;
     }
     .el-tag{
         background: rgba(255,255,255,.2);
@@ -631,6 +669,11 @@ thead tr th,.el-table tr ,.el-table,thead, thead tr{
     .el-table th{
         //background: #333 !important;
         color:#eee;
+        border-bottom: 1px solid #444 !important;
+    }
+    .el-table td{
+        //background: #333 !important;
+        border-bottom: 1px solid #444 !important;
     }
     .el-table tr{
         //background: #333 !important;

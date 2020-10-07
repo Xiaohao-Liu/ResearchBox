@@ -158,14 +158,15 @@ var that =this;
 <style lang="scss" rel="stylesheet/scss">
 @import "../../assets/theme";
 .left_table{
-    min-width: 200px;
+    min-width: 150px;
     text-align: center;
     margin: 10px;
     cursor: pointer;
     font-size: 16px !important;
     float: left;
     position: relative;
-    max-width: 50%;
+    // max-width: 50%;
+    padding-right:40px !important;
 }
 .left_table .el-tag__close.el-icon-close{
         position: absolute;
