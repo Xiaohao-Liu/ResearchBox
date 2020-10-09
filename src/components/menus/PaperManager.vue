@@ -117,11 +117,11 @@
             <el-button v-on:click="show_add_to_table=false">取消</el-button>
         </el-row>
     </el-card>
-    <el-row style="position: fixed;bottom: 10px;right:30px;z-index: 10;">
+    <el-row style="position: fixed;bottom: 10px;right:80px;z-index: 10;">
         <el-col :span="24" class='pagination_board' >
             <el-pagination
             background
-            :current-page="pagenum"
+            :current-page="parseInt(pagenum)"
             layout="prev, pager, next"
             :page-size="papers_per_page"
             :total="paper_lite_list.length"
@@ -193,11 +193,10 @@ export default {
     first_loadding.__init__();
     first_loadding.add_process(
         "拉取paper数据",
-        function(){
-            axios.get(
+        async function(){
+            var returndata = await axios.get(
                 config.server_host + "/api/paper/by_page/"+that.pagenum
-            ).then(
-                returndata=>{
+            );
                     console.log(returndata)
                     for(var i = 0; i< returndata.data.data.length;i++){
                         if(returndata.data.data[i] ==null)continue;
@@ -207,50 +206,29 @@ export default {
                         returndata.data.data[i]['Ptime'] = new Date(returndata.data.data[i]['Ptime']).getTime();
                         that.paper_list.push(returndata.data.data[i]);
                     }
-                }
-            )
         }
     );
     first_loadding.add_process(
         "拉取paper数据",
-        function(){
-            axios.get(
+        async function(){
+            var returndata = await axios.get(
                 config.server_host + "/api/paper/by_ntime_query"
-            ).then(
-                returndata=>{
+            );
                     console.log(returndata)
                         that.paper_lite_list=returndata.data.data;
-                }
-            )
+
         }
     );
     first_loadding.add_process(
         "拉取table数据",
-        function(){
-            //  $.ajax({
-            //     type:"GET",
-            //     url: config.server_host + "/api/plan/by_ntime",
-            //     async:false,
-            //     dataType:"json",
-            //     success:function(returndata){
-            //         console.log(returndata)
-            //         for(var i in returndata.data.data){
-            //             that.now_tables.push({"id":returndata.data.data[i].id,"title":returndata.data.data[i].title})
-            //             that.now_tables_title.push(returndata.data.data[i].title);
-            //         }
-            //     }
-            // });
-            axios.get(
+        async function(){
+            var returndata = await axios.get(
                 config.server_host + "/api/plan/by_ntime"
-            ).then(
-                returndata=>{
-                    console.log(returndata)
+            );
                     for(var i in returndata.data.data){
                         that.now_tables.push({"id":returndata.data.data[i].id,"title":returndata.data.data[i].title})
                         that.now_tables_title.push(returndata.data.data[i].title);
                     }
-                }
-            )
         }
     );
     first_loadding.start();
@@ -273,29 +251,13 @@ export default {
             loadding.__init__();
             loadding.add_process(
                 "添加Paper",
-                function(){
-                //     $.ajax({
-                //         type:"POST",
-                //         url: config.server_host + "/api/paper/add",
-                //         async:false,
-                //         data:{"title":that.add_form.title,"author1":that.add_form.author1,"Ptime":that.add_form.Ptime},
-                //         dataType:"json",
-                //         success:function(returndata){
-                //             that.show_add_paper=false;
-                //             console.log(returndata);
-                //             that.reload();
-                //         }
-                // });
-                axios.post(
+                async function(){
+                await axios.post(
                     config.server_host + "/api/paper/add",
                     {"title":that.add_form.title,"author1":that.add_form.author1,"Ptime":that.add_form.Ptime}
-                ).then(
-                    returndata=>{
-                        that.show_add_paper=false;
-                            console.log(returndata);
-                            that.reload();
-                    }
-                )
+                );
+                that.show_add_paper=false;
+                that.reload();
             })
         loadding.start();
       },
@@ -306,27 +268,12 @@ export default {
         loadding.__init__();
         loadding.add_process(
         "删除Paper",
-        function(){
-        //   $.ajax({
-        //     type:"POST",
-        //     url: config.server_host + "/api/paper/del",
-        //     async:false,
-        //     data:{"id":id},
-        //     dataType:"json",
-        //     success:function(returndata){
-        //         console.log(returndata);
-        //         that.reload();
-        //     }
-        // });
-        axios.post(
+        async function(){
+        await axios.post(
             config.server_host + "/api/paper/del",
             {"id":id}
-        ).then(
-            returndata=>{
-                console.log(returndata);
+        );
                 that.reload();
-            }
-        )
         })
         loadding.start();
       },
@@ -368,35 +315,17 @@ export default {
             loadding.__init__();
             loadding.add_process(
             "删除Paper",
-            function(){
-            // $.ajax({
-            //     type:"POST",
-            //     url: config.server_host + "/api/paper/add_paper_table",
-            //     async:false,
-            //     data:{"paperid":that.add_to_table.paper_id,"tableid":that.add_to_table.table_id},
-            //     dataType:"json",
-            //     success:function(returndata){
-            //         console.log(returndata);
-            //         that.$notify({
-            //             title: '成功',
-            //             message: that.add_to_table.paper_title+"\nTO\n"+that.add_to_table.table_title
-            //             });
-            //         that.show_add_to_table = false;
-            //     }
-            // });
-            axios.post(
+            async function(){
+
+            await axios.post(
                 config.server_host + "/api/paper/add_paper_table",
                 {"paperid":that.add_to_table.paper_id,"tableid":that.add_to_table.table_id}
-            ).then(
-                returndata=>{
-                    console.log(returndata);
+            );
                     that.$notify({
                         title: '成功',
                         message: that.add_to_table.paper_title+"\nTO\n"+that.add_to_table.table_title
                         });
                     that.show_add_to_table = false;
-                }
-            )
             })
             loadding.start();
       },
@@ -410,210 +339,4 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" rel="stylesheet/scss">
-@import "../../assets/theme";
-.add_board{
-        position: fixed;
-    width: 40%;
-    margin-top: 50px;
-    z-index: 100;
-    transition: ease .5s;
-}
-.add_to_table{
-        position: absolute;
-    z-index: 11;
-    width: 50%;
-    margin-left: 25%;
-    transition: ease .5s;
-}
-.add_board .el-form-item__label{
-    line-height: 20px;
-}
-.paper{
-    width: calc(25% - 12px);
-    margin: 5px;
-    float: left;
-    position: relative;
-    // min-width: 150px;
-    transition:ease .5s;
-}
-.paper .el-card__body{
-    position: unset !important;
-}
-@media only screen and (max-width: 767px){
-    .paper{
-        width: calc(100% - 12px);
-    }
-    #aside_bar{
-        position: absolute !important;
-    }
-    #main{
-        margin-left:40px;
-    }
-    .paper_tags .el-tag{
-        margin: 2px;
-        margin-left: 10px;
-    }
-    #float_board{display: none;}
-}
-
-@media only screen and  (min-width: 767px) and (max-width: 1024px)
-{
-    .paper{
-        width: calc(50% - 12px);
-    }
-    #aside_bar{
-        position: absolute !important;
-    }
-    #main{
-        margin-left:40px;
-    }
-    .paper_tags .el-tag{
-        margin: 2px;
-        margin-left: 10px;
-    }
-    #float_board{display: none;}
-}
-.paper .el-card__header{
-    font-weight: bold;
-    font-size: 1em;
-        position: relative;
-    z-index: 10;
-    padding-top: 1.5em;
-}
-.paper .ptime{
-    font-size:12px;
-}
-.paper .meeting{
-        position: absolute;
-    z-index: 0;
-    color: #ddd;
-    top: 0px;
-    left: 20px;
-    font-size: 1em;
-    line-height: 1.6em;
-    font-weight: bold;
-}
-.paper_query_item{
-    background-color:rgba(0,128,128,.1);
-    border-radius: 10px;
-    text-indent: 10px;
-}
-.pagination_board{
-text-align: center;
-    background: white;
-    border-radius: 10px;
-    padding: 5px;
-    box-shadow: 0px 0px 10px rgba(0,0,0,.1);
-}
-.micro_tag{
-
-    font-size: 8px !important;
-    border-radius: 10px !important;
-    padding: 0px 10px !important;
-    height: 20px !important;
-    line-height: 20px !important;
-    background:$--color-primary !important;
-    color:white !important;
-    border:0px !important;
-}
-.finished{
-    box-shadow: 0 2px 8px -1px rgba(0, 0, 0, 0.1) inset !important;
-    background: white  !important;
-    border: 2px dashed teal  !important;
-    border-bottom: 0px  !important;
-    box-sizing: border-box  !important;
-}
-.finished::before{
-    content: "\e6da";
-    font-family: 'element-icons' !important;
-    position: absolute;
-    background: #43A047;
-    border-radius: 15px;
-    padding: 6px;
-    color: white;
-    height: 15px;
-    font-weight: bold;
-    box-shadow: 0px 2px 12px 0 rgba(0, 0, 0, 0.1);
-    top: 5px;
-    right: 5px;
-    width: 15px;
-    line-height: 15px;
-    text-align: center;
-}
-.el-collapse-item__content{padding: 10px !important;}
-.el-collapse-item__header,.el-collapse-item__content{
-    transition: ease .5s;
-}
-.el-card{
-    transition: ease .5s;
-}
-#main-app.dark-mode{
-    .el-card{
-        background: #333;
-        border: 1px solid #444;
-        color: #eee;
-    }
-    .add_board{
-        background: #333;
-        border: 1px solid #444;
-        color: #eee;
-    }
-    .add_to_table{
-        background: #333;
-        border: 1px solid #444;
-        color: #eee;
-    }
-    .pagination_board{
-        background:#444;
-    }
-    .el-collapse-item__header{
-        background: transparent;
-        border-bottom: 1px solid #444;
-        color: #eee;
-    }
-    .el-collapse-item__content{
-        background: #333;
-        color: #eee;
-        border-bottom: 1px solid #444;
-    }
-    .el-collapse-item__wrap{
-        border-bottom: 1px solid #444;
-    }
-    .el-collapse{
-        border-top: 1px solid #444;
-    }
-    .el-form-item{
-        .el-form-item__label{
-            color: #eee;
-        }
-    }
-    
-    .el-input__inner{
-        color: #eee;
-        background: #444;
-        border: 1px solid #666;
-    }
-    .el-card__header{
-        border-bottom: 1px solid #444;
-    }
-    .el-button--default{
-        color: #eee;
-        background: #444;
-        border: 1px solid #666;
-    }
-    .paper .meeting{
-        color: #eee;
-    }
-    .micro_tag{
-        color:#eee !important;
-    }
-    .finished{
-            background: #333 !important;
-            color: white !important;
-    }
-    .paper{
-        background: #333 !important;
-        color: white !important;
-    }
-}
 </style>

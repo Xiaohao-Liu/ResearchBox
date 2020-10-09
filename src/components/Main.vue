@@ -271,14 +271,13 @@ export default {
     var first_loadding = new Loadding();
     first_loadding.add_title("初始化");
     first_loadding.__init__();
-    first_loadding.add_process("拉取数据", function() {
-      axios.get(config.server_host + "/api/user/info").then(returndata => {
+    first_loadding.add_process("拉取数据", async function() {
+      var returndata = await axios.get(config.server_host + "/api/user/info");
         console.log(returndata);
         that.user_info = returndata.data.data;
-      });
     });
-    first_loadding.add_process("设定事件", function() {
-      that.add_frame_drag_event();
+    first_loadding.add_process("设定事件",async function() {
+      await that.add_frame_drag_event();
     });
     first_loadding.start();
   },
@@ -774,5 +773,551 @@ $dark-mode-font-color: #eee;
   .Loadding_title {
     color: $dark-mode-font-color;
   }
+}
+
+  .avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px !important;
+    text-align: center;
+  }
+  .pic {
+    width: 178px;
+    height: 178px;
+    display: block;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  .meeting_list .el-tag{
+    cursor: pointer;
+    margin: 2px 5px;
+    border-radius: 10px;
+    padding: 0px 20px;
+}
+.meeting_search{
+    box-shadow: 0px 0px 0 0 black !important;
+    background: transparent !important;
+    border: 0px !important;
+}
+.meeting_list .nums .el-badge__content{
+    margin:5px;
+}
+
+.full-screen{
+    margin-top: 0px !important;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    z-index: 2000;
+    margin: 0px;
+    height: 100%;
+    width: 100%;
+    overflow: auto !important;
+    .editor_header{
+        position: fixed;
+    z-index: 2000;
+    background: white;
+    width: 100%;
+    top: 0px;
+    left: 0px;
+    padding:10px 20px;
+    box-shadow: 0px 3px 10px rgba(0,0,0,.1);
+    }
+    .under-editor-header{
+        margin-top:50px;
+    }
+
+}
+.paper_info{
+    position: relative;
+    transition: ease .5s;
+}
+.ops{
+        margin: 0px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+.ops .el-button i{
+    font-weight: bold;
+}
+.paper_title{
+    font-size: 1.2em;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 10px;
+    text-shadow: 2px 2px 6px #ddd;
+}
+.paper_author{
+    margin-top: 10px;
+    text-align: center;
+}
+.paper_meeting{
+    text-align: center;
+    margin-top: 10px;
+}
+.paper_cite{
+    text-align: right;
+    font-size: 12px;
+    margin: 10px 0px;
+}
+.paper_cite span{
+    color:#999;
+}
+
+.paper_edit{
+    margin-top: 10px;
+}
+.paper_edit .el-form-item__label{
+    line-height: 20px;
+}
+.status_bar{
+        position: absolute;
+    bottom: 0px;
+    left: 0px;
+    height: 5px;
+    background: #009688;
+    transition: ease .5s;
+    border-radius: 10px;
+}
+
+.el-textarea__inner{
+    background:#333 !important;
+    color:white !important;
+}
+.el-tag + .el-tag {
+margin-left: 10px;
+}
+.button-new-tag {
+margin-left: 10px;
+height: 32px;
+line-height: 30px;
+padding-top: 0;
+padding-bottom: 0;
+}
+.input-new-tag {
+width: 150px !important;
+margin-left: 10px;
+vertical-align: bottom;
+}
+
+#md_editor{
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px 10px;
+    margin: 10px 0;
+    font-size: .8em;
+    box-sizing: border-box;
+    box-shadow: 5px 5px 10px rgba(0,0,0,.1);
+    transition: ease .5s;
+}
+#md_editor .katex .katex-html {
+    display: inline-block;
+    white-space: break-spaces;
+    line-height: 2;
+}
+#md_editor .katex .fontsize-ensurer.reset-size3.size1,#md_editor  .katex .sizing.reset-size3.size1 {
+    font-size: 1em;
+    transform: scale(.7);
+}
+#md_editor blockquote {
+    margin: 2px;
+    background: rgba(0,0,0,.02);
+    padding: 1em;
+    border-radius: 0px;
+}
+#md_editor a img{
+    height: 1.5em;
+    transform: translate(0px, .3em);
+    background:transparent;
+}
+#md_editor img{
+    max-height: 400px;
+    border-radius: 10px;
+}
+.el-slider__runway,.el-slider__stop{
+background: rgba(255,255,255,.5);
+}
+
+#push-pic-board{
+    position: absolute;
+    top:calc(100% + 10px);
+    width:calc(100% - 20px);
+    z-index: 100;
+}
+#push-pic-board .el-card__body{
+    padding:0px;
+}
+
+thead tr th,.el-table tr ,.el-table,thead, thead tr{
+    background:transparent !important;
+}
+.el-divider__text{
+        transition: ease .5s;
+    }
+#main-app.dark-mode{
+    .paper_info{
+        background: #333;
+    }
+    .paper_title{
+        text-shadow: 0px 0px 0px;
+    }
+    .el-textarea__inner{
+        border:1px solid #555;
+    }
+    .full-screen .editor_header{
+        background:#444;
+    }
+    #md_editor{
+        background: #444;
+        color: #eee;
+        border: 1px solid #555;
+    }
+    #md_editor .katex .katex-html {
+        display: inline-block;
+        white-space: break-spaces;
+        line-height: 2;
+    }
+    #md_editor .katex .fontsize-ensurer.reset-size3.size1,#md_editor  .katex .sizing.reset-size3.size1 {
+        font-size: 1em;
+        transform: scale(.7);
+    }
+    #md_editor blockquote {
+        margin: 2px;
+        background: rgba(255,255,255,.1);
+        border-radius: 0px;
+        border-color: #333;
+        color: #aaa;
+    }
+    #md_editor a{
+        color:#64B5F6;
+    }
+    #md_editor thead tr th{
+        background: #333 !important;
+    color: white;
+    }
+    #md_editor table th{
+        border: 1px solid #333;
+    }
+    .el-tag{
+        background: rgba(255,255,255,.2);
+        color: #eee;
+    }
+    .el-tag__close{
+        color: #eee;
+    }
+    .left_table .el-tag__close{
+        background: rgba(255,255,255,.1);
+    }
+    .el-table th{
+        //background: #333 !important;
+        color:#eee;
+        border-bottom: 1px solid #444 !important;
+    }
+    .el-table td{
+        //background: #333 !important;
+        border-bottom: 1px solid #444 !important;
+    }
+    .el-table tr{
+        //background: #333 !important;
+        color:#eee;
+    }
+    .el-table tr:hover{
+        color:#555;
+        border-radius: 10px;
+    }
+    .el-divider__text{
+        background: #222;
+        color:#eee;
+    }
+    .el-input-number__increase{
+        background: #333;
+    color: #eee;
+    border-left: 1px solid #555;
+    }
+    .el-input-number__decrease{
+            background: #333;
+    color: #eee;
+    border-right: 1px solid #555;
+    }
+    // .th{
+    //     background: #333;
+    //     color:#eee;
+    // }
+}
+.add_board{
+        position: fixed;
+    width: 40%;
+    margin-top: 50px;
+    z-index: 100;
+    transition: ease .5s;
+}
+.add_to_table{
+        position: absolute;
+    z-index: 11;
+    width: 50%;
+    margin-left: 25%;
+    transition: ease .5s;
+}
+.add_board .el-form-item__label{
+    line-height: 20px;
+}
+.paper{
+    width: calc(50% - 12px);
+    margin: 5px;
+    float: left;
+    position: relative;
+    // min-width: 150px;
+    transition:ease .5s;
+}
+.paper .el-card__body{
+    position: unset !important;
+}
+@media only screen and (max-width: 767px){
+    .paper{
+        width: calc(100% - 12px);
+    }
+    #aside_bar{
+        position: absolute !important;
+        z-index:2000 !important;
+    }
+    #main{
+        margin-left:40px;
+    }
+    .paper_tags .el-tag{
+        margin: 2px;
+        margin-left: 10px;
+    }
+    #float_board{display: none;}
+}
+
+@media only screen and  (min-width: 767px) and (max-width: 1024px)
+{
+    .paper{
+        width: calc(50% - 12px);
+    }
+    #aside_bar{
+        position: absolute !important;
+        z-index: 2000 !important;
+    }
+    #main{
+        margin-left:40px;
+    }
+    .paper_tags .el-tag{
+        margin: 2px;
+        margin-left: 10px;
+    }
+    #float_board{display: none;}
+}
+.paper .el-card__header{
+    font-weight: bold;
+    font-size: 1em;
+        position: relative;
+    z-index: 10;
+    padding-top: 1.5em;
+}
+.paper .ptime{
+    font-size:12px;
+}
+.paper .meeting{
+        position: absolute;
+    z-index: 0;
+    color: #ddd;
+    top: 0px;
+    left: 20px;
+    font-size: 1em;
+    line-height: 1.6em;
+    font-weight: bold;
+}
+.paper_query_item{
+    background-color:rgba(0,128,128,.1);
+    border-radius: 10px;
+    text-indent: 10px;
+}
+.pagination_board{
+text-align: center;
+    background: white;
+    border-radius: 10px;
+    padding: 5px;
+    box-shadow: 0px 0px 10px rgba(0,0,0,.1);
+}
+.micro_tag{
+
+    font-size: 8px !important;
+    border-radius: 10px !important;
+    padding: 0px 10px !important;
+    height: 20px !important;
+    line-height: 20px !important;
+    background:$--color-primary !important;
+    color:white !important;
+    border:0px !important;
+}
+.finished{
+    box-shadow: 0 2px 8px -1px rgba(0, 0, 0, 0.1) inset !important;
+    background: white  !important;
+    border: 2px dashed teal  !important;
+    border-bottom: 0px  !important;
+    box-sizing: border-box  !important;
+}
+.finished::before{
+    content: "\e6da";
+    font-family: 'element-icons' !important;
+    position: absolute;
+    background: #43A047;
+    border-radius: 15px;
+    padding: 6px;
+    color: white;
+    height: 15px;
+    font-weight: bold;
+    box-shadow: 0px 2px 12px 0 rgba(0, 0, 0, 0.1);
+    top: 5px;
+    right: 5px;
+    width: 15px;
+    line-height: 15px;
+    text-align: center;
+}
+.el-collapse-item__content{padding: 10px !important;}
+.el-collapse-item__header,.el-collapse-item__content{
+    transition: ease .5s;
+}
+.el-card{
+    transition: ease .5s;
+}
+#main-app.dark-mode{
+    .el-card{
+        background: #333;
+        border: 1px solid #444;
+        color: #eee;
+    }
+    .add_board{
+        background: #333;
+        border: 1px solid #444;
+        color: #eee;
+    }
+    .add_to_table{
+        background: #333;
+        border: 1px solid #444;
+        color: #eee;
+    }
+    .pagination_board{
+        background:#444;
+    }
+    .el-collapse-item__header{
+        background: transparent;
+        border-bottom: 1px solid #444;
+        color: #eee;
+    }
+    .el-collapse-item__content{
+        background: #333;
+        color: #eee;
+        border-bottom: 1px solid #444;
+    }
+    .el-collapse-item__wrap{
+        border-bottom: 1px solid #444;
+    }
+    .el-collapse{
+        border-top: 1px solid #444;
+    }
+    .el-form-item{
+        .el-form-item__label{
+            color: #eee;
+        }
+    }
+    
+    .el-input__inner{
+        color: #eee;
+        background: #444;
+        border: 1px solid #666;
+    }
+    .el-card__header{
+        border-bottom: 1px solid #444;
+    }
+    .el-button--default{
+        color: #eee;
+        background: #444;
+        border: 1px solid #666;
+    }
+    .paper .meeting{
+        color: #eee;
+    }
+    .micro_tag{
+        color:#eee !important;
+    }
+    .finished{
+            background: #333 !important;
+            color: white !important;
+    }
+    .paper{
+        background: #333 !important;
+        color: white !important;
+    }
+}
+.el-card .el-card__body{
+    position: relative;
+}
+.plan_process{
+    width: 80%;
+    position: absolute;
+    top: 0px;
+    left:0px;
+    height: 5px;
+    background: $--color-primary;
+    border-radius: 10px;
+}
+.left_table{
+    min-width: 150px;
+    text-align: center;
+    margin: 10px;
+    cursor: pointer;
+    font-size: 16px !important;
+    float: left;
+    position: relative;
+    // max-width: 50%;
+    padding-right:40px !important;
+}
+.left_table .el-tag__close.el-icon-close{
+        position: absolute;
+    top: 5px;
+    right: 5px;
+    background: white;
+    font-size: 15px;
+    padding: 2px;
+    height: 16px;
+    box-shadow: -2px 1px 6px rgba(0,0,0,.1);
+    width: 16px;
+}
+.left_table .el-tag__close.el-icon-close:hover{
+    background: $--color-primary;
+    color:white;
+}
+.nums .el-badge__content{
+    margin:10px;
+}
+.tag_list .el-tag{
+        cursor: pointer;
+    margin: 2px 5px;
+    border-radius: 10px;
+    padding: 0px 20px;
+}
+.tag_search{
+    box-shadow: 0px 0px 0 0 black !important;
+    background: transparent !important;
+    border: 0px !important;
+}
+.tag_list .nums .el-badge__content{
+    margin:5px;
 }
 </style>

@@ -142,45 +142,25 @@ export default {
     first_loadding.__init__();
     first_loadding.add_process(
         "拉取数据",
-        function(){
-        axios.get(
+        async function(){
+        var returndata = await axios.get(
             config.server_host + "/api/user/info"
-        ).then(
-            returndata=>{
-                console.log(returndata)
-                that.user_info = returndata.data.data;
-                if(that.user_info.github_info == null){
-                  console.log("no github_info was settled.")
-                }else{
-                  that.user_info.github_info = JSON.parse(that.user_info.github_info);
-                  that.ruleForm.github_username = that.user_info.github_info.username;
-                  that.ruleForm.github_repos = that.user_info.github_info.repos;
-                  that.ruleForm.github_token = that.user_info.github_info.token;
-                }
-                that.ruleForm.name = that.user_info.username;
-            }
         );
-
+            console.log(returndata)
+            that.user_info = returndata.data.data;
+            if(that.user_info.github_info == null){
+              console.log("no github_info was settled.")
+            }else{
+              that.user_info.github_info = JSON.parse(that.user_info.github_info);
+              that.ruleForm.github_username = that.user_info.github_info.username;
+              that.ruleForm.github_repos = that.user_info.github_info.repos;
+              that.ruleForm.github_token = that.user_info.github_info.token;
+            }
+            that.ruleForm.name = that.user_info.username;
+        
         })
         first_loadding.start();
-    //   var that =this;
-    //   var first_loadding = new Loadding();
-    // first_loadding.add_title("初始化");
-    // first_loadding.__init__();
-    // first_loadding.add_process(
-    //     "拉取数据",
-    //     function(){
-    //   $.ajax({
-    //         type:"GET",
-    //         url: config.server_host + "/api/tag/get",
-    //         async:false,
-    //         dataType:"json",
-    //         success:function(returndata){
-    //             that.tags_list = returndata.data;
-    //         }
-    //     });
-    //     })
-    //     first_loadding.start();
+
   },
   methods:{
     handleAvatarSuccess(res, file) {
@@ -208,14 +188,10 @@ export default {
       loadding.__init__();
       loadding.add_process(
           "设置用户名",
-          function(){
-          axios.post(
+          async function(){
+          await axios.post(
               config.server_host + "/api/user/setusername",
               {username:that.ruleForm.name}
-          ).then(
-              returndata=>{
-                  console.log(returndata)
-              }
           );
 
           })
@@ -228,14 +204,10 @@ export default {
       loadding.__init__();
       loadding.add_process(
           "设置密码",
-          function(){
-          axios.post(
+          async function(){
+          await axios.post(
               config.server_host + "/api/user/setpassword",
               {password:that.ruleForm.pass}
-          ).then(
-              returndata=>{
-                  console.log(returndata)
-              }
           );
 
           })
@@ -248,14 +220,10 @@ export default {
       loadding.__init__();
       loadding.add_process(
           "设置Github",
-          function(){
-          axios.post(
+          async function(){
+          await axios.post(
               config.server_host + "/api/user/setgithub",
               {username:that.ruleForm.github_username,repos:that.ruleForm.github_repos,token:that.ruleForm.github_token}
-          ).then(
-              returndata=>{
-                  console.log(returndata)
-              }
           );
 
           })
@@ -268,31 +236,5 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" rel="stylesheet/scss">
-@import "../assets/theme";
-  .avatar-uploader .el-upload {
-    border: 1px dashed #d9d9d9;
-    border-radius: 6px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-  }
-  .avatar-uploader .el-upload:hover {
-    border-color: #409EFF;
-  }
-  .avatar-uploader-icon {
-    font-size: 28px;
-    color: #8c939d;
-    width: 178px;
-    height: 178px;
-    line-height: 178px !important;
-    text-align: center;
-  }
-  .pic {
-    width: 178px;
-    height: 178px;
-    display: block;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-  }
+
 </style>

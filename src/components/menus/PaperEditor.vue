@@ -96,14 +96,14 @@
         <el-col :span="16"  :xs="24"  :md="16">
 <el-card  style="margin-top:10px;" :class="full_editor?'full-screen':''">
     <el-row class='editor_header' >
-        <el-col :span="12" :xs="24"  :md="12" class="text_wrap">
+        <el-col :span="10" :xs="24"  :md="10" class="text_wrap">
             <span style="
                 line-height: 30px;
                 font-weight: bold;
                 font-size: 18px;
             ">{{full_editor?edit_form.title:'内容编辑'}}</span>
         </el-col>
-        <el-col :span="12"  :xs="0" :md="12" style="position: relative;">
+        <el-col :span="14"  :xs="0" :md="14" style="position: relative;">
             <el-button 
              style="    float: right;
     padding: 10px;
@@ -227,7 +227,7 @@ export default {
             cite:"",
             meeting:"",
             tags:[],
-            process:"",
+            process:0,
             link:"",
             Ptime:"",
             Ntime:"",
@@ -265,40 +265,35 @@ export default {
     }
     first_loadding.add_process(
         "拉取数据",
-        function(){
-        axios.get(
+        async function(){
+        var returndata = await axios.get(
             config.server_host + "/api/paper/fetchone/"+that.id
-        ).then(
-            returndata=>{
-                var data = returndata.data.data[0];
-                var s = ['title','author1','author2','cite','Ptime','Ntime','meeting','link']
-                that.source_title = data["title"]
-                for(var i =0;i<s.length;i++)that.edit_form[s[i]] = data[s[i]];
-                if(data['tags'] != null){
-                    that.edit_form['tags'] =data['tags']==''?[]:data['tags'].split(';');
-                    console.log(data['tags'])
-                }else that.edit_form['tags']=[]
-                that.edit_form['process'] = parseInt(data['process']);
-                that.edit_form['md'] = data['md'] == null?'':data['md']
-                that.edit_form['Ptime'] = new Date(data['Ptime']).getTime();
-                that.edit_form['Ntime'] = new Date(data['Ntime']).getTime();
-                console.log(that.edit_form)
-            }
-        )
+        );
+        var data = returndata.data.data[0];
+        var s = ['title','author1','author2','cite','Ptime','Ntime','meeting','link']
+        that.source_title = data["title"]
+        for(var i =0;i<s.length;i++)that.edit_form[s[i]] = data[s[i]];
+        if(data['tags'] != null){
+            that.edit_form['tags'] =data['tags']==''?[]:data['tags'].split(';');
+            console.log(data['tags'])
+        }else that.edit_form['tags']=[]
+        that.edit_form['process'] = parseInt(data['process']);
+        that.edit_form['md'] = data['md'] == null?'':data['md']
+        that.edit_form['Ptime'] = new Date(data['Ptime']).getTime();
+        that.edit_form['Ntime'] = new Date(data['Ntime']).getTime();
+
         })
         first_loadding.add_process(
         "添加粘贴事件",
-            function(){
+            async function(){
             that.add_paste_event();
             })
         first_loadding.add_process(
         "拉取Github数据",
-        function(){
-        axios.get(
+        async function(){
+        var returndata = await axios.get(
             config.server_host + "/api/user/info"
-        ).then(
-            returndata=>{
-                console.log(returndata)
+        );
                 that.user_info = returndata.data.data;
                 if(that.user_info.github_info == null){
                   console.log("no github_info was settled.")
@@ -308,10 +303,6 @@ export default {
                   that.github_info.repos = that.user_info.github_info.repos;
                   that.github_info.token = that.user_info.github_info.token;
                 }
-                console.log(that.github_info)
-            }
-        );
-
         })
         first_loadding.start()
 
@@ -328,29 +319,14 @@ export default {
     loadding.__init__();
     loadding.add_process(
         "更新数据",
-        function(){
+        async function(){
         var form = {}
         for(var key in that.edit_form)form[key] = that.edit_form[key]
         form["tags"] = form["tags"].join(";")
-        // console.log(form)
-        // $.ajax({
-        //     type:"POST",
-        //     url: config.server_host + "/api/paper/uploadone",
-        //     async:false,
-        //     data:{"id":that.id,"new_paper":form},
-        //     dataType:"json",
-        //     success:function(){
-
-        //     }
-        // });
-        axios.post(
+        await axios.post(
             config.server_host + "/api/paper/uploadone",
             {"id":that.id,"new_paper":form}
-        ).then(
-            returndata=>{
-                console.log(returndata)
-            }
-        )
+        );
         })
         loadding.start();
       },
@@ -462,244 +438,5 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" rel="stylesheet/scss">
-@import "../../assets/theme";
 
-.full-screen{
-    margin-top: 0px !important;
-    position: fixed;
-    top: 0px;
-    left: 0px;
-    z-index: 2000;
-    margin: 0px;
-    height: 100%;
-    width: 100%;
-    overflow: auto !important;
-    .editor_header{
-        position: fixed;
-    z-index: 2000;
-    background: white;
-    width: 100%;
-    top: 0px;
-    left: 0px;
-    padding:10px 20px;
-    box-shadow: 0px 3px 10px rgba(0,0,0,.1);
-    }
-    .under-editor-header{
-        margin-top:50px;
-    }
-
-}
-.paper_info{
-    position: relative;
-    transition: ease .5s;
-}
-.ops{
-        margin: 0px;
-    padding: 10px;
-    margin-bottom: 10px;
-}
-.ops .el-button i{
-    font-weight: bold;
-}
-.paper_title{
-    font-size: 1.2em;
-    font-weight: bold;
-    text-align: center;
-    margin-top: 10px;
-    text-shadow: 2px 2px 6px #ddd;
-}
-.paper_author{
-    margin-top: 10px;
-    text-align: center;
-}
-.paper_meeting{
-    text-align: center;
-    margin-top: 10px;
-}
-.paper_cite{
-    text-align: right;
-    font-size: 12px;
-    margin: 10px 0px;
-}
-.paper_cite span{
-    color:#999;
-}
-
-.paper_edit{
-    margin-top: 10px;
-}
-.paper_edit .el-form-item__label{
-    line-height: 20px;
-}
-.status_bar{
-        position: absolute;
-    bottom: 0px;
-    left: 0px;
-    height: 5px;
-    background: #009688;
-    transition: ease .5s;
-    border-radius: 10px;
-}
-
-.el-textarea__inner{
-    background:#333 !important;
-    color:white !important;
-}
-.el-tag + .el-tag {
-margin-left: 10px;
-}
-.button-new-tag {
-margin-left: 10px;
-height: 32px;
-line-height: 30px;
-padding-top: 0;
-padding-bottom: 0;
-}
-.input-new-tag {
-width: 150px !important;
-margin-left: 10px;
-vertical-align: bottom;
-}
-
-#md_editor{
-    width: 100%;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 10px 10px;
-    margin: 10px 0;
-    font-size: .8em;
-    box-sizing: border-box;
-    box-shadow: 5px 5px 10px rgba(0,0,0,.1);
-    transition: ease .5s;
-}
-#md_editor .katex .katex-html {
-    display: inline-block;
-    white-space: break-spaces;
-    line-height: 2;
-}
-#md_editor .katex .fontsize-ensurer.reset-size3.size1,#md_editor  .katex .sizing.reset-size3.size1 {
-    font-size: 1em;
-    transform: scale(.7);
-}
-#md_editor blockquote {
-    margin: 2px;
-    background: rgba(0,0,0,.02);
-    padding: 1em;
-    border-radius: 0px;
-}
-#md_editor a img{
-    height: 1.5em;
-    transform: translate(0px, .3em);
-    background:transparent;
-}
-.el-slider__runway,.el-slider__stop{
-background: rgba(255,255,255,.5);
-}
-
-#push-pic-board{
-    position: absolute;
-    top:calc(100% + 10px);
-    width:calc(100% - 20px);
-    z-index: 100;
-}
-#push-pic-board .el-card__body{
-    padding:0px;
-}
-
-thead tr th,.el-table tr ,.el-table,thead, thead tr{
-    background:transparent !important;
-}
-.el-divider__text{
-        transition: ease .5s;
-    }
-#main-app.dark-mode{
-    .paper_info{
-        background: #333;
-    }
-    .paper_title{
-        text-shadow: 0px 0px 0px;
-    }
-    .el-textarea__inner{
-        border:1px solid #555;
-    }
-    .full-screen .editor_header{
-        background:#444;
-    }
-    #md_editor{
-        background: #444;
-        color: #eee;
-        border: 1px solid #555;
-    }
-    #md_editor .katex .katex-html {
-        display: inline-block;
-        white-space: break-spaces;
-        line-height: 2;
-    }
-    #md_editor .katex .fontsize-ensurer.reset-size3.size1,#md_editor  .katex .sizing.reset-size3.size1 {
-        font-size: 1em;
-        transform: scale(.7);
-    }
-    #md_editor blockquote {
-        margin: 2px;
-        background: rgba(255,255,255,.1);
-        border-radius: 0px;
-        border-color: #333;
-        color: #aaa;
-    }
-    #md_editor a{
-        color:#64B5F6;
-    }
-    #md_editor thead tr th{
-        background: #333 !important;
-    color: white;
-    }
-    #md_editor table th{
-        border: 1px solid #333;
-    }
-    .el-tag{
-        background: rgba(255,255,255,.2);
-        color: #eee;
-    }
-    .el-tag__close{
-        color: #eee;
-    }
-    .left_table .el-tag__close{
-        background: rgba(255,255,255,.1);
-    }
-    .el-table th{
-        //background: #333 !important;
-        color:#eee;
-        border-bottom: 1px solid #444 !important;
-    }
-    .el-table td{
-        //background: #333 !important;
-        border-bottom: 1px solid #444 !important;
-    }
-    .el-table tr{
-        //background: #333 !important;
-        color:#eee;
-    }
-    .el-table tr:hover{
-        color:#555;
-        border-radius: 10px;
-    }
-    .el-divider__text{
-        background: #222;
-        color:#eee;
-    }
-    .el-input-number__increase{
-        background: #333;
-    color: #eee;
-    border-left: 1px solid #555;
-    }
-    .el-input-number__decrease{
-            background: #333;
-    color: #eee;
-    border-right: 1px solid #555;
-    }
-    // .th{
-    //     background: #333;
-    //     color:#eee;
-    // }
-}
 </style>

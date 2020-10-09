@@ -57,8 +57,10 @@ Loadding.prototype={
                     // alert();
                     
                     loop_id=setTimeout(()=>{
-                        that.process[i].todo();
-                        loop_(i+1);
+                        that.process[i].todo().then(()=>{
+
+                            loop_(i+1);
+                        })
                     },0);
                 }
                 catch{

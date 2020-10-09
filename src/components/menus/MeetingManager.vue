@@ -84,31 +84,14 @@ export default {
     first_loadding.__init__();
     first_loadding.add_process(
         "拉取数据",
-        function(){
-    //   $.ajax({
-    //         type:"GET",
-    //         url: config.server_host + "/api/meeting/get",
-    //         async:false,
-    //         dataType:"json",
-    //         success:function(returndata){
-    //             console.log(returndata)
-    //             for(let i = 0; i < returndata.data.data.length;i++){
-    //                 that.meetings_list.push(returndata.data.data[i])
-    //                 that.meeting_id_title[returndata.data.data[i].id] = returndata.data.data[i].title;
-    //             }
-    //         }
-    //     });
-        axios.get(
+        async function(){
+        var returndata = await axios.get(
             config.server_host + "/api/meeting/get"
-        ).then(
-            returndata=>{
-                console.log(returndata)
+        );
                 for(let i = 0; i < returndata.data.data.length;i++){
                     that.meetings_list.push(returndata.data.data[i])
                     that.meeting_id_title[returndata.data.data[i].id] = returndata.data.data[i].title;
                 }
-            }
-        )
         })
         first_loadding.start()
   },
@@ -134,32 +117,11 @@ export default {
     loadding.__init__();
     loadding.add_process(
         "获取Paper数据",
-        function(){
-        // $.ajax({
-        //     type:"POST",
-        //     url: config.server_host + "/api/meeting/paper_by_meetings",
-        //     async:false,
-        //     data:{meetings:that.search_meetings_id},
-        //     dataType:"json",
-        //     success:function(returndata){
-        //         console.log(returndata)
-        //         that.paper_list=[]
-        //         for(var i = 0; i< returndata.data.data.length;i++){
-        //             if(returndata.data.data[i] ==null)continue;
-        //             if(returndata.data.data[i]['tags'] != ''){
-        //                 returndata.data.data[i]['tags'] = returndata.data.data[i]['tags'].split(';');
-        //             }else returndata.data.data[i]['tags']=[]
-        //             returndata.data.data[i]['Ptime'] = new Date(returndata.data.data[i]['Ptime']).getTime();
-        //             that.paper_list.push(returndata.data.data[i]);
-        //         }
-        //     }
-        // });
-        axios.post(
+        async function(){
+        var returndata = await axios.post(
             config.server_host + "/api/meeting/paper_by_meetings",
             {meetings:that.search_meetings_id}
-        ).then(
-            returndata=>{
-                console.log(returndata)
+        );
                 that.paper_list=[]
                 for(var i = 0; i< returndata.data.data.length;i++){
                     if(returndata.data.data[i] ==null)continue;
@@ -169,8 +131,6 @@ export default {
                     returndata.data.data[i]['Ptime'] = new Date(returndata.data.data[i]['Ptime']).getTime();
                     that.paper_list.push(returndata.data.data[i]);
                 }
-            }
-        )
         })
         loadding.start();
     }
@@ -180,22 +140,5 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" rel="stylesheet/scss">
-@import "../../assets/theme";
-.meeting_list{
 
-}
-.meeting_list .el-tag{
-    cursor: pointer;
-    margin: 2px 5px;
-    border-radius: 10px;
-    padding: 0px 20px;
-}
-.meeting_search{
-    box-shadow: 0px 0px 0 0 black !important;
-    background: transparent !important;
-    border: 0px !important;
-}
-.meeting_list .nums .el-badge__content{
-    margin:5px;
-}
 </style>

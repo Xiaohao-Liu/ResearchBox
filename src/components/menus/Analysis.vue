@@ -16,9 +16,9 @@
             </el-card>
           </el-col>
           <el-col :span="18"  :xs="24">
-            <el-card>
+            <el-card v-loading="paperRecents_loading">
               <div class="analysis_title">最近编辑：</div>
-              <el-row class="paper_recent"  v-for="paper in paperRecents" :key="paper">
+              <el-row class="paper_recent"  v-for="paper in paperRecents" :key="paper.id">
                 <div class="paper_recent_process" v-bind:style="{width:paper.process+'%'}"></div>
                 <el-col class="paper_recent_title text_wrap" :span="16">{{paper.title}}</el-col>
                 <el-col class="paper_recent_author text_wrap" :span="4"><i class='el-icon-user'></i> {{paper.author1}}</el-col>
@@ -29,7 +29,7 @@
       </el-row>
       <el-row :gutter=10 style="margin-top:10px;">
           <el-col :span="8"  :xs="24">
-            <el-card class="top10">
+            <el-card class="top10" v-loading="tag_top10_loading">
               <div class="analysis_title">Tag TOP10：</div>
               <div class="top10_line" v-for="tag in tag_top10" :key="tag.id">
                  <el-row>
@@ -50,7 +50,7 @@
             </el-card>
           </el-col>
           <el-col :span="8"  :xs="24">
-            <el-card class="top10">
+            <el-card class="top10" v-loading="meeting_top10_loading">
               <div class="analysis_title">Meeting TOP10：</div>
               <div class="top10_line" v-for="meeting in meeting_top10" :key="meeting.id">
                 <el-row>
@@ -71,7 +71,7 @@
             </el-card>
           </el-col>
           <el-col :span="8"  :xs="24">
-            <el-card class="top10">
+            <el-card class="top10" v-loading="table_top10_loading">
               <div class="analysis_title">Table TOP10：</div>
               <div class="top10_line" v-for="table in table_top10" :key="table.id">
                 <el-row>
@@ -149,6 +149,10 @@ export default {
         tag_top10:[],
         meeting_top10:[],
         table_top10:[], 
+        paperRecents_loading:true,
+        tag_top10_loading:true,
+        meeting_top10_loading:true,
+        table_top10_loading:true, 
     }
   },
   mounted:function(){
@@ -158,29 +162,14 @@ export default {
     first_loadding.__init__();
     first_loadding.add_process(
         "拉取数量统计",
-        function(){
-      // $.ajax({
-      //       type:"GET",
-      //       url: config.server_host + "/api/analysis/nums",
-      //       async:false,
-      //       dataType:"json",
-      //       success:function(returndata){
-      //           that.nums.paper = returndata.data.data[0];
-      //           that.nums.meeting = returndata.data.data[1];
-      //           that.nums.tag = returndata.data.data[2];
-      //           that.nums.plan = returndata.data.data[3];
-      //       }
-      //   });
-        axios.get(
+        async function(){
+        var returndata = await axios.get(
           config.server_host + "/api/analysis/nums"
-        ).then(
-          returndata=>{
+        );
             that.nums.paper = returndata.data.data[0];
             that.nums.meeting = returndata.data.data[1];
             that.nums.tag = returndata.data.data[2];
             that.nums.plan = returndata.data.data[3];
-          }
-        )
         })
         first_loadding.start();
         this.getPaperRecent();
@@ -191,18 +180,7 @@ export default {
   methods:{
       getPaperRecent:function(){
         var that = this;
-        // $.ajax({
-        //     type:"GET",
-        //     url: config.server_host + "/api/analysis/paperrecents",
-        //     async:true,
-        //     dataType:"json",
-        //     success:function(returndata){
-        //         for(var i =0;i<returndata.data.data.length;i++){
-        //           returndata.data.data[i]['updatedAt'] = new Date(returndata.data.data[i]['updatedAt']);
-        //           that.paperRecents.push(returndata.data.data[i])
-        //         }
-        //     }
-        // });
+        that.paperRecents_loading=true;
         axios.get(
           config.server_host + "/api/analysis/paperrecents"
         ).then(
@@ -211,79 +189,49 @@ export default {
                   returndata.data.data[i]['updatedAt'] = new Date(returndata.data.data[i]['updatedAt']);
                   that.paperRecents.push(returndata.data.data[i])
                 }
+            that.paperRecents_loading=false;
           }
         )
       },
       getTagTop10:function(){
         var that = this;
-        //  $.ajax({
-        //     type:"GET",
-        //     url: config.server_host + "/api/analysis/tag_top10",
-        //     async:true,
-        //     dataType:"json",
-        //     success:function(returndata){
-        //       console.log(returndata)
-        //         for(var i =0;i<returndata.data.data.length;i++){
-        //           that.tag_top10.push(returndata.data.data[i])
-        //         }
-        //     }
-        // });
+        that.tag_top10_loading=true;
         axios.get(
           config.server_host + "/api/analysis/tag_top10"
         ).then(
           returndata=>{
-            console.log(returndata)
                 for(var i =0;i<returndata.data.data.length;i++){
                   that.tag_top10.push(returndata.data.data[i])
                 }
+                that.tag_top10_loading=false;
           }
         )
       },
       getMeetingTop10:function(){
         var that = this;
-        //  $.ajax({
-        //     type:"GET",
-        //     url: config.server_host + "/api/analysis/meeting_top10",
-        //     async:true,
-        //     dataType:"json",
-        //     success:function(returndata){
-        //         for(var i =0;i<returndata.data.data.length;i++){
-        //           that.meeting_top10.push(returndata.data.data[i])
-        //         }
-        //     }
-        // });
+        that.meeting_top10_loading=true;
         axios.get(
           config.server_host + "/api/analysis/meeting_top10"
         ).then(
           returndata=>{
-            console.log(returndata)
                 for(var i =0;i<returndata.data.data.length;i++){
                   that.meeting_top10.push(returndata.data.data[i])
                 }
+                that.meeting_top10_loading=false;
           }
         )
       },
       getTableTop10:function(){
         var that = this;
-        //  $.ajax({
-        //     type:"GET",
-        //     url: config.server_host + "/api/analysis/table_top10",
-        //     async:true,
-        //     dataType:"json",
-        //     success:function(returndata){
-        //         for(var i =0;i<returndata.data.data.length;i++){
-        //           that.table_top10.push(returndata.data.data[i])
-        //         }
-        //     }
-        // });
+        that.table_top10_loading=true;
         axios.get(
           config.server_host + "/api/analysis/table_top10"
         ).then(
           returndata=>{
-            console.log(returndata)
                 for(var i =0;i<returndata.data.data.length;i++){
                   that.table_top10.push(returndata.data.data[i])
                 }
+                that.table_top10_loading=false;
           }
         )
       }

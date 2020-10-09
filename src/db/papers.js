@@ -166,7 +166,7 @@ async function  set_paper_all(id, new_paper){
     var old_tags = paper.tags==null?[]:paper.tags.split(";");
     var new_tags = new_paper.tags==''?[]:new_paper.tags.split(";");
     var old_meeting = paper.meeting==null?"":paper.meeting;
-    var new_meeting = new_paper.meeting;
+    var new_meeting = new_paper.meeting==null?"":new_paper.meeting;
     new_paper.Ptime = parseInt(new_paper.Ptime);
     new_paper.process = parseInt(new_paper.process);
     new_paper.cite = parseInt(new_paper.cite);

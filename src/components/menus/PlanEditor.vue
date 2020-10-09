@@ -107,24 +107,11 @@ export default {
     first_loadding.__init__();
     first_loadding.add_process(
         "初始化数据",
-        function(){
-        //     $.ajax({
-        //     type:"GET",
-        //     url: config.server_host + "/api/plan/fetchone/"+that.id,
-        //     async:false,
-        //     dataType:"json",
-        //     success:function(returndata){
-        //         var data = returndata.data.data[0];
-        //         that.editForm["Ntime"] = data["Ntime"];
-        //         that.editForm["title"] = data["title"];
-        //         that.editForm["papers"] = data["papers"]==""?[]:data["papers"].split(";");
-        //         console.log(that.editForm)
-        //     }
-        // });
-        axios.get(
+        async function(){
+        
+        var returndata = await axios.get(
             config.server_host + "/api/plan/fetchone/"+that.id
-        ).then(
-            returndata=>{
+        );
                 var data = returndata.data.data[0];
                 that.editForm["Ntime"] = data["Ntime"];
                 that.editForm["title"] = data["title"];
@@ -149,11 +136,8 @@ export default {
                             that.paper_list.push(returndata.data.data[i]);
                         }
                         that.everageWidth = sum_process / returndata.data.data.length;
-                        console.log(returndata.data.data)
                     }
                 )
-            }
-        );
         })
         first_loadding.start()
   },
@@ -178,27 +162,13 @@ export default {
     loadding.__init__();
     loadding.add_process(
         "删除Paper table",
-        function(){
-        // $.ajax({
-        //     type:"POST",
-        //     url: config.server_host + "/api/paper/rm_paper_table",
-        //         async:false,
-        //         data:{"paperid":paperid,"tableid":that.id},
-        //     dataType:"json",
-        //     success:function(returndata){
-        //         console.log(returndata)
-        //         that.reload();
-        //     }
-        // });
-        axios.post(
+        async function(){
+
+        await axios.post(
             config.server_host + "/api/paper/rm_paper_table",
             {"paperid":paperid,"tableid":that.id}
-        ).then(
-            returndata=>{
-                console.log(returndata)
+        );
                 that.reload();
-            }
-        )
         });
         loadding.start();
     }
@@ -208,18 +178,5 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" rel="stylesheet/scss">
-@import "../../assets/theme";
-.el-card .el-card__body{
-    position: relative;
-}
-.plan_process{
-    width: 80%;
-    position: absolute;
-    top: 0px;
-    left:0px;
-    height: 5px;
-    background: $--color-primary;
-    border-radius: 10px;
-}
 
 </style>

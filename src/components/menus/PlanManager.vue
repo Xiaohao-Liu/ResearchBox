@@ -54,32 +54,14 @@ var that =this;
     first_loadding.__init__();
     first_loadding.add_process(
         "拉取数据",
-        function(){
-            //  $.ajax({
-            //     type:"GET",
-            //     url: config.server_host + "/api/plan/by_ntime",
-            //     async:false,
-            //     dataType:"json",
-            //     success:function(returndata){
-            //         console.log(returndata)
-            //         for(var i in returndata.data.data){
-            //             that.now_tables.push({"id":returndata.data.data[i].id,"title":returndata.data.data[i].title,"nums":returndata.data.data[i].nums})
-            //             that.now_tables_title.push(returndata.data.data[i].title);
-            //         }
-            //     }
-            // });
-            axios.get(
+        async function(){
+            var returndata = await axios.get(
                 config.server_host + "/api/plan/by_ntime"
-            ).then(
-                returndata=>{
-                    console.log(returndata)
+            )
                     for(var i in returndata.data.data){
                         that.now_tables.push({"id":returndata.data.data[i].id,"title":returndata.data.data[i].title,"nums":returndata.data.data[i].nums})
                         that.now_tables_title.push(returndata.data.data[i].title);
                     }
-                }
-            );
-
         }
     );
     first_loadding.start();
@@ -87,35 +69,18 @@ var that =this;
   methods:{
       add_table:function(){
           var that = this;
-          console.log(that.add_form);
           var loadding = new Loadding();
             loadding.add_title("初始化");
             loadding.__init__();
             loadding.add_process(
                 "添加table",
-                function(){
-                //     $.ajax({
-                //         type:"POST",
-                //         url: config.server_host + "/api/plan/add",
-                //         async:false,
-                //         data:{"title":that.add_form.title},
-                //         dataType:"json",
-                //         success:function(returndata){
-                //             that.show_add_table=false;
-                //             console.log(returndata);
-                //             that.reload();
-                //         }
-                // });
-                axios.post(
+                async function(){
+                await axios.post(
                     config.server_host + "/api/plan/add",
                     {"title":that.add_form.title}
-                ).then(
-                    returndata=>{
+                );
                         that.show_add_table=false;
-                        console.log(returndata);
                         that.reload();
-                    }
-                )
             })
         loadding.start();
       },
@@ -126,27 +91,12 @@ var that =this;
         loadding.__init__();
         loadding.add_process(
         "删除table",
-        function(){
-        //   $.ajax({
-        //     type:"POST",
-        //     url: config.server_host + "/api/plan/del",
-        //     async:false,
-        //     data:{"ntime":ntime},
-        //     dataType:"json",
-        //     success:function(returndata){
-        //         console.log(returndata);
-        //         that.reload();
-        //     }
-        // });
-        axios.post(
+        async function(){
+        await axios.post(
             config.server_host + "/api/plan/del",
             {"ntime":ntime}
-        ).then(
-            returndata=>{
-                console.log(returndata);
-                that.reload();
-            }
         );
+                that.reload();
         })
         loadding.start();
       }
@@ -156,34 +106,5 @@ var that =this;
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" rel="stylesheet/scss">
-@import "../../assets/theme";
-.left_table{
-    min-width: 150px;
-    text-align: center;
-    margin: 10px;
-    cursor: pointer;
-    font-size: 16px !important;
-    float: left;
-    position: relative;
-    // max-width: 50%;
-    padding-right:40px !important;
-}
-.left_table .el-tag__close.el-icon-close{
-        position: absolute;
-    top: 5px;
-    right: 5px;
-    background: white;
-    font-size: 15px;
-    padding: 2px;
-    height: 16px;
-    box-shadow: -2px 1px 6px rgba(0,0,0,.1);
-    width: 16px;
-}
-.left_table .el-tag__close.el-icon-close:hover{
-    background: $--color-primary;
-    color:white;
-}
-.nums .el-badge__content{
-    margin:10px;
-}
+
 </style>
