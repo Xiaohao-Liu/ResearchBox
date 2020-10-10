@@ -45,7 +45,7 @@
             </el-form>
         </el-card>
         <el-col :span="4" style="line-height:40px;padding:0px 10px;"><el-checkbox v-model="include_finished" @change="change_finished">已完成</el-checkbox></el-col>
-        <el-col :span="12" :xs="24">
+        <el-col :span="12" :xs="24" class="under_search_bar">
             <el-select style="width:calc(100% - 20px);" v-model="select_paper_lite" :change="handlePush(select_paper_lite)" clearable autocomplete default-first-option filterable placeholder="请搜索">
                 <el-option 
                 style="margin:5px"
@@ -61,8 +61,13 @@
             </el-select>
         </el-col>
     </el-row>
-    <el-card  :class="'paper'+(paper.process==100?' finished':'')" v-for="paper in paper_list" :key="paper.Ntime" v-show="(paper.process!=100 || include_finished)">
-        <div slot="header" class="clearfix" style="cursor:pointer" v-on:click="$router.push('/papereditor/'+paper.id)">
+    <el-card  :class="'paper'+(paper.process==100?' finished':'')" v-for="paper in paper_list" :key="paper.id" v-show="(paper.process!=100 || include_finished)">
+        <el-row :gutter="10">
+            <el-col :span="(paper.background!=null && paper.background!='')?8:0" :xs="24">
+                <div v-show="paper.background!=null && paper.background!=''" class="paper_img" style="border-radius:5px;" :style="{backgroundImage:'url('+paper.background+')'}"/>
+            </el-col>
+            <el-col :span="(paper.background!=null && paper.background!='')?16:24"  :xs="24">
+                <div  class="paper_head" style="cursor:pointer" v-on:click="$router.push('/papereditor/'+paper.id)">
             <span>{{paper.title}}</span>
         </div>
         <div class="meeting">
@@ -89,10 +94,14 @@
         </div> -->
         
         <el-row>
-            <el-col :span="24"  v-for="tag in paper.tags" :key="tag">
-                <el-tag class='micro_tag'>{{tag}}</el-tag>
+            <el-tag class='micro_tag'  v-for="tag in paper.tags" :key="tag">{{tag}}</el-tag>
+            <!-- <el-col :span="24" >
+                
+            </el-col> -->
+        </el-row>
             </el-col>
         </el-row>
+        
         <div class="status_bar" v-bind:style="{width:paper.process + '%'}"></div>
     </el-card>
     <el-card class="add_to_table" v-show="show_add_to_table">

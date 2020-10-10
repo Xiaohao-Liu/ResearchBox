@@ -88,6 +88,8 @@
                 <el-input placeholder="请输入内容" v-model="edit_form.cite" clearable class="paper_edit_cite"> </el-input>
             </el-form-item><el-form-item label="链接">
                 <el-input placeholder="请输入内容" v-model="edit_form.link" clearable class="paper_edit_link"> </el-input>
+            </el-form-item><el-form-item label="封面">
+                <el-input placeholder="请输入内容" v-model="edit_form.background" clearable class="paper_edit_link"> </el-input>
             </el-form-item>
         </el-form>
 
@@ -192,6 +194,7 @@ import '../../assets/github-markdown.min.css';
 const axios = require('axios');
 
 const md = markdownIt()
+md.use(require('markdown-it-highlightjs'),{ inline: true })
 md.use(markdownItLatex)
 
 
@@ -231,7 +234,8 @@ export default {
             link:"",
             Ptime:"",
             Ntime:"",
-            md:""
+            md:"",
+            background:""
         },
         inputVisible:false,
         inputValue:"",
@@ -253,6 +257,10 @@ export default {
     }
   },
   mounted:function(){
+      var hljs_link = document.createElement("link");
+      document.head.appendChild(hljs_link);
+
+      hljs_link.outerHTML = "<link rel='stylesheet' href='//cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.2.1/build/styles/default.min.css'>";
       var that =this;
       var first_loadding = new Loadding();
     first_loadding.add_title("初始化");
@@ -270,7 +278,7 @@ export default {
             config.server_host + "/api/paper/fetchone/"+that.id
         );
         var data = returndata.data.data[0];
-        var s = ['title','author1','author2','cite','Ptime','Ntime','meeting','link']
+        var s = ['title','author1','author2','cite','Ptime','Ntime','meeting','link','background']
         that.source_title = data["title"]
         for(var i =0;i<s.length;i++)that.edit_form[s[i]] = data[s[i]];
         if(data['tags'] != null){

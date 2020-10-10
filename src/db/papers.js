@@ -29,6 +29,9 @@ const Paper = sequelize.define('Paper', {
   author2:{
     type: DataTypes.STRING
   },
+  background:{
+    type: DataTypes.STRING,
+  },
   process:{
     type: DataTypes.INTEGER,
     defaultValue:0
@@ -108,7 +111,7 @@ async function  getPapersInfo(ids){
 
 async function  getPapersSimpleInfo(ids){
     return await Paper.findAll({
-        attributes:['id','title','tags','meeting','Ptime','Ntime','process'],
+        attributes:['id','title','tags','meeting','Ptime','Ntime','process','background'],
         where:{
             id:{
                 [Op.or]:ids
@@ -172,7 +175,7 @@ async function  set_paper_all(id, new_paper){
     new_paper.cite = parseInt(new_paper.cite);
     // console.log(new_paper)
     for(var key in new_paper){if(key=="Ntime"){continue;}paper[key] = new_paper[key];}
-
+    // console.log(new_paper.background)
     
     var stack = []
     for(let i = 0;i<old_tags.length;i++){

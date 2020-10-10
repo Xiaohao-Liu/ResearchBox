@@ -22,7 +22,10 @@
     </el-row>
     <el-divider><i class="el-icon-arrow-down"></i></el-divider>
     <el-badge  class="nums" v-for="table in now_tables" :key="table.id" :value="table.nums" type="primary">
-        <el-tag  class="left_table" v-on:click="$router.push('/planeditor/'+table.id)"  closable @close="delTable(table.id)">{{table.title}}</el-tag>
+        <el-tag  class="left_table" v-on:click="$router.push('/planeditor/'+table.id)"  closable @close="delTable(table.id)">
+        <!-- <div class="process_bar" :style="{width:table.process+'%'}">{{table.title}}</div> -->
+        {{table.title}}
+        </el-tag>
     </el-badge>
   </el-main>
 </template>

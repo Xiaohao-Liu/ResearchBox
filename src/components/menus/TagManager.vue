@@ -32,15 +32,31 @@
         </el-row>
       </el-card>
          <el-card :class="'paper'+(paper.process==100?' finished':'')" v-for="paper in paper_list" :key="paper.Ntime">
-        <div slot="header" class="clearfix" style="cursor:pointer" v-on:click="$router.push('/papereditor/'+paper.id)">
+        <el-row :gutter="10">
+            <el-col :span="(paper.background!=null && paper.background!='')?8:0" :xs="24">
+                <div v-show="paper.background!=null && paper.background!=''" class="paper_img" style="width:100%;border-radius:5px;" :style="{backgroundImage:'url('+paper.background+')'}"/>
+            </el-col>
+            <el-col :span="(paper.background!=null && paper.background!='')?16:24"  :xs="24">
+                <div  class="paper_head" style="cursor:pointer" v-on:click="$router.push('/papereditor/'+paper.id)">
             <span>{{paper.title}}</span>
         </div>
         <div class="meeting">
             {{paper.meeting}}
         </div>
         <el-row>
-            <el-col :span="24" class="ptime">
+            <el-col :span="12" class="ptime">
                 <span style="font-size:10px;color:#999;">submitted:</span> {{new Date(parseInt(paper.Ptime)).getMonth()+1}},{{new Date(parseInt(paper.Ptime)).getFullYear()}} 
+            </el-col>
+            <el-col :span="12" style="text-align:right;">
+                <el-dropdown @command="handleCommand">
+                    <el-button type="primary" icon="el-icon-menu" class="paper_dropdown_btn" circle>
+                    </el-button>
+                    <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item v-bind:command="{'type':'d','params':paper.id}" >删除</el-dropdown-item>
+                        <el-dropdown-item v-bind:command="{'type':'e','params':paper.id}" >编辑</el-dropdown-item>
+                        <el-dropdown-item v-bind:command="{'type':'a','param1':paper.id,'param2':paper.title}" >添加至...</el-dropdown-item>
+                    </el-dropdown-menu>
+                    </el-dropdown>
             </el-col>
         </el-row>
         <!-- <div v-for="o in 4" :key="o" class="text item">
@@ -48,8 +64,11 @@
         </div> -->
         
         <el-row>
-            <el-col :span="24"  v-for="tag in paper.tags" :key="tag">
-                <el-tag class='micro_tag'>{{tag}}</el-tag>
+            <el-tag class='micro_tag'  v-for="tag in paper.tags" :key="tag">{{tag}}</el-tag>
+            <!-- <el-col :span="24" >
+                
+            </el-col> -->
+        </el-row>
             </el-col>
         </el-row>
         <div class="status_bar" v-bind:style="{width:paper.process + '%'}"></div>

@@ -844,6 +844,7 @@ $dark-mode-font-color: #eee;
 .paper_info{
     position: relative;
     transition: ease .5s;
+    box-shadow: 0px 0px 0px;
 }
 .ops{
         margin: 0px;
@@ -1076,12 +1077,41 @@ thead tr th,.el-table tr ,.el-table,thead, thead tr{
     line-height: 20px;
 }
 .paper{
-    width: calc(50% - 12px);
-    margin: 5px;
+    width: calc(80% - 12px);
+    margin: 10px 10%;
     float: left;
     position: relative;
     // min-width: 150px;
     transition:ease .5s;
+    box-shadow: 0 8px 42px -8px rgba(0, 0, 0, 0.2);
+    border-radius: 1em;
+    .paper_head{
+          line-height: 1.2em;
+    padding: 5px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 1em;
+    font-weight: bold;
+    transition: ease .5s;
+    
+    }
+    .paper_img{
+      width: 260px;
+      height: 160px;
+          max-width: 100%;
+          margin-left: calc(50% - 130px);
+      //margin-top: calc(50% - 100px);
+      background-position: center;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-image: url(https://raw.githubusercontent.com/WYKXLDZ/ResearchBoxCollection/master/22_understanding_n_1.png);
+      background-color: white;
+      border-radius: 5px;
+      
+  }
+}
+.paper:hover{
+      cursor: pointer;
+      box-shadow: 0 8px 42px -8px rgba(0, 0, 0, 0.3);
 }
 .paper .el-card__body{
     position: unset !important;
@@ -1089,6 +1119,11 @@ thead tr th,.el-table tr ,.el-table,thead, thead tr{
 @media only screen and (max-width: 767px){
     .paper{
         width: calc(100% - 12px);
+        margin:10px;
+  
+    }
+    .under_search_bar{
+      margin-top:10px;
     }
     #aside_bar{
         position: absolute !important;
@@ -1107,7 +1142,8 @@ thead tr th,.el-table tr ,.el-table,thead, thead tr{
 @media only screen and  (min-width: 767px) and (max-width: 1024px)
 {
     .paper{
-        width: calc(50% - 12px);
+        width: calc(100% - 12px);
+        margin:10px;
     }
     #aside_bar{
         position: absolute !important;
@@ -1133,7 +1169,7 @@ thead tr th,.el-table tr ,.el-table,thead, thead tr{
     font-size:12px;
 }
 .paper .meeting{
-        position: absolute;
+        //position: absolute;
     z-index: 0;
     color: #ddd;
     top: 0px;
@@ -1164,11 +1200,12 @@ text-align: center;
     background:$--color-primary !important;
     color:white !important;
     border:0px !important;
+    margin-right: 10px !important;
+    margin-left: 0px !important;
 }
 .finished{
-    box-shadow: 0 2px 8px -1px rgba(0, 0, 0, 0.1) inset !important;
     background: white  !important;
-    border: 2px dashed teal  !important;
+    // border: 2px dashed teal  !important;
     border-bottom: 0px  !important;
     box-sizing: border-box  !important;
 }
@@ -1188,6 +1225,7 @@ text-align: center;
     width: 15px;
     line-height: 15px;
     text-align: center;
+    z-index: 1;
 }
 .el-collapse-item__content{padding: 10px !important;}
 .el-collapse-item__header,.el-collapse-item__content{
@@ -1195,6 +1233,7 @@ text-align: center;
 }
 .el-card{
     transition: ease .5s;
+    border-radius: 1em;
 }
 #main-app.dark-mode{
     .el-card{
@@ -1251,7 +1290,7 @@ text-align: center;
         border: 1px solid #666;
     }
     .paper .meeting{
-        color: #eee;
+        color: #666;
     }
     .micro_tag{
         color:#eee !important;
@@ -1263,6 +1302,9 @@ text-align: center;
     .paper{
         background: #333 !important;
         color: white !important;
+        .paper_head{
+          border-bottom: 1px solid #444;
+        }
     }
 }
 .el-card .el-card__body{
@@ -1287,6 +1329,20 @@ text-align: center;
     position: relative;
     // max-width: 50%;
     padding-right:40px !important;
+        overflow: hidden;
+        .process_bar{
+          height: 100%;
+          width: 5px;
+          background: #009688;
+          position: absolute;
+          top: 0;
+          left: 0;
+          z-index: 0;
+          overflow: hidden;
+          color: white;
+          text-indent: 10px !important;
+          text-align: left;
+        }
 }
 .left_table .el-tag__close.el-icon-close{
         position: absolute;
@@ -1320,4 +1376,16 @@ text-align: center;
 .tag_list .nums .el-badge__content{
     margin:5px;
 }
+
+.meeting_icon{
+  height: 15px;
+    float: left;
+    margin: 1px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    margin-right: 5px;
+}
+
+
 </style>
