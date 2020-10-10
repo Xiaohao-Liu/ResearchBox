@@ -7,7 +7,7 @@
             <el-col class="title_bar" :span="24" ><i class="el-icon-data-analysis"></i>统计分析 </el-col>
         </el-row>
       <el-row :gutter=10 style="margin-top:10px;">
-          <el-col :span="6" :xs="24">
+          <el-col :span="6" :xs="24"  style="margin-top:10px;">
             <el-card>
               <div class="analysis_title">总数：</div>
                 <div class="num_item" v-for="item in items" :key="item.idx" v-on:click="$router.push(item.route)">
@@ -15,7 +15,7 @@
                 </div>
             </el-card>
           </el-col>
-          <el-col :span="18"  :xs="24">
+          <el-col :span="18"  :xs="24"  style="margin-top:10px;">
             <el-card v-loading="paperRecents_loading">
               <div class="analysis_title">最近编辑：</div>
               <el-row class="paper_recent"  v-for="paper in paperRecents" :key="paper.id">
@@ -28,12 +28,12 @@
           </el-col>
       </el-row>
       <el-row :gutter=10 style="margin-top:10px;">
-          <el-col :span="8"  :xs="24">
+          <el-col :span="8"  :xs="24"  style="margin-top:10px;">
             <el-card class="top10" v-loading="tag_top10_loading">
               <div class="analysis_title">Tag TOP10：</div>
               <div class="top10_line" v-for="tag in tag_top10" :key="tag.id">
                  <el-row>
-                  <el-col :span="20">
+                  <el-col :span="20" >
                     <div class="top10_title">{{tag.title==null?'':tag.title.split('+').join(' ')}}</div>
                   </el-col>
                   <el-col :span="4">
@@ -49,7 +49,7 @@
               </div>
             </el-card>
           </el-col>
-          <el-col :span="8"  :xs="24">
+          <el-col :span="8"  :xs="24"  style="margin-top:10px;">
             <el-card class="top10" v-loading="meeting_top10_loading">
               <div class="analysis_title">Meeting TOP10：</div>
               <div class="top10_line" v-for="meeting in meeting_top10" :key="meeting.id">
@@ -70,7 +70,7 @@
               </div>
             </el-card>
           </el-col>
-          <el-col :span="8"  :xs="24">
+          <el-col :span="8"  :xs="24"  style="margin-top:10px;">
             <el-card class="top10" v-loading="table_top10_loading">
               <div class="analysis_title">Table TOP10：</div>
               <div class="top10_line" v-for="table in table_top10" :key="table.id">
@@ -120,7 +120,7 @@ export default {
               title:"Paper",
               name:"paper",
               icon:"el-icon-paperclip",
-              route:"/papermanager"
+              route:"/papermanager/1"
           },
           {
               idx:1,

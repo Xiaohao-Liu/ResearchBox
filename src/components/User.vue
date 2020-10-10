@@ -7,9 +7,10 @@
             <el-col class="title_bar" :span="24" ><i class="el-icon-user"></i>用户管理 </el-col>
         </el-row>
     <el-row style="margin-top:10px;">
-      <el-col :span="6">
+      <el-col :span="24">
         <el-upload
   class="avatar-uploader"
+  style="text-align:center;margin:5px;"
   :action="config.server_host + '/api/user/uploadsidepic'"
   :show-file-list="false"
   :headers="{Authorization:auth_toke}"
@@ -19,7 +20,7 @@
   <i v-else class="el-icon-plus avatar-uploader-icon"></i>
 </el-upload>
       </el-col>
-      <el-col :span="18">
+      <el-col :sm="24">
             <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
                 
                 <el-collapse>

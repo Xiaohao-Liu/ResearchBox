@@ -540,7 +540,6 @@ $menu_item_h: 20px;
     text-align: center;
     color: black;
     bottom: 0px;
-    margin-bottom: 10px;
     padding: 10px;
     box-sizing: border-box;
     overflow: hidden;
@@ -1120,7 +1119,6 @@ thead tr th,.el-table tr ,.el-table,thead, thead tr{
     .paper{
         width: calc(100% - 12px);
         margin:10px;
-  
     }
     .under_search_bar{
       margin-top:10px;
@@ -1128,9 +1126,25 @@ thead tr th,.el-table tr ,.el-table,thead, thead tr{
     #aside_bar{
         position: absolute !important;
         z-index:2000 !important;
+        width: 100% !important;
+        height: auto;
+          padding-bottom: 15px;
     }
+    #menu-btn{
+            left: 75% !important;
+            right:auto !important;
+        margin-left: 0px;
+      }
+    .aside_active#aside_bar{
+        height: 50px;
+        overflow: hidden;
+        #menu-btn{
+            right: 0% !important;
+            left:auto !important;
+      }
+      }
     #main{
-        margin-left:40px;
+        margin-top:50px;
     }
     .paper_tags .el-tag{
         margin: 2px;
@@ -1387,5 +1401,15 @@ text-align: center;
     margin-right: 5px;
 }
 
-
+.img_scale{
+    position: fixed;
+    top: 0px;
+    height: 100% !important;
+    width: 100% !important;
+    left: 0px;
+    margin: 0px !important;
+    z-index: 100001;
+    background-color: rgba(0,0,0,.75) !important;
+    border-radius: 0px !important;
+}
 </style>
