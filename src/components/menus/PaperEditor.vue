@@ -7,7 +7,7 @@
             <el-col class="title_bar" :span="24" ><i class="el-icon-paperclip"></i>Paper管理 </el-col>
         </el-row>
     <el-row class="ops" style="margin:10px;">
-        <el-button type="primary" icon="el-icon-back" v-on:click="$router.push('/papermanager/1')" circle></el-button>
+        <el-button type="primary" icon="el-icon-back" v-on:click="$router.back(-1)" circle></el-button>
         <el-button type="primary" icon="el-icon-finished" v-on:click="upload_all()" circle></el-button>
     </el-row>
     <el-card  class="paper_info">
@@ -110,7 +110,6 @@
              style="    float: right;
     padding: 10px;
     margin-right: 10px;
-    background: #00695C;
     " type="primary" icon="el-icon-upload" v-on:click="upload_all()" circle></el-button>
             <el-button style="    float: right;
     padding: 10px;

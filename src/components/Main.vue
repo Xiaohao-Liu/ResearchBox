@@ -29,7 +29,8 @@
                 >{{user_info.username}}</el-col>
                 <el-col :span="6">
                   <el-button
-                    style="background: teal;padding: 10px;font-size: 10px;color: white;border: 0px;box-shadow: 0px 0px 10px -2px black;"
+                  class="edit_icon"
+                    style="padding: 10px;font-size: 10px;color: white;border: 0px;box-shadow: 0px 0px 10px -2px black;"
                     v-on:click="$router.push('/user');defaultPageIdx=0;"
                     icon="el-icon-edit"
                     circle
@@ -385,7 +386,7 @@ body {
   transition: ease 0.5s;
 }
 #menu-btn {
-  background: teal !important;
+  background: $--color-primary !important;
   padding: 10px;
   font-size: 10px;
   color: white;
@@ -425,6 +426,9 @@ body {
   left: 0px;
   z-index: 100;
   transition: ease 0.5s;
+  .edit_icon{
+    background: $--color-primary;
+  }
 }
 
 .image {
@@ -626,7 +630,7 @@ $menu_item_h: 20px;
     cursor: pointer;
   }
   .hidden_btn:hover{
-      background: #009688;
+      background: $--color-primary;
       color: black;
   }
   .close_btn{
@@ -888,7 +892,7 @@ $dark-mode-font-color: #eee;
     bottom: 0px;
     left: 0px;
     height: 5px;
-    background: #009688;
+    background: $--color-primary;
     transition: ease .5s;
     border-radius: 10px;
 }
@@ -1219,7 +1223,7 @@ text-align: center;
 }
 .finished{
     background: white  !important;
-    // border: 2px dashed teal  !important;
+    // border: 2px dashed $--color-primary  !important;
     border-bottom: 0px  !important;
     box-sizing: border-box  !important;
 }
@@ -1347,7 +1351,7 @@ text-align: center;
         .process_bar{
           height: 100%;
           width: 5px;
-          background: #009688;
+          background: $--color-primary;
           position: absolute;
           top: 0;
           left: 0;

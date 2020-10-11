@@ -8,7 +8,7 @@
         </el-row>
     <!-- {{editForm}} -->
     <el-row class="ops" style="margin:10px;">
-        <el-button type="primary" icon="el-icon-back" v-on:click="$router.push('/planmanager')" circle></el-button>
+        <el-button type="primary" icon="el-icon-back" v-on:click="$router.back(-1)" circle></el-button>
         <el-button type="primary" icon="el-icon-finished" v-on:click="upload_all_changes()" circle></el-button>
     </el-row>
     <el-row>

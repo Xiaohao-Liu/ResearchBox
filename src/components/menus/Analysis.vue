@@ -18,7 +18,7 @@
           <el-col :span="18"  :xs="24"  style="margin-top:10px;">
             <el-card v-loading="paperRecents_loading">
               <div class="analysis_title">最近编辑：</div>
-              <el-row class="paper_recent"  v-for="paper in paperRecents" :key="paper.id">
+              <el-row class="paper_recent"  v-for="paper in paperRecents" :key="paper.id"  v-on:click="$router.push(('/papereditor/'+paper.id))">
                 <div class="paper_recent_process" v-bind:style="{width:paper.process+'%'}"></div>
                 <el-col class="paper_recent_title text_wrap" :span="16">{{paper.title}}</el-col>
                 <el-col class="paper_recent_author text_wrap" :span="4"><i class='el-icon-user'></i> {{paper.author1}}</el-col>
@@ -185,6 +185,7 @@ export default {
           config.server_host + "/api/analysis/paperrecents"
         ).then(
           returndata=>{
+            console.log(returndata)
             for(var i =0;i<returndata.data.data.length;i++){
                   returndata.data.data[i]['updatedAt'] = new Date(returndata.data.data[i]['updatedAt']);
                   that.paperRecents.push(returndata.data.data[i])
@@ -280,7 +281,7 @@ export default {
     transition:ease .5s;
 }
 .paper_recent:hover{
-  background: #00897B;
+  background: $--color-primary-50;
   color: white;
 }
 .paper_recent_title{
@@ -288,6 +289,7 @@ export default {
   line-height: 30px;
   font-weight: bold;
   position: relative;
+  cursor: pointer;
 }
 .paper_recent_author{
   height:30px;
@@ -330,7 +332,7 @@ export default {
  background: white;
 }
 .top10_line .top10_title{
-background: #4DB6AC;
+background: $--color-primary-50;
     border-radius: 10px;
     color: white;
     padding: 0px 10px;
