@@ -44,5 +44,10 @@ router.get('/tool/crypto', function (req, res, next) {
     res.send(html);
 })
 
+router.get('/tool/piclinks', function (req, res, next) {
+    var html = fs.readFileSync(config.cwd+'/dist/piclinks.html', 'utf-8');
+    res.send(html);
+})
+
 module.exports = router
 

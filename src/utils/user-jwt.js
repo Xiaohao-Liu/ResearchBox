@@ -32,6 +32,7 @@ const jwtAuth = expressJwt({
     '/page/first_set',
     '/page/tool/translate',
     '/page/tool/crypto',
+    '/page/tool/piclinks',
     "/static/uploads/sidepic.jpg"
   ]
 })
