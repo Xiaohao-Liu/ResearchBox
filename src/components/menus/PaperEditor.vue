@@ -406,37 +406,93 @@ export default {
             });
             return;
         }
-        $.ajax({
-                url:"https://api.github.com/repos/"+that.github_info.username+"/"+that.github_info.repos+"/contents/"+that.push_pic.name,
-                type:"PUT",
-                contentType:"application/json",
-                dataType:"json",
-                data:JSON.stringify({
-                    "message": "upload a pic named "+ that.push_pic.name,
-                    "content": that.push_pic.base64.substring(22)
-                    }),
-                headers:{"Authorization":"token "+that.github_info.token},
-                success:function(returndata){
-                    // console.log(returndata)
-                    that.$notify({
-                        title: '成功',
-                        message: that.push_pic.name+" 上传成功！"
-                    });
-                    that.push_pic.raw = returndata.content.download_url;
-                    that.push_pic.base64="";
-                    that.push_pic.pushed = true;
-                    that.push_pic.loadding=false;
-                },
-                error:function(returndata){
-                    that.$notify({
-                        title: ' 失败',
-                        message: returndata.responseJSON.message
-                    });
-                    that.push_pic.loadding=false;
+            $.ajax({
+                    url:"https://api.github.com/repos/"+that.github_info.username+"/"+that.github_info.repos+"/contents/"+that.push_pic.name,
+                    type:"GET",
+                    contentType:"application/json",
+                    dataType:"json",
+                    headers:{"Authorization":"token "+that.github_info.token},
+                    success:function(returndata){
+                        that.$alert('是否替换'+that.push_pic.name, '替换', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'warning'
+                            }).then(() => {
+                                $.ajax({
+                                    url:"https://api.github.com/repos/"+that.github_info.username+"/"+that.github_info.repos+"/contents/"+that.push_pic.name,
+                                    type:"PUT",
+                                    contentType:"application/json",
+                                    dataType:"json",
+                                    data:JSON.stringify({
+                                        "message": "upload a pic named "+ that.push_pic.name,
+                                        "content": that.push_pic.base64.substring(22),
+                                        "sha":returndata.sha
+                                        }),
+                                    headers:{"Authorization":"token "+that.github_info.token},
+                                    success:function(returndata){
+                                        // console.log(returndata)
+                                        that.$notify({
+                                            title: '成功',
+                                            message: that.push_pic.name+" 替换成功！"
+                                        });
+                                        that.push_pic.raw = returndata.content.download_url;
+                                        that.push_pic.base64="";
+                                        that.push_pic.pushed = true;
+                                        that.push_pic.loadding=false;
+                                    },
+                                    error:function(returndata){
+                                        that.$notify({
+                                            title: ' 失败',
+                                            message: returndata.responseJSON.message
+                                        });
+                                        that.push_pic.loadding=false;
+                                    }
+                                })
+                            }).catch(() => {
+                                that.$notify({
+                                    title: '取消替换',
+                                    message: ''
+                                });
+                                that.push_pic.loadding=false;        
+                                });
+                        
+                    },
+                    error:function(){
+                        $.ajax({
+                            url:"https://api.github.com/repos/"+that.github_info.username+"/"+that.github_info.repos+"/contents/"+that.push_pic.name,
+                            type:"PUT",
+                            contentType:"application/json",
+                            dataType:"json",
+                            data:JSON.stringify({
+                                "message": "upload a pic named "+ that.push_pic.name,
+                                "content": that.push_pic.base64.substring(22)
+                                }),
+                            headers:{"Authorization":"token "+that.github_info.token},
+                            success:function(returndata){
+                                // console.log(returndata)
+                                that.$notify({
+                                    title: '成功',
+                                    message: that.push_pic.name+" 上传成功！"
+                                });
+                                that.push_pic.raw = returndata.content.download_url;
+                                that.push_pic.base64="";
+                                that.push_pic.pushed = true;
+                                that.push_pic.loadding=false;
+                            },
+                            error:function(returndata){
+                                that.$notify({
+                                    title: ' 失败',
+                                    message: returndata.responseJSON.message
+                                });
+                                that.push_pic.loadding=false;
+                            }
+                            
+
+                        })
                 }
-                
 
             })
+        
     }
     
   }

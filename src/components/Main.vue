@@ -141,8 +141,8 @@ export default {
   },
   data() {
     return {
-        frame_idx:0,
-        frame_hidden:true,
+        frame_idx:2,
+        frame_hidden:false,
         // frame_closed:false,
         float_frames:[
             {
@@ -159,11 +159,21 @@ export default {
                 idx:1,
                 name:"MD5加密",
                 link:config.tool_crypto,
-                icon:"https://image.flaticon.com/icons/png/128/891/891403.png",
+                icon:"https://static.easyicon.net/preview/124/1247388.gif",
                 height:"120px",
                 minHeight:"100px",
                 width:"40%",
                 minWidth:"500px"
+            },
+            {
+                idx:2,
+                name:"常见图片链接",
+                link:config.tool_piclinks,
+                icon:"https://static.easyicon.net/preview/120/1204563.gif",
+                height:"calc(50% - 20px)",
+                minHeight:"200px",
+                width:"200px",
+                minWidth:"100px"
             }
         ],
       config: config,
