@@ -33,7 +33,18 @@ const jwtAuth = expressJwt({
     '/page/tool/translate',
     '/page/tool/crypto',
     '/page/tool/piclinks',
-    "/static/uploads/sidepic.jpg"
+    '/page/tool/knowledge',
+    "/static/uploads/sidepic.jpg",
+    "/weights/ssd_mobilenetv1_model-weights_manifest.json",
+    "/weights/ssd_mobilenetv1_model-shard1",
+    "/weights/ssd_mobilenetv1_model-shard2",
+    "/weights/face_landmark_68_model-weights_manifest.json",
+    "/weights/face_landmark_68_model-shard1",
+    "/weights/face_recognition_model-weights_manifest.json",
+    "/weights/face_recognition_model-shard1",
+    "/weights/face_recognition_model-shard2",
+    "/weights/tiny_face_detector_model-weights_manifest.json",
+    "/weights/tiny_face_detector_model-shard1"
   ]
 })
 

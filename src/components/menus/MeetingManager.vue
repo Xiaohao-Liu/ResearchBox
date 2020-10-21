@@ -120,7 +120,8 @@ export default {
                     that.meeting_id_title[returndata.data.data[i].id] = returndata.data.data[i].title;
                 }
         })
-        first_loadding.start()
+        first_loadding.start();
+        document.getElementsByTagName('title')[0].innerText = "会议";
   },
   methods:{
     handleClose(meetingid) {

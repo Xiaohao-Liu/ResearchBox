@@ -101,7 +101,9 @@ export default {
   mounted:function(){
       var that =this;
       var first_loadding = new Loadding();
+      document.getElementsByTagName('title')[0].innerText = "标签";
     first_loadding.add_title("初始化");
+    
     first_loadding.__init__();
     first_loadding.add_process(
         "拉取数据",

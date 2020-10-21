@@ -8,6 +8,8 @@ const meetingR = require('./APIs/meetings')
 const planR = require("./APIs/plan")
 const analysisR = require("./APIs/analysis")
 const toolR = require("./APIs/tool")
+const knowledgeR = require("./APIs/knowledge")
+
 
 router.use("/user", userR)
 router.use("/paper", paperR)
@@ -16,6 +18,6 @@ router.use("/meeting", meetingR)
 router.use("/plan",planR)
 router.use("/analysis",analysisR)
 router.use("/tool",toolR)
-
+router.use("/knowledge",knowledgeR)
 
 module.exports = router

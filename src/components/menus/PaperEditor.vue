@@ -288,6 +288,7 @@ export default {
         that.edit_form['md'] = data['md'] == null?'':data['md']
         that.edit_form['Ptime'] = new Date(data['Ptime']).getTime();
         that.edit_form['Ntime'] = new Date(data['Ntime']).getTime();
+        document.getElementsByTagName('title')[0].innerText = that.edit_form['title'];
 
         })
         first_loadding.add_process(

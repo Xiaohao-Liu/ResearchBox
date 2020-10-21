@@ -176,6 +176,7 @@ export default {
         this.getTagTop10();
         this.getTableTop10();
         this.getMeetingTop10();
+        document.getElementsByTagName('title')[0].innerText = "分析";
   },
   methods:{
       getPaperRecent:function(){

@@ -116,7 +116,8 @@ export default {
                 that.editForm["Ntime"] = data["Ntime"];
                 that.editForm["title"] = data["title"];
                 that.editForm["papers"] = data["papers"]==""?[]:data["papers"].split(";");
-                console.log(that.editForm)
+                console.log(that.editForm);
+                document.getElementsByTagName('title')[0].innerText = that.editForm["title"];
                 axios.post(
                     config.server_host + "/api/plan/paper_by_table",
                     {ids:that.editForm["papers"]}

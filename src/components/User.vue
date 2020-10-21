@@ -65,6 +65,9 @@
             </el-form>
       </el-col>
     </el-row>
+    <el-row style="margin-top:10px;text-align:center;" >
+      <el-button type="danger" plain @click="logout">登出帐号</el-button>
+    </el-row>
   </el-main>
 </template>
 
@@ -230,7 +233,10 @@ export default {
           })
           loadding.start();
     },
-
+    logout:function(){
+      localStorage.removeItem("jwt_token");
+      location.reload();
+    }
   }
 }
 </script>

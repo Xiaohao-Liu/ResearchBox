@@ -141,8 +141,8 @@ export default {
   },
   data() {
     return {
-        frame_idx:2,
-        frame_hidden:false,
+        frame_idx:3,
+        frame_hidden:true,
         // frame_closed:false,
         float_frames:[
             {
@@ -174,6 +174,16 @@ export default {
                 minHeight:"200px",
                 width:"200px",
                 minWidth:"100px"
+            },
+            {
+                idx:3,
+                name:"知识库",
+                link:config.tool_knowledge,
+                icon:"https://static.easyicon.net/preview/128/1280592.gif",
+                height:"calc(70% - 20px)",
+                minHeight:"200px",
+                width:"40%",
+                minWidth:"200px"
             }
         ],
       config: config,
@@ -401,7 +411,6 @@ body {
   font-size: 10px;
   color: white;
   border: 0px !important;
-  box-shadow: black 0px 0px 10px -2px;
   transition: ease 0.5s;
   margin: 10px;
   position: fixed;
@@ -1145,17 +1154,18 @@ thead tr th,.el-table tr ,.el-table,thead, thead tr{
           padding-bottom: 15px;
     }
     #menu-btn{
-            left: 75% !important;
-            right:auto !important;
+            right: 0% !important;
+            left:auto !important;
         margin-left: 0px;
+        border-radius: 0px;
+    width: 50px;
+    height: 50px;
+    font-size:16px;
+    margin:0px;
       }
     .aside_active#aside_bar{
         height: 50px;
         overflow: hidden;
-        #menu-btn{
-            right: 0% !important;
-            left:auto !important;
-      }
       }
     #main{
         margin-top:50px;

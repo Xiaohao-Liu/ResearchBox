@@ -5,8 +5,8 @@ import 'element-ui/lib/theme-chalk/index.css';
 
 // Vue.component('vue-markdown', VueMarkdown);
 Vue.config.productionTip = false;
-import VueMathjax from 'vue-mathjax'
-Vue.use(VueMathjax)
+// import VueMathjax from 'vue-mathjax'
+// Vue.use(VueMathjax)
 
 Vue.use(ElementUI);
 import Translate from '../../components/tools/Translate.vue';

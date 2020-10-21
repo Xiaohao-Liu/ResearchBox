@@ -10,7 +10,7 @@
     <el-row v-for="img in imgs" :key="img.idx" class="piclink_link">
         <el-col :span="12"><div class="line_img" :style="{backgroundImage:'url('+img.piclink+')'}"></div></el-col>
         <el-col :span="12"> <el-button  :pid="img.idx" class="line_button" :data-clipboard-target="'#img_link_'+img.idx">Copy</el-button><span style="    width: 2px;
-    overflow: hidden;
+    overflow: hidden;height:2px;
     display: block;
     float: right;
     text-indent: 20px;font-size:1px;position:absolute;" :id="'img_link_'+img.idx">{{img.piclink}}</span></el-col>
@@ -45,7 +45,7 @@ export default {
             {
                 idx:2,
                 name:"google dirver",
-                piclink:"https://ssl.gstatic.com/docs/doclist/images/infinite_arrow_favicon_5.ico"
+                piclink:"https://static.easyicon.net/preview/122/1224623.gif"
             },
             {
                 idx:3,

@@ -1,5 +1,8 @@
 const express = require('express')
 const boom = require('boom')
+const fs = require("fs")
+const config = require("../utils/config")
+
 //api路由模块
 const apiRouter = require('./api')
 //page路由模块
@@ -20,6 +23,11 @@ router.use(jwtAuth)
 
 router.get("/",(req,res)=>{
   res.redirect("/page/main");
+})
+
+router.get('/weights/:filename', function (req, res, next) {
+  var f = fs.readFileSync(config.cwd+'/weights/'+req.params.filename, 'utf-8');
+  res.send(f);
 })
 //加入用户模块路由
 router.use('/api', apiRouter)
