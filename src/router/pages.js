@@ -49,5 +49,10 @@ router.get('/tool/piclinks', function (req, res, next) {
     res.send(html);
 })
 
+router.get('/tool/knowledge', function (req, res, next) {
+    var html = fs.readFileSync(config.cwd+'/dist/knowledge.html', 'utf-8');
+    res.send(html);
+})
+
 module.exports = router
 

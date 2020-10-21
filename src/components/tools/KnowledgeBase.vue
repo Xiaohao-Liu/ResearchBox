@@ -33,7 +33,7 @@
                     :closable="k.edit"
                     :disable-transitions="false"
                     @close="handleClose(k,paper.id)">
-                    {{paper.title}}
+                    {{(paper.title.substring(0,25) + (paper.title.length >25?'...':''))}}
                     </el-tag>
                     <!-- <el-input
                         class="input-new-tag"
@@ -44,7 +44,7 @@
                         @keyup.enter.native="handleInputConfirm(k,paper.id)"
                         @blur="handleInputConfirm(k,paper.id)"
                     > -->
-                    <el-select v-show="k.edit" style="width:200px;" v-model="k.select_paper_lite" @change="handlePush(k)" clearable autocomplete default-first-option filterable placeholder="请搜索">
+                    <el-select v-show="k.edit" style="width:200px;margin:5px 0px;" v-model="k.select_paper_lite" @change="handlePush(k)" clearable autocomplete default-first-option filterable placeholder="请搜索">
                       <el-option 
                       style="margin:5px"
                       v-for="item in paper_lite_list"
@@ -70,9 +70,7 @@
               placeholder="请输入内容"
               v-model="k.md">
           </el-input>
-          <el-row  v-show="k.edit">
-                <el-button type="primary" icon="el-icon-upload"  circle style="float:right;padding:6px;"  @click="upload(k)"></el-button>
-            </el-row>
+          <el-button v-show="k.edit" type="primary" icon="el-icon-upload"  circle style="position: absolute;right: 10px;bottom: 10px;"  @click="upload(k)"></el-button>
         </div>
       </div>
   </el-main>
@@ -357,13 +355,12 @@ export default {
     position: absolute;
     top:0px;
     left:0px;
-    height: 100%;
+    min-height: 100%;
     width: 100%;
     padding-top: 30px;
     margin:0px;
-    .el-tag{
-      padding: 8px 5px;
-  }
+    z-index: 2;
+    padding-bottom:50px;
 }
 .el-tag{
       padding: 2px 5px;

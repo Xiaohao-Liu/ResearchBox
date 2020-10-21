@@ -2,7 +2,7 @@
 
 module.exports = {
     cwd:process.cwd(),
-    server_host:"http://localhost:9090",
+    server_host:"http://47.106.35.151",
     mysql_host: 'localhost',
     mysql_port:3306,
     mysql_username:"root",
@@ -20,5 +20,6 @@ module.exports = {
     // tool_translate:"/page/tool/translate",
     // tool_crypto:"/page/tool/crypto",
     // tool_piclinks:"/page/tool/piclinks",
+    // tool_knowledge:"/page/tool/knowledge",
     papers_per_page:8
   }
