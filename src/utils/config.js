@@ -2,7 +2,7 @@
 
 module.exports = {
     cwd:process.cwd(),
-    server_host:"http://47.106.35.151",
+    server_host:"http://localhost",
     mysql_host: 'localhost',
     mysql_port:3306,
     mysql_username:"root",
