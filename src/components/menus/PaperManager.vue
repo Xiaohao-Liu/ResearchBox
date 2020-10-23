@@ -61,6 +61,15 @@
             </el-select>
         </el-col>
     </el-row>
+            <el-card v-if="pagenum==1" v-loading="paperRecents_loading" class="paper">
+                <div class="analysis_title">最近编辑：</div>
+                <el-row class="paper_recent"  v-for="paper in paperRecents" :key="paper.id">
+                <div class="paper_recent_process" v-bind:style="{width:paper.process+'%'}"></div>
+                <el-col class="paper_recent_title text_wrap" :span="16"><span v-on:click="$router.push('/papereditor/'+paper.id)">{{paper.title}}</span></el-col>
+                <el-col class="paper_recent_author text_wrap" :span="4"><i class='el-icon-user'></i> {{paper.author1}}</el-col>
+                <el-col class="paper_recent_updatedAt" :span="4" >{{paper.updatedAt.getFullYear()}}-{{paper.updatedAt.getMonth()}}-{{paper.updatedAt.getDate()}} {{paper.updatedAt.getHours()}}:{{paper.updatedAt.getMinutes()}}</el-col>
+                </el-row>
+            </el-card>
     <el-card  :class="'paper'+(paper.process==100?' finished':'')" v-for="paper in paper_list" :key="paper.id" v-show="(paper.process!=100 || include_finished)">
         <el-row :gutter="10">
             <el-col :span="(paper.background!=null && paper.background!='')?8:0" :xs="24">
@@ -164,9 +173,11 @@ export default {
         show_add_to_table:false,
         include_finished:true,
         now_tables:[],
+        paperRecents:[],
+        paperRecents_loading:true,
         now_tables_title:[],
         add_to_table:{
-            paper_title:"",
+            paper_title:"", 
             paper_id:"",
             table_title:"",
             table_id:"",
@@ -241,8 +252,20 @@ export default {
                     }
         }
     );
+    if(this.pagenum==1)first_loadding.add_process(
+        "拉取Recents数据",
+        async function(){
+            var returndata = await axios.get(
+                config.server_host + "/api/analysis/paperrecents"
+                )
+            for(var i =0;i<returndata.data.data.length;i++){
+                returndata.data.data[i]['updatedAt'] = new Date(returndata.data.data[i]['updatedAt']);
+                that.paperRecents.push(returndata.data.data[i])
+                }
+            that.paperRecents_loading=false;
+        }
+    );
     first_loadding.start();
-     
   },
   methods:{
       handlePush(paperid) {
@@ -351,7 +374,7 @@ export default {
                 $(scale_ele).removeClass("img_scale");
                 cover.remove();
           })
-      }
+      },
 
   }
 }
