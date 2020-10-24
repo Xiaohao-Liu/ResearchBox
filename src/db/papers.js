@@ -226,6 +226,13 @@ async function rm_from_table(paperid, tableid){
 async function getNum(){
     return await Paper.count();
 }
+async function getNumByTime(){
+    return await Paper.count({
+        group:"Ptime",
+        order:[["Ptime"]],
+        attributes: ['Ptime']
+    });
+}
 
 async function getRecents(){
     return await Paper.findAll({
@@ -242,6 +249,7 @@ module.exports={
     getPaperByNtime,
     getPapersInfo,
     getNum,
+    getNumByTime,
     getRecents,
     getPapersSimpleInfo,
     deletePaper,

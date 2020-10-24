@@ -16,14 +16,21 @@
             </el-card>
           </el-col>
           <el-col :span="18"  :xs="24"  style="margin-top:10px;">
-            <el-card v-loading="paperRecents_loading">
-              <div class="analysis_title">最近编辑：</div>
-              <el-row class="paper_recent"  v-for="paper in paperRecents" :key="paper.id"  v-on:click="$router.push(('/papereditor/'+paper.id))">
-                <div class="paper_recent_process" v-bind:style="{width:paper.process+'%'}"></div>
-                <el-col class="paper_recent_title text_wrap" :span="16">{{paper.title}}</el-col>
-                <el-col class="paper_recent_author text_wrap" :span="4"><i class='el-icon-user'></i> {{paper.author1}}</el-col>
-                <el-col class="paper_recent_updatedAt" :span="4" >{{paper.updatedAt.getFullYear()}}-{{paper.updatedAt.getMonth()}}-{{paper.updatedAt.getDate()}} {{paper.updatedAt.getHours()}}:{{paper.updatedAt.getMinutes()}}</el-col>
-              </el-row>
+            <el-card v-loading="paper_time_loading">
+              <div class="analysis_title">发表时间分布</div>
+                <div class="paper_board">
+                  <div class="paper_month_line">1</div>
+                  <div class="paper_month_line" v-for="i in 12" :key="i" :style="{top:'calc(180px / 12 * '+i+')'}">{{i!=12?(i+1):''}}</div>
+                <div style="height: 100%;width: 100%;display: flex;justify-content: space-between;">
+                  <div class="paper_time_line" v-for="line in paper_time" :key="line">
+                  <div class="paper_time_title">{{line[0].year}}</div>
+                  <div class="paper_time_month_bar" v-for="month in line" :key="month.month" :style="{top:'calc(100% / 12 * '+(month.month)+')',opacity:(month.count/5)}">
+                  {{month.count}}
+                  </div>
+                </div>
+
+                </div>
+                </div>
             </el-card>
           </el-col>
       </el-row>
@@ -144,13 +151,12 @@ export default {
               route:"/planmanager"
           },
         ],
-
-        paperRecents:[],
+        paper_time:{},
         tag_top10:[],
         meeting_top10:[],
         table_top10:[], 
-        paperRecents_loading:true,
         tag_top10_loading:true,
+        paper_time_loading:true,
         meeting_top10_loading:true,
         table_top10_loading:true, 
     }
@@ -172,26 +178,34 @@ export default {
             that.nums.plan = returndata.data.data[3];
         })
         first_loadding.start();
-        this.getPaperRecent();
+        this.getPaperTimeLine();
         this.getTagTop10();
         this.getTableTop10();
         this.getMeetingTop10();
         document.getElementsByTagName('title')[0].innerText = "分析";
   },
   methods:{
-      getPaperRecent:function(){
+      getPaperTimeLine:function(){
         var that = this;
         that.paperRecents_loading=true;
         axios.get(
-          config.server_host + "/api/analysis/paperrecents"
+          config.server_host + "/api/analysis/timenums"
         ).then(
           returndata=>{
-            console.log(returndata)
+            
             for(var i =0;i<returndata.data.data.length;i++){
-                  returndata.data.data[i]['updatedAt'] = new Date(returndata.data.data[i]['updatedAt']);
-                  that.paperRecents.push(returndata.data.data[i])
+                let d = new Date(returndata.data.data[i]['Ptime']);
+                  returndata.data.data[i]["year"] = d.getFullYear();
+                  returndata.data.data[i]["month"] = (d.getMonth()+1)%12;
+                  if(returndata.data.data[i]["year"] in that.paper_time){
+                    that.paper_time[returndata.data.data[i]["year"]].push(returndata.data.data[i])
+                  }else{
+                    that.paper_time[returndata.data.data[i]["year"]]=[returndata.data.data[i]]
+                  }
+                  
                 }
-            that.paperRecents_loading=false;
+              console.log(that.paper_time)
+            that.paper_time_loading=false;
           }
         )
       },
@@ -353,5 +367,73 @@ background: $--color-primary-50;
     font-size: 10px;
     margin-left: 15px;
     font-weight: bold;
+}
+.paper_board{
+  height: 210px;
+  position: relative;
+  width: 100%;
+  margin: 10px 0px;
+  padding-left: 20px;
+  box-sizing: border-box;
+  // overflow-x: scroll;
+  .paper_month_line{
+        position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 0px;
+    border-top: 1px dashed #ddd;
+        font-size: 10px;
+    line-height: 12px;
+    color: #999;
+    // z-index: 1;
+    text-indent: 0px;
+  }
+
+}
+#main-app.dark-mode{
+  .paper_time_line{
+    background: rgba(68,68,68 ,.5);
+  }
+  .paper_month_line{
+    border-top: 1px dashed #555;
+  }
+}
+.paper_time_line{
+      line-height: 300px;
+    height: 180px;
+    width: 100%;
+    background: rgba(247,247,247 ,.5);
+    border-radius: 3px;
+    margin: 0px 10px;
+        display: inline-block;
+    position: relative;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    transition: ease .5s;
+    .paper_time_title{
+          position: absolute;
+    bottom: -15px;
+    text-align: center;
+    font-size: 10px;
+    line-height: 10px;
+    width: 100%;
+    height: 10px;
+    left: 0px;
+    }
+    .paper_time_month_bar{
+    width: 100%;
+    position: absolute;
+    left: 0px;
+    height: calc(100% / 12);
+    background: $--color-primary;
+    opacity: 0;
+        font-size: 8px;
+    line-height: 14px;
+    width: 100%;
+    text-align: center;
+    border-radius: 5px;
+    color: white;
+    }
 }
 </style>

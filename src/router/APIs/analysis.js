@@ -15,7 +15,13 @@ router.get('/nums', function (req, res, next) {
         }
     )
 })
-
+router.get('/timenums', function (req, res, next) {
+    Papers.getNumByTime().then(
+        nums=>{
+            res.json({ code: 401, msg: '查询Time数量成功', data: nums });
+        }
+    )
+})
 router.get('/paperrecents', function (req, res, next) {
     Papers.getRecents().then(
         papers=>{
