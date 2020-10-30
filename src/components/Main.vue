@@ -812,6 +812,10 @@ $dark-mode-font-color: #eee;
   #aside_bar {
     background: $dark-mode-bg;
     box-shadow: 2px 0px 0px #343434;
+    .mobile_title{
+      background:#222;
+      color:white;
+    }
   }
 
   .menu_item .el-button {
