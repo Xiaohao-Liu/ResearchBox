@@ -6,6 +6,7 @@
   >
     <el-container style="padding:0px;">
       <el-aside id="aside_bar" :class="show_aside?'':'aside_active'" width="200px">
+        <div class="mobile_title">{{mobile_title}}</div>
         <el-button
           id="menu-btn"
           :icon="'el-icon-'+(show_aside?'s-fold':'s-unfold')"
@@ -143,6 +144,7 @@ export default {
     return {
         frame_idx:3,
         frame_hidden:true,
+        mobile_title:"Paper",
         // frame_closed:false,
         float_frames:[
             {
@@ -242,7 +244,17 @@ export default {
           icon: "el-icon-data-analysis",
           route: "/analysis"
         }
-      ]
+      ],
+      routerMap:{
+        "papereditor":"Paper编辑",
+        "papermanager":"Paper管理",
+        "analysis":"统计分析",
+        "tagmanager":"Tag管理",
+        "planeditor":"计划编辑",
+        "planmanager":"计划管理",
+        "meetingmanager":"会议管理",
+        "user":"用户管理"
+      }
     };
   },
   mounted: function() {
@@ -250,6 +262,13 @@ export default {
     that.defaultPageIdx = that.menu_indexOf.indexOf(
       location.hash.substring(2).split("/")[0]
     );
+    console.log(document.getElementsByTagName("title")[0].innerText)
+    this.mobile_title = document.getElementsByTagName("title")[0].innerText;
+    this.$router.beforeEach((to,from,next) => {
+      that.mobile_title = that.routerMap[to.fullPath.split('/')[1]];
+      console.log(from);
+      next();
+    })
     axios.interceptors.request.use(request => {
       const jwt_token = window.localStorage.getItem("jwt_token");
       var _darkMode = localStorage.getItem("RSB_darkMode");
@@ -447,6 +466,19 @@ body {
   transition: ease 0.5s;
   .edit_icon{
     background: $--color-primary;
+  }
+  .mobile_title{
+        height: 50px;
+    line-height: 50px;
+    text-indent: 20px;
+    position: absolute;
+    background: white;
+    z-index: 1;
+    width: calc(100% - 50px);
+    overflow: hidden;
+    font-size: 1em;
+    font-weight: bold;
+    display: none;
   }
 }
 
@@ -723,8 +755,8 @@ $menu_item_h: 20px;
 .aside_active {
   width: 50px !important;
   .menu_top {
-    height: 0px;
-    margin-bottom: 160px !important;
+    transition: ease .5s;
+    width: 0px;
   }
   .menu_item .el-button {
     margin: 2px 2px;
@@ -1146,12 +1178,33 @@ thead tr th,.el-table tr ,.el-table,thead, thead tr{
     .under_search_bar{
       margin-top:10px;
     }
+    .aside_active {
+      .menu_top {
+          height: auto;
+          opacity: 0;
+          transition:ease .5s;
+          margin-bottom: 0px !important;
+        }
+        .menu_item .el-button {
+          margin: 2px 10px;
+          width: calc(100% - 20px);
+          span i {
+            float: left;
+          }
+          span span {
+            display: inline-block;
+          }
+        }
+    }
     #aside_bar{
         position: absolute !important;
         z-index:2000 !important;
         width: 100% !important;
-        height: auto;
+        height: 100%;
           padding-bottom: 15px;
+          .mobile_title{
+            display: block;
+          }
     }
     #menu-btn{
             right: 0% !important;
@@ -1162,6 +1215,9 @@ thead tr th,.el-table tr ,.el-table,thead, thead tr{
     height: 50px;
     font-size:16px;
     margin:0px;
+      }
+      .menu_top .el-card__body {
+        height: 70vw;
       }
     .aside_active#aside_bar{
         height: 50px;
