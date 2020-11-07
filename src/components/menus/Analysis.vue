@@ -22,7 +22,7 @@
                   <div class="paper_month_line">1</div>
                   <div class="paper_month_line" v-for="i in 12" :key="i" :style="{top:'calc(180px / 12 * '+i+')'}">{{i!=12?(i+1):''}}</div>
                 <div style="height: 100%;width: 100%;display: flex;justify-content: space-between;">
-                  <div class="paper_time_line" v-for="line in paper_time" :key="line">
+                  <div class="paper_time_line" v-for="line in paper_time" :key="line[0].year">
                   <div class="paper_time_title">{{line[0].year}}</div>
                   <div class="paper_time_month_bar" v-for="month in line" :key="month.month" :style="{top:'calc(100% / 12 * '+(month.month)+')',opacity:(month.count/5)}">
                   {{month.count}}
@@ -34,8 +34,13 @@
             </el-card>
           </el-col>
       </el-row>
-      <el-row :gutter=10 style="margin-top:10px;">
-          <el-col :span="8"  :xs="24"  style="margin-top:10px;">
+      <el-row  :gutter=10 style="margin-top:10px;">
+        <el-col  :span="12"  :xs="24"  style="margin-top:10px;">
+          <el-card style="height:464px;" id="tagGraphBoard">
+            <div id='tagGraphCanvas'></div>
+          </el-card>
+        </el-col>
+        <el-col :span="12"  :xs="24"  style="margin-top:10px;">
             <el-card class="top10" v-loading="tag_top10_loading">
               <div class="analysis_title">Tag TOP10：</div>
               <div class="top10_line" v-for="tag in tag_top10" :key="tag.id">
@@ -56,7 +61,10 @@
               </div>
             </el-card>
           </el-col>
-          <el-col :span="8"  :xs="24"  style="margin-top:10px;">
+      </el-row>
+
+      <el-row :gutter=10 style="margin-top:10px;">
+          <el-col :span="12"  :xs="24"  style="margin-top:10px;">
             <el-card class="top10" v-loading="meeting_top10_loading">
               <div class="analysis_title">Meeting TOP10：</div>
               <div class="top10_line" v-for="meeting in meeting_top10" :key="meeting.id">
@@ -77,7 +85,7 @@
               </div>
             </el-card>
           </el-col>
-          <el-col :span="8"  :xs="24"  style="margin-top:10px;">
+          <el-col :span="12"  :xs="24"  style="margin-top:10px;">
             <el-card class="top10" v-loading="table_top10_loading">
               <div class="analysis_title">Table TOP10：</div>
               <div class="top10_line" v-for="table in table_top10" :key="table.id">
@@ -98,14 +106,27 @@
             </el-card>
           </el-col>
       </el-row>
+      
   </el-main>
 </template>
 
 <script>
-// const $ = require("jquery");
 const config = require("../../utils/config");
 const Loadding = require("../../utils/loadding");
 const axios = require('axios')
+// import $ from "jquery"
+
+// import ECharts modules manually to reduce bundle size
+import echarts from 'echarts'
+import 'echarts/lib/chart/graph'
+import 'echarts/lib/component/tooltip'
+require('echarts/extension/dataTool')
+
+// If you want to use ECharts extensions, just import the extension package, and it will work
+// Taking ECharts-GL as an example:
+// You only need to install the package with `npm install --save echarts-gl` and import it as follows
+import 'echarts-gl'
+
 export default {
     inject:['reload'],
   name: 'login',
@@ -158,7 +179,7 @@ export default {
         tag_top10_loading:true,
         paper_time_loading:true,
         meeting_top10_loading:true,
-        table_top10_loading:true, 
+        table_top10_loading:true,
     }
   },
   mounted:function(){
@@ -182,6 +203,7 @@ export default {
         this.getTagTop10();
         this.getTableTop10();
         this.getMeetingTop10();
+        this.getTagGraph()
         document.getElementsByTagName('title')[0].innerText = "分析";
   },
   methods:{
@@ -250,6 +272,126 @@ export default {
                 that.table_top10_loading=false;
           }
         )
+      },
+
+      getTagGraph:function(){
+        var  categories = ['Tag'];
+        var myChart = echarts.init(document.getElementById('tagGraphCanvas'));
+        myChart.showLoading();
+        var options = {
+          title: {
+            text: 'Tag Graph:',
+            subtext: 'Force Layout',
+            top: 'top',
+            left: 'left'
+        },
+        tooltip: {},
+        legend: [{
+            data: categories.map(function (a) {
+                return a.name;
+            })
+        }],
+        animationDurationUpdate: 1500,
+        animationEasingUpdate: 'quinticInOut',
+        series: [
+            {
+                name: 'Tag',
+                type: 'graph',
+                layout: 'force',
+                data: [],
+                links: [],
+                categories: categories,
+                roam: 'move',
+                label: {
+                    position: 'bottom'
+                },
+                itemStyle: {
+                  color:'rgb(63,81,181)',
+                    borderColor: '#fff',
+                    borderWidth: 1,
+                    shadowBlur: 10,
+                    shadowColor: 'rgba(0, 0, 0, 0.3)'
+                },
+                force: {
+                  initLayout:'circular',
+                    repulsion: 50,
+                    gravity:.1,
+                    edgeLength: [10, 50],
+                    friction :.1
+                }
+            }
+        ]
+      };
+        axios.get(
+            config.server_host + "/api/tag/get"
+        ).then(res=>{
+          // console.log(res)
+          var graph = {nodes:[],links:[]};
+          var linksDict = {};
+          var paperDict={}
+          var num = 0;
+          res.data.data.forEach(ele=>{
+            myChart.hideLoading();
+            ele.graphidx = ele.id;
+            ele.id = num;
+            ele.name = ele.title.split('+').join(" ");
+            ele.category= 0;
+            
+            graph.nodes.push(ele);
+            ele.papers.split(";").forEach(p=>{
+              if(!(p in paperDict)){
+                paperDict[p]=new Set();
+              }
+              paperDict[p].forEach(prevTag=>{
+                if(!(prevTag in linksDict)){
+                  linksDict[prevTag]={count:0}
+                }
+                if(!(ele.id in linksDict)){
+                  linksDict[ele.id]={count:0}
+                }
+                if(ele.id in linksDict[prevTag]){
+                  linksDict[prevTag][ele.id]+=1;
+                  linksDict[ele.id][prevTag]+=1;
+                }else{
+                  linksDict[prevTag][ele.id]=1;
+                  linksDict[ele.id][prevTag]+=1;
+                }
+                linksDict[prevTag].count+=1;
+                linksDict[ele.id].count+=1;
+              })
+              paperDict[p].add(ele.id);
+            })
+            num+=1;
+          })
+          num = 0;
+          for(var target in linksDict){
+            for(var source in linksDict[target]){
+              if(source=="count"){
+                graph.nodes[target].value=linksDict[target].count;
+                graph.nodes[target].symbolSize=linksDict[target].count*3;
+                // graph.nodes[target].label={show:graph.nodes[target].value>5?true:false}
+                graph.nodes[target].itemStyle={
+                  color:'rgb(63,81,181)',
+                  opacity:(linksDict[target].count>5?1:linksDict[target].count/5),
+                }
+                continue;
+              }
+              graph.links.push({
+                id:num,
+                name: null,
+                weight:linksDict[target][source],
+                value:linksDict[target][source],
+                source: source,
+                target:target,
+              });
+              num+=1;
+            }
+          }
+          // console.log(graph)
+          options.series[0].data= graph.nodes;
+          options.series[0].links= graph.links;
+          myChart.setOption(options);
+        })
       }
   }
 }
@@ -329,6 +471,9 @@ export default {
     z-index: 0;
     opacity: .5;
     border-radius: 5px;
+}
+.top10{
+  height:464px;
 }
 .top10 .top10_line{
       height: auto;
@@ -435,5 +580,19 @@ background: $--color-primary-50;
     border-radius: 5px;
     color: white;
     }
+}
+.echarts {
+  width: 100%;
+  height: 100%;
+}
+#tagGraphBoard .el-card__body{
+  height: 100%;
+  width: 100%;
+  // padding: 0;
+  overflow: hidden;
+  #tagGraphCanvas{
+    height: 100%;
+  width: 100%;
+  }
 }
 </style>

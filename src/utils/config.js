@@ -2,7 +2,7 @@
 
 module.exports = {
     cwd:process.cwd(),
-    server_host:"http://localhost",
+    server_host:"http://localhost:9090",
     mysql_host: 'localhost',
     mysql_port:3306,
     mysql_username:"root",
@@ -11,15 +11,15 @@ module.exports = {
     // login_path:"/ligin.html",
     // main_path:"/main.html",
     
-    tool_translate:"/translate.html",
-    tool_crypto:"/crypto.html",
-    tool_piclinks:"/piclinks.html",
-    tool_knowledge:"/knowledge.html",
+    // tool_translate:"/translate.html",
+    // tool_crypto:"/crypto.html",
+    // tool_piclinks:"/piclinks.html",
+    // tool_knowledge:"/knowledge.html",
     login_path:"/page/login",
     main_path:"/page/main",
-    // tool_translate:"/page/tool/translate",
-    // tool_crypto:"/page/tool/crypto",
-    // tool_piclinks:"/page/tool/piclinks",
-    // tool_knowledge:"/page/tool/knowledge",
+    tool_translate:"/page/tool/translate",
+    tool_crypto:"/page/tool/crypto",
+    tool_piclinks:"/page/tool/piclinks",
+    tool_knowledge:"/page/tool/knowledge",
     papers_per_page:8
   }
