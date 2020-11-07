@@ -2,6 +2,10 @@
 module.exports = {
     // 选项...
     publicPath:"/",
+    transpileDependencies: [
+      'vue-echarts',
+      'resize-detector'
+    ],
     pages:{
         // index: {
         //     // page 的入口
