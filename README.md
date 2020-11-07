@@ -23,6 +23,23 @@
 - 添加tool（翻译、MD5）
 - 添加分页和搜索
 
+**2020.10.17 update**
+
+- 添加tool（图片链接快速获取、资料库）
+
+**2020.10.26 update**
+
+- 自适应页面
+
+**2020.11.07 update**
+
+- tag graph (Force Layout)
+
+
+
+
+
+
 ## Installation 
 
 ### 安装依赖
