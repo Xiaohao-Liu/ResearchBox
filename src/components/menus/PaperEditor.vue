@@ -4,7 +4,7 @@
             <!-- <el-col class="user_bar" :span="4">
                         <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
             </el-col> -->
-            <el-col class="title_bar" :span="24" ><i class="el-icon-paperclip"></i>Paper管理 </el-col>
+            <el-col class="title_bar" :span="24" ><i class="el-icon-paperclip"></i> Paper管理 </el-col>
         </el-row>
     <el-row class="ops" style="margin:10px;">
         <el-button type="primary" icon="el-icon-back" v-on:click="$router.back(-1)" circle></el-button>
@@ -125,9 +125,9 @@
     " type="primary" icon="el-icon-picture" circle @click="push_pic_show = !push_pic_show"></el-button>
     <el-button style="    float: right;
     padding: 10px;
-    " type="primary" icon="el-icon-plus" circle @click="open('https://github.com/'+github_info.username+'/'+github_info.repos+'/tree/master')"></el-button>  
+    " type="primary" icon="el-icon-plus" circle @click="open('https://gitee.com/api/v5/repos/'+github_info.username+'/'+github_info.repos+'/tree/master')"></el-button>  
             <el-card v-show="push_pic_show" id="push-pic-board" v-loading="push_pic.loadding">
-                <img :src="push_pic.base64" style="width:100%;max-height:300px;"/>  
+                <img :src="push_pic.base64" style="width:100%;"/>  
                 <p v-show="push_pic.base64==''  && !push_pic.pushed" style="text-align:center;">NO IMAGE!</p>   
                 <p v-show="push_pic.base64=='' && push_pic.pushed" style="text-align:center;">COPY THE LINK!</p>   
                 <el-input placeholder="照片名称" v-model="push_pic.name" v-show="!push_pic.pushed">
@@ -408,59 +408,104 @@ export default {
             return;
         }
             $.ajax({
-                    url:"https://api.github.com/repos/"+that.github_info.username+"/"+that.github_info.repos+"/contents/"+that.push_pic.name,
+                    url:"https://gitee.com/api/v5/repos/"+that.github_info.username+"/"+that.github_info.repos+"/contents/"+that.push_pic.name,
                     type:"GET",
                     contentType:"application/json",
                     dataType:"json",
                     headers:{"Authorization":"token "+that.github_info.token},
                     success:function(returndata){
-                        that.$alert('是否替换'+that.push_pic.name, '替换', {
-                            confirmButtonText: '确定',
-                            cancelButtonText: '取消',
-                            type: 'warning'
-                            }).then(() => {
-                                $.ajax({
-                                    url:"https://api.github.com/repos/"+that.github_info.username+"/"+that.github_info.repos+"/contents/"+that.push_pic.name,
-                                    type:"PUT",
-                                    contentType:"application/json",
-                                    dataType:"json",
-                                    data:JSON.stringify({
-                                        "message": "upload a pic named "+ that.push_pic.name,
-                                        "content": that.push_pic.base64.substring(22),
-                                        "sha":returndata.sha
-                                        }),
-                                    headers:{"Authorization":"token "+that.github_info.token},
-                                    success:function(returndata){
-                                        // console.log(returndata)
-                                        that.$notify({
-                                            title: '成功',
-                                            message: that.push_pic.name+" 替换成功！"
-                                        });
-                                        that.push_pic.raw = returndata.content.download_url;
-                                        that.push_pic.base64="";
-                                        that.push_pic.pushed = true;
-                                        that.push_pic.loadding=false;
-                                    },
-                                    error:function(returndata){
-                                        that.$notify({
-                                            title: ' 失败',
-                                            message: returndata.responseJSON.message
-                                        });
-                                        that.push_pic.loadding=false;
-                                    }
-                                })
-                            }).catch(() => {
-                                that.$notify({
-                                    title: '取消替换',
-                                    message: ''
-                                });
-                                that.push_pic.loadding=false;        
-                                });
+                        if(returndata.length == 0){
+                            // put a new pic to gitee repos
+                            $.ajax({
+                                url:"https://gitee.com/api/v5/repos/"+that.github_info.username+"/"+that.github_info.repos+"/contents/"+that.push_pic.name,
+                                type:"POST",
+                                contentType:"application/json",
+                                dataType:"json",
+                                data:JSON.stringify({
+                                    "access_token":that.github_info.token,
+                                    "owner":that.github_info.username,
+                                    "repo":that.github_info.repos,
+                                    "path":that.push_pic.name,
+                                    "message": "upload a pic named "+ that.push_pic.name,
+                                    "content": that.push_pic.base64.substring(22)
+                                    }),
+                                headers:{"Authorization":"token "+that.github_info.token},
+                                success:function(returndata){
+                                    // console.log(returndata)
+                                    that.$notify({
+                                        title: '成功',
+                                        message: that.push_pic.name+" 上传成功！"
+                                    });
+                                    that.push_pic.raw = returndata.content.download_url;
+                                    that.push_pic.base64="";
+                                    that.push_pic.pushed = true;
+                                    that.push_pic.loadding=false;
+                                },
+                                error:function(returndata){
+                                    that.$notify({
+                                        title: ' 失败',
+                                        message: returndata.responseJSON.message
+                                    });
+                                    that.push_pic.loadding=false;
+                                }
+                                
+
+                            })
+                        }
+                        else{
+                            that.$alert('是否替换'+that.push_pic.name, '替换', {
+                                confirmButtonText: '确定',
+                                cancelButtonText: '取消',
+                                type: 'warning'
+                                }).then(() => {
+                                    $.ajax({
+                                        url:"https://gitee.com/api/v5/repos/"+that.github_info.username+"/"+that.github_info.repos+"/contents/"+that.push_pic.name,
+                                        type:"PUT",
+                                        contentType:"application/json",
+                                        dataType:"json",
+                                        data:JSON.stringify({
+                                            "access_token":that.github_info.token,
+                                            "owner":that.github_info.username,
+                                            "repo":that.github_info.repos,
+                                            "path":that.push_pic.name,
+                                            "message": "upload a pic named "+ that.push_pic.name,
+                                            "content": that.push_pic.base64.substring(22),
+                                            "sha":returndata.sha
+                                            }),
+                                        headers:{"Authorization":"token "+that.github_info.token},
+                                        success:function(returndata){
+                                            // console.log(returndata)
+                                            that.$notify({
+                                                title: '成功',
+                                                message: that.push_pic.name+" 替换成功！"
+                                            });
+                                            that.push_pic.raw = returndata.content.download_url;
+                                            that.push_pic.base64="";
+                                            that.push_pic.pushed = true;
+                                            that.push_pic.loadding=false;
+                                        },
+                                        error:function(returndata){
+                                            that.$notify({
+                                                title: ' 失败',
+                                                message: returndata.responseJSON.message
+                                            });
+                                            that.push_pic.loadding=false;
+                                        }
+                                    })
+                                }).catch(() => {
+                                    that.$notify({
+                                        title: '取消替换',
+                                        message: ''
+                                    });
+                                    that.push_pic.loadding=false;        
+                                    });
+                        }
+                        
                         
                     },
                     error:function(){
                         $.ajax({
-                            url:"https://api.github.com/repos/"+that.github_info.username+"/"+that.github_info.repos+"/contents/"+that.push_pic.name,
+                            url:"https://gitee.com/api/v5/repos/"+that.github_info.username+"/"+that.github_info.repos+"/contents/"+that.push_pic.name,
                             type:"PUT",
                             contentType:"application/json",
                             dataType:"json",
@@ -487,8 +532,6 @@ export default {
                                 });
                                 that.push_pic.loadding=false;
                             }
-                            
-
                         })
                 }
 

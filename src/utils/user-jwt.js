@@ -27,13 +27,7 @@ const jwtAuth = expressJwt({
     '/',
     '/api/user/login',
     '/api/user/first_set',
-    '/page/main',
-    '/page/login',
-    '/page/first_set',
-    '/page/tool/translate',
-    '/page/tool/crypto',
-    '/page/tool/piclinks',
-    '/page/tool/knowledge',
+    /page.*/i,
     "/static/uploads/sidepic.jpg",
     "/weights/ssd_mobilenetv1_model-weights_manifest.json",
     "/weights/ssd_mobilenetv1_model-shard1",
@@ -44,7 +38,9 @@ const jwtAuth = expressJwt({
     "/weights/face_recognition_model-shard1",
     "/weights/face_recognition_model-shard2",
     "/weights/tiny_face_detector_model-weights_manifest.json",
-    "/weights/tiny_face_detector_model-shard1"
+    "/weights/tiny_face_detector_model-shard1",
+    /storage.*/i,
+    /api\/gitee.*/i,
   ]
 })
 

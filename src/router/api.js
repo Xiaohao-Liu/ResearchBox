@@ -10,6 +10,7 @@ const analysisR = require("./APIs/analysis")
 const toolR = require("./APIs/tool")
 const knowledgeR = require("./APIs/knowledge")
 
+const giteeJsonR = require("./APIs/giteejson")
 
 router.use("/user", userR)
 router.use("/paper", paperR)
@@ -19,5 +20,6 @@ router.use("/plan",planR)
 router.use("/analysis",analysisR)
 router.use("/tool",toolR)
 router.use("/knowledge",knowledgeR)
+router.use("/gitee",giteeJsonR)
 
 module.exports = router

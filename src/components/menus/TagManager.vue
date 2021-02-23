@@ -4,7 +4,7 @@
             <!-- <el-col class="user_bar" :span="4">
                         <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
             </el-col> -->
-            <el-col class="title_bar" :span="24" ><i class="el-icon-price-tag"></i>标签管理 </el-col>
+            <el-col class="title_bar" :span="24" ><i class="el-icon-price-tag"></i> 标签管理 </el-col>
         </el-row>
       <el-select style="width:calc(100% - 20px);margin:10px;" v-model="select_tag" :change="handlePush(select_tag)" clearable autocomplete default-first-option filterable placeholder="请搜索">
         <el-option
@@ -34,7 +34,7 @@
          <el-card :class="'paper'+(paper.process==100?' finished':'')" v-for="paper in paper_list" :key="paper.Ntime">
         <el-row :gutter="10">
             <el-col :span="(paper.background!=null && paper.background!='')?8:0" :xs="24">
-                <div v-show="paper.background!=null && paper.background!=''" class="paper_img" style="width:100%;border-radius:5px;" :style="{backgroundImage:'url('+paper.background+')'}"/>
+                <div v-show="paper.background!=null && paper.background!=''" class="paper_img" style="border-radius:5px;" :style="{backgroundImage:'url('+paper.background+')'}" @click="scale"/>
             </el-col>
             <el-col :span="(paper.background!=null && paper.background!='')?16:24"  :xs="24">
                 <div  class="paper_head" style="cursor:pointer" v-on:click="$router.push('/papereditor/'+paper.id)">
@@ -77,7 +77,7 @@
 </template>
 
 <script>
-// const $ = require("jquery");
+const $ = require("jquery");
 const config = require("../../utils/config");
 const Loadding = require("../../utils/loadding");
 const axios = require('axios');
@@ -132,7 +132,16 @@ export default {
         this.search_tags_id.push(tagid);
         this.get_papers_by_search_tags();
     },
-
+    scale:function(event){
+          var scale_ele = event.currentTarget;
+          $(scale_ele).addClass("img_scale");
+          var cover = $("<div style='position:fixed;top:0px;left:0px;height:100%;width:100%;z-index:100000001;cursor: zoom-out;'></div>");
+          $("body").append(cover);
+          cover.on("click",function(){
+                $(scale_ele).removeClass("img_scale");
+                cover.remove();
+          })
+      },
     get_papers_by_search_tags:function(){
         var that = this;
         if(that.search_tags.length==0){return;}

@@ -105,6 +105,30 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" rel="stylesheet/scss">
 @import "../../assets/theme";
+html{
+  overflow-x:auto;
+  overflow-y: auto !important;
+}
+*{
+  box-sizing: content-box;
+}
+/* 设置滚动条的样式 */
+::-webkit-scrollbar {
+width:5px;
+height:5px;
+background-color: #eee;
+}
+
+/* 滚动槽 */
+::-webkit-scrollbar-track {
+border-radius:5px;
+}
+
+/* 滚动条滑块 */
+::-webkit-scrollbar-thumb {
+border-radius:5px;
+background:#aaa;
+}
 .el-header.title{
     height: 30px !important;
     line-height: 30px;

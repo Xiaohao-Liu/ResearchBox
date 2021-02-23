@@ -14,34 +14,10 @@
           @click="change_show_aside"
           circle
         ></el-button>
-        <el-row class="menu_top">
-          <el-col :span="24">
-            <el-card>
-              <div
-                class="image"
-                v-bind:style="{backgroundImage:'url('+config.server_host+'/static/uploads/sidepic.jpg)'}"
-              />
-              <el-row
-                style="position: absolute;width: 100%;bottom: 0px;padding: 5px 10px;color: white;line-height: 50px;text-align: left;"
-              >
-                <el-col
-                  :span="18"
-                  style="text-indent:10px;text-shadow: 0px 0px 5px black;"
-                >{{user_info.username}}</el-col>
-                <el-col :span="6">
-                  <el-button
-                  class="edit_icon"
-                    style="padding: 10px;font-size: 10px;color: white;border: 0px;box-shadow: 0px 0px 10px -2px black;"
-                    v-on:click="$router.push('/user');defaultPageIdx=0;"
-                    icon="el-icon-edit"
-                    circle
-                  ></el-button>
-                </el-col>
-              </el-row>
-            </el-card>
-          </el-col>
+        <el-row class="menu_top" style="margin-top:60px;">
+          
         </el-row>
-        <el-row class="menu_item" v-for="item in menu" :key="item.idx" v-show="item.idx>0">
+        <el-row class="menu_item" v-for="item in menu" :key="item.idx" >
           <el-col :span="24">
             <el-button v-on:click="$router.push(item.route);defaultPageIdx=item.idx;reload()">
               <i v-bind:class="item.icon"></i>
@@ -50,22 +26,30 @@
           </el-col>
         </el-row>
       </el-aside>
+      <div id="m_nav_bar" :class="show_aside?'':'aside_active'">
+        <el-button icon="el-icon-menu" id="m_nav_menu_btn" @click="show_aside=!show_aside"></el-button>
+        <div id="nav_title" style="position: absolute;top: 0px;float: right;height: 50px;line-height: 50px;width: 100%;text-align: center;font-weight: bold;transition:ease .5s;}"><i :class="show_top_title?menu[defaultPageIdx].icon:''"></i> {{show_top_title?menu[defaultPageIdx].title:""}}</div>
+        <el-row class="menu_item" v-for="item in menu" :key="item.idx" >
+          <el-col :span="24">
+            <el-button v-on:click="$router.push(item.route);defaultPageIdx=item.idx;reload();">
+              <i v-bind:class="item.icon"></i>
+              <span>{{item.title}}</span>
+            </el-button>
+          </el-col>
+        </el-row>
+      </div>
       <el-main id="main">
         <router-view v-if="isRouterAlive"></router-view>
       </el-main>
     </el-container>
 
-    <div id="dark-mode-control">
+    <!-- <div id="dark-mode-control">
       <el-button
         :icon="darkMode?'el-icon-moon':'el-icon-sunny'"
         circle
         v-on:click="change_mode"
       ></el-button>
-      <!-- <div>
-                <div style="font-weight: bold;font-size: 14px;margin-top: 10px;">深色模式</div>
-                <div class="dark-mode-status">{{darkMode?'打开':'关闭'}}</div>
-      </div>-->
-    </div>
+    </div> -->
     <div id='float_board' :class="(frame_hidden?'hidden':'')"
     :style="{
       height:float_frames[frame_idx].height,
@@ -88,7 +72,7 @@
         <!-- <div class="close_btn" v-on:click="frame_closed=true;"><i class="el-icon-close"></i></div> -->
       </div>
       <div class="main_board">
-          <iframe :src="float_frames[frame_idx].link"></iframe>
+          <iframe id="float_board_frame" src=""></iframe>
       </div>
     </div>
   </el-container>
@@ -111,7 +95,8 @@ import MeetingManager from "./menus/MeetingManager";
 import PlanManager from "./menus/PlanManager";
 import PlanEditor from "./menus/PlanEditor";
 import Analysis from "./menus/Analysis";
-
+import Storage from "./menus/Storage"
+import Experiments from "./menus/Experiments"
 Vue.use(VueRouter);
 
 const router = new VueRouter({
@@ -125,7 +110,9 @@ const router = new VueRouter({
     { path: "/meetingmanager", component: MeetingManager },
     { path: "/planmanager", component: PlanManager },
     { path: "/planeditor/:id", component: PlanEditor, props: true },
-    { path: "/analysis", component: Analysis }
+    { path: "/analysis", component: Analysis },
+    { path: "/storage", component: Storage },
+    { path: "/experiments", component: Experiments }
   ]
 });
 
@@ -142,9 +129,10 @@ export default {
   },
   data() {
     return {
-        frame_idx:3,
+        frame_idx:2,
         frame_hidden:true,
         mobile_title:"Paper",
+        show_top_title:false,
         // frame_closed:false,
         float_frames:[
             {
@@ -190,6 +178,7 @@ export default {
         ],
       config: config,
       darkMode: false,
+      darkModeAuto:true,
       show_aside: true,
       defaultPageIdx: 0,
       user_info: {},
@@ -243,17 +232,31 @@ export default {
           title: "统计分析",
           icon: "el-icon-data-analysis",
           route: "/analysis"
-        }
+        },
+        {
+          idx: 6,
+          title: "文件存储",
+          icon: "el-icon-files",
+          route: "/storage"
+        },
+        // {
+        //   idx: 7,
+        //   title: "实验箱",
+        //   icon: "el-icon-takeaway-box",
+        //   route: "/experiments"
+        // }
       ],
       routerMap:{
         "papereditor":"Paper编辑",
         "papermanager":"Paper管理",
         "analysis":"统计分析",
+        "storage":"文件存储",
         "tagmanager":"Tag管理",
         "planeditor":"计划编辑",
         "planmanager":"计划管理",
         "meetingmanager":"会议管理",
-        "user":"用户管理"
+        "user":"用户管理",
+        "experiments":"实验"
       }
     };
   },
@@ -262,6 +265,7 @@ export default {
     that.defaultPageIdx = that.menu_indexOf.indexOf(
       location.hash.substring(2).split("/")[0]
     );
+    $("#float_board_frame").attr("src",this.float_frames[this.frame_idx].link)
     console.log(document.getElementsByTagName("title")[0].innerText)
     this.mobile_title = document.getElementsByTagName("title")[0].innerText;
     this.$router.beforeEach((to,from,next) => {
@@ -272,11 +276,24 @@ export default {
     axios.interceptors.request.use(request => {
       const jwt_token = window.localStorage.getItem("jwt_token");
       var _darkMode = localStorage.getItem("RSB_darkMode");
-      if (_darkMode) {
-        this.darkMode = _darkMode == "false" ? false : true;
-      } else {
-        localStorage.setItem("RSB_darkMode", this.darkMode);
-      }
+      var _darkMode_auto = localStorage.getItem("RSB_darkMode_auto");
+      if(_darkMode_auto){
+        this.darkModeAuto = _darkMode_auto == "false" ? false : true;
+        if(this.darkModeAuto){
+          this.darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          $("body").addClass(this.darkMode?"dark-mode":"");
+        }else{
+          if (_darkMode) {
+            this.darkMode = _darkMode == "false" ? false : true;
+            $("body").addClass(this.darkMode?"dark-mode":"");
+          } else {
+            localStorage.setItem("RSB_darkMode", this.darkMode);
+          }
+        }
+      }else {
+          localStorage.setItem("RSB_darkMode_auto", this.darkModeAuto);
+        }
+      
       var _show_aside = localStorage.getItem("RSB_show_aside");
       if (_show_aside) {
         this.show_aside = _show_aside == "false" ? false : true;
@@ -320,16 +337,45 @@ export default {
       await that.add_frame_drag_event();
     });
     first_loadding.start();
+
+    // add scroll Text
+    setTimeout(()=>{
+      $("#main main").scroll(function() {
+        // alert()
+        if(this.scrollTop>60){
+          that.show_top_title=true;
+        }else{
+          that.show_top_title=false;
+        }
+
+      });
+    },500)
   },
   methods: {
     reload: function() {
+      var that =this;
       this.isRouterAlive = false;
       this.$nextTick(function() {
         this.isRouterAlive = true;
       });
+      that.show_top_title=false;
+      setTimeout(()=>{
+        $("#main main").scroll(function() {
+          // alert()
+          if(this.scrollTop>60){
+            that.show_top_title=true;
+          }else{
+            that.show_top_title=false;
+          }
+
+        });
+      },500);
+      
     },
     change_mode: function() {
       this.darkMode = !this.darkMode;
+      $("body").addClass(this.darkMode?"dark-mode":"");
+      $("body").removeClass(!this.darkMode?"dark-mode":"");
       localStorage.setItem("RSB_darkMode", this.darkMode);
     },
     change_show_aside: function() {
@@ -370,16 +416,14 @@ export default {
                         return;
                     }
                     frame_board_move_flag = false;
-                    dom.style.transition = "ease .3s";
+                    dom.style.transition = "all 0.5s ease 0s";
                     dom.style.transform = "scale(1)";
                     dom.style.marginTop = "0";
                     topline.style.height = "30px"
                     if(d_ev2.pageX > window.innerWidth/2){
-                        dom.style.left = 'auto';
-                        dom.style.right = '10px';
+                        dom.style.left = (window.innerWidth - dom.offsetWidth - 10) + "px";
                     }else{
                         dom.style.left = '10px';
-                        dom.style.right = 'auto';
                     }
                     if(d_ev2.pageY > window.innerHeight/2){
                         dom.style.top = 'auto';
@@ -396,6 +440,21 @@ export default {
           if(command.type=="frame"){
             console.log(command)
               this.frame_idx = parseInt(command.params)
+              $(".hidden_circle").css("display","block");
+              setTimeout(()=>{
+                $(".hidden_circle").css("opacity","1");
+                setTimeout(()=>{
+                  $("#float_board_frame").attr("src",this.float_frames[this.frame_idx].link)
+                  setTimeout(()=>{
+                    $(".hidden_circle").css("opacity","0");
+                    setTimeout(()=>{
+                      $(".hidden_circle").css("display","none");
+                    },500)
+                  },1000)
+                },500)
+              },200)
+              
+              
               return;
           }
       },
@@ -407,6 +466,30 @@ export default {
 <style lang="scss" rel="stylesheet/scss">
 @import "../assets/theme";
 $head_height: 30px;
+html{
+  overflow-x:auto;
+  overflow-y: auto !important;
+}
+*{
+  box-sizing: content-box;
+}
+/* 设置滚动条的样式 */
+::-webkit-scrollbar {
+width:5px;
+height:5px;
+background-color: #eee;
+}
+
+/* 滚动槽 */
+::-webkit-scrollbar-track {
+border-radius:5px;
+}
+
+/* 滚动条滑块 */
+::-webkit-scrollbar-thumb {
+border-radius:5px;
+background:#aaa;
+}
 #aside_bar .el-row {
   margin: 0px;
 }
@@ -420,9 +503,12 @@ body {
   width: 100%;
 }
 #main {
-  background: white;
+  background: #efefef;
   position: relative;
   transition: ease 0.5s;
+  main:nth-child(1){
+    padding-bottom:50px;
+  }
 }
 #menu-btn {
   background: $--color-primary !important;
@@ -482,6 +568,64 @@ body {
   }
 }
 
+#m_nav_bar{
+  display: none;
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    height: 0px;
+    background: rgb(255 255 255 / 20%);
+    width: 100%;
+    z-index: 10000;
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+    box-shadow: 0px 0px 10px rgba(0,0,0,.1);
+    border-bottom: 1px solid #eee;
+    overflow: hidden;
+    transition: ease .5s;
+    padding-top:50px;
+    box-sizing: border-box;
+    
+    #m_nav_menu_btn{
+      position: absolute;
+      bottom:0px;
+      left:0px;
+      z-index:2;
+          border: 0px;
+    height: 50px;
+    border-radius: 0px;
+    font-size: 1em;
+    background: transparent;
+    }
+    .menu_item{
+    opacity: 0;
+    transition: ease .5s;
+  }
+}
+.aside_active#m_nav_bar{
+height:100%;
+width:100% !important;
+background: rgb(255 255 255 );
+padding-top:100px;
+#nav_title{
+      font-size:1.5em;
+      height:100px !important;
+      line-height: 100px !important;
+    }
+  .menu_item{
+    opacity: 1;
+    .el-button {
+        margin: 2px 10px;
+        width: calc(100% - 20px);
+        span i {
+            float: left;
+        }
+        span span {
+          display: block;
+      }
+    }
+  }
+}
 .image {
   height: 100%;
   width: 100%;
@@ -590,7 +734,7 @@ $menu_item_h: 20px;
 }
 #dark-mode-control {
       position: fixed;
-    z-index: 2001;
+    z-index: 20001;
     right: 20px;
     text-align: center;
     color: black;
@@ -626,15 +770,17 @@ $menu_item_h: 20px;
   overflow: hidden;
   border-radius: 10px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-  transition:ease .2s;
+  transition:all 0.5s ease 0s;
   .hidden_circle{
         height: 100%;
     width: 100%;
-        background-size: 50%;
+        background-size: 100px;
         border-radius: 40px;
         background-repeat: no-repeat;
         background-position: center;
         display: none;
+        opacity: 0;
+            transition: ease .5s;
   }
   .top_line {
     position: absolute;
@@ -737,7 +883,7 @@ $menu_item_h: 20px;
     min-width: 40px !important;
     min-height: 40px !important;
     border-radius: 100px;
-    .hidden_circle{display: block;}
+    .hidden_circle{display: block !important;opacity: 1 !important;background-size: 100%;}
     .top_line {display: none;}
     .main_board {display: none;}
 }
@@ -787,10 +933,14 @@ $menu_item_h: 20px;
     font-size: 16px;
   }
 }
+.el-select-dropdown{
+  max-width: calc(100% - 10px) !important;
+}
 // dark-mode
 $dark-mode-bg: #222;
 $dark-mode-font-color: #eee;
-#main-app.dark-mode {
+.dark-mode {
+  background: $dark-mode-bg;
   #main {
     background: $dark-mode-bg;
   }
@@ -802,6 +952,26 @@ $dark-mode-font-color: #eee;
     .dark-mode-status {
       color: #eee;
     }
+  }
+  .el-select-dropdown{
+        background: #111 !important;
+    border: 1px solid #333 !important;
+        
+    .el-select-dropdown__item{
+color: #eee;
+    }
+    .el-select-dropdown__item.hover{
+      background: #080808 !important;
+    border-radius: 10px;
+    
+    }
+    .popper__arrow{
+      border-bottom-color: #333;
+    }
+    .popper__arrow::after {
+      border-bottom-color: #111;
+    }
+    
   }
   .top_bar {
     color: $dark-mode-font-color;
@@ -817,7 +987,14 @@ $dark-mode-font-color: #eee;
       color:white;
     }
   }
-
+  #m_nav_bar{
+    background:rgba(0,0,0,.2);
+    border-bottom: 1px solid #444;
+    color: white;
+  }
+  .aside_active#m_nav_bar{
+    background:rgb(0,0,0);
+  }
   .menu_item .el-button {
     border: 1px solid #343434;
 
@@ -905,8 +1082,9 @@ $dark-mode-font-color: #eee;
     box-shadow: 0px 0px 0px;
 }
 .ops{
-        margin: 0px;
-    padding: 10px;
+    padding: 5x;
+    margin: 10px 10%;
+    width: calc(80% - 12px);
     margin-bottom: 10px;
 }
 .ops .el-button i{
@@ -942,6 +1120,7 @@ $dark-mode-font-color: #eee;
 .paper_edit .el-form-item__label{
     line-height: 20px;
 }
+
 .status_bar{
         position: absolute;
     bottom: 0px;
@@ -957,7 +1136,9 @@ $dark-mode-font-color: #eee;
     color:white !important;
 }
 .el-tag + .el-tag {
+  margin:2px 5px;
 margin-left: 10px;
+
 }
 .button-new-tag {
 margin-left: 10px;
@@ -1014,7 +1195,8 @@ background: rgba(255,255,255,.5);
 #push-pic-board{
     position: absolute;
     top:calc(100% + 10px);
-    width:calc(100% - 20px);
+    width:400px;
+    right:20px;
     z-index: 100;
 }
 #push-pic-board .el-card__body{
@@ -1025,9 +1207,10 @@ thead tr th,.el-table tr ,.el-table,thead, thead tr{
     background:transparent !important;
 }
 .el-divider__text{
+        background:#efefef;
         transition: ease .5s;
     }
-#main-app.dark-mode{
+.dark-mode{
     .paper_info{
         background: #333;
     }
@@ -1072,14 +1255,17 @@ thead tr th,.el-table tr ,.el-table,thead, thead tr{
         border: 1px solid #333;
     }
     .el-tag{
-        background: rgba(255,255,255,.2);
-        color: #eee;
+        background: rgba(255,255,255,.2) !important;
+        color: #eee !important;
     }
     .el-tag__close{
-        color: #eee;
+        color: #eee !important;
     }
     .left_table .el-tag__close{
-        background: rgba(255,255,255,.1);
+        background: rgba(255,255,255,.1) !important;
+    }
+    .left_table .el-tag__close:hover{
+        background: rgba(255,255,255,.2) !important;
     }
     .el-table th{
         //background: #333 !important;
@@ -1125,11 +1311,14 @@ thead tr th,.el-table tr ,.el-table,thead, thead tr{
     transition: ease .5s;
 }
 .add_to_table{
-        position: absolute;
+        position: fixed;
     z-index: 11;
+    top: 40px;
+    background: #eee;
+    border: 1px solid #ddd;
     width: 50%;
     margin-left: 25%;
-    transition: ease .5s;
+    box-shadow: 0px 5px 20px -4px rgba(0,0,0,.2) !important;
 }
 .add_board .el-form-item__label{
     line-height: 20px;
@@ -1137,7 +1326,7 @@ thead tr th,.el-table tr ,.el-table,thead, thead tr{
 .paper{
     width: calc(80% - 12px);
     margin: 10px 10%;
-    float: left;
+    // float: left;
     position: relative;
     // min-width: 150px;
     transition:ease .5s;
@@ -1156,7 +1345,7 @@ thead tr th,.el-table tr ,.el-table,thead, thead tr{
       width: 260px;
       height: 160px;
           max-width: 100%;
-          margin-left: calc(50% - 130px);
+          // margin-left: calc(50% - 130px);
       //margin-top: calc(50% - 100px);
       background-position: center;
       background-size: contain;
@@ -1175,61 +1364,69 @@ thead tr th,.el-table tr ,.el-table,thead, thead tr{
     position: unset !important;
 }
 @media only screen and (max-width: 767px){
+    #aside_bar{display: none;}
+    #m_nav_bar{display: block;}
     .paper{
         width: calc(100% - 12px);
         margin:10px;
+        .paper_img{margin-left:calc(50% - 130px)}
+    }
+    .ops{
+      width: calc(100% - 12px);
+      margin:10px;
     }
     .under_search_bar{
       margin-top:10px;
     }
-    .aside_active {
-      .menu_top {
-          height: auto;
-          opacity: 0;
-          transition:ease .5s;
-          margin-bottom: 0px !important;
-        }
-        .menu_item .el-button {
-          margin: 2px 10px;
-          width: calc(100% - 20px);
-          span i {
-            float: left;
-          }
-          span span {
-            display: inline-block;
-          }
-        }
-    }
-    #aside_bar{
-        position: absolute !important;
-        z-index:2000 !important;
-        width: 100% !important;
-        height: 100%;
-          padding-bottom: 15px;
-          .mobile_title{
-            display: block;
-          }
-    }
-    #menu-btn{
-            right: 0% !important;
-            left:auto !important;
-        margin-left: 0px;
-        border-radius: 0px;
-    width: 50px;
-    height: 50px;
-    font-size:16px;
-    margin:0px;
-      }
-      .menu_top .el-card__body {
-        height: 70vw;
-      }
-    .aside_active#aside_bar{
-        height: 50px;
-        overflow: hidden;
-      }
-    #main{
-        margin-top:50px;
-    }
+    // .aside_active {
+    //   .menu_top {
+    //       height: auto;
+    //       opacity: 0;
+    //       transition:ease .5s;
+    //       margin-bottom: 0px !important;
+    //     }
+    //     .menu_item .el-button {
+    //       margin: 2px 10px;
+    //       width: calc(100% - 20px);
+    //       span i {
+    //         float: left;
+    //       }
+    //       span span {
+    //         display: inline-block;
+    //       }
+    //     }
+    // }
+    // #aside_bar{
+    //     position: absolute !important;
+    //     z-index:2000 !important;
+    //     width: 100% !important;
+    //     height: 100%;
+    //       padding-bottom: 15px;
+    //       .mobile_title{
+    //         display: block;
+    //       }
+    // }
+    // #menu-btn{
+    //         right: 0% !important;
+    //         left:auto !important;
+    //     margin-left: 0px;
+    //     border-radius: 0px;
+    // width: 50px;
+    // height: 50px;
+    // font-size:16px;
+    // margin:0px;
+    //   }
+    //   .menu_top .el-card__body {
+    //     height: 70vw;
+    //   }
+    // .aside_active#aside_bar{
+    //     height: 50px;
+    //     overflow: hidden;
+    //   }
+    #main main:nth-child(1){
+    padding-bottom:100px;
+    .pagination{right:10px;}
+  }
     .paper_tags .el-tag{
         margin: 2px;
         margin-left: 10px;
@@ -1240,6 +1437,10 @@ thead tr th,.el-table tr ,.el-table,thead, thead tr{
 @media only screen and  (min-width: 767px) and (max-width: 1024px)
 {
     .paper{
+        width: calc(100% - 12px);
+        margin:10px;
+    }
+    .ops{
         width: calc(100% - 12px);
         margin:10px;
     }
@@ -1280,6 +1481,19 @@ thead tr th,.el-table tr ,.el-table,thead, thead tr{
     background-color:rgba(0,128,128,.1);
     border-radius: 10px;
     text-indent: 10px;
+    overflow:hidden; //超出的文本隐藏
+        text-overflow:ellipsis; //溢出用省略号显示
+        white-space:nowrap; //溢出不换行
+    height: 100%;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+.pagination{
+  position: absolute;
+  // bottom: 10px;
+  right:80px;
+  z-index: 10;
 }
 .pagination_board{
 text-align: center;
@@ -1323,17 +1537,21 @@ text-align: center;
     width: 15px;
     line-height: 15px;
     text-align: center;
-    z-index: 1;
+    z-index: 2;
+
+    box-sizing: content-box;
+
 }
-.el-collapse-item__content{padding: 10px !important;}
+.el-collapse-item__content{background:#efefef;padding: 10px !important;}
 .el-collapse-item__header,.el-collapse-item__content{
+  background:#efefef;
     transition: ease .5s;
 }
 .el-card{
     transition: ease .5s;
     border-radius: 1em;
 }
-#main-app.dark-mode{
+.dark-mode{
     .el-card{
         background: #333;
         border: 1px solid #444;
@@ -1496,4 +1714,5 @@ text-align: center;
     background-color: rgba(0,0,0,.75) !important;
     border-radius: 0px !important;
 }
+
 </style>

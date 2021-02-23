@@ -2,6 +2,7 @@ const express = require('express')
 const boom = require('boom')
 const fs = require("fs")
 const config = require("../utils/config")
+const localStorage = require("../utils/LocalStorage")
 
 //api路由模块
 const apiRouter = require('./api')
@@ -9,6 +10,8 @@ const apiRouter = require('./api')
 const pageRouter = require('./pages')
 
 const staticRouter = require('./static')
+
+const storageRouter = require('./localStorage')
 
 //导入jwt认证函数
 const { jwtAuth } = require('../utils/user-jwt')
@@ -29,10 +32,14 @@ router.get('/weights/:filename', function (req, res, next) {
   var f = fs.readFileSync(config.cwd+'/weights/'+req.params.filename, 'utf-8');
   res.send(f);
 })
+
+let uploadPath = config.cwd + '/storage/';
+
 //加入用户模块路由
 router.use('/api', apiRouter)
 router.use('/page', pageRouter)
 router.use('/static', staticRouter)
+router.use('/storage', storageRouter([new localStorage(uploadPath)],{uploadPath}))
 //自定义统一异常处理中间件，需要放在代码最后
 router.use((err, req, res, next) => {
   //自定义用户认证失败的错误返回

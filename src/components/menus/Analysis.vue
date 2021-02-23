@@ -4,7 +4,7 @@
             <!-- <el-col class="user_bar" :span="4">
                         <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
             </el-col> -->
-            <el-col class="title_bar" :span="24" ><i class="el-icon-data-analysis"></i>统计分析 </el-col>
+            <el-col class="title_bar" :span="24" ><i class="el-icon-data-analysis"></i> 统计分析 </el-col>
         </el-row>
       <el-row :gutter=10 style="margin-top:10px;">
           <el-col :span="6" :xs="24"  style="margin-top:10px;">
@@ -550,7 +550,7 @@ background: $--color-primary-50;
     width: 100%;
     background: rgba(247,247,247 ,.5);
     border-radius: 3px;
-    margin: 0px 10px;
+    margin: 0px 0px;
         display: inline-block;
     position: relative;
     border-bottom-left-radius: 0px;
@@ -590,6 +590,8 @@ background: $--color-primary-50;
   width: 100%;
   // padding: 0;
   overflow: hidden;
+  margin:0px;
+      padding: 0;
   #tagGraphCanvas{
     height: 100%;
   width: 100%;

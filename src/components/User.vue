@@ -21,15 +21,15 @@
 </el-upload>
       </el-col>
       <el-col :sm="24">
-            <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+            <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm" label-position="left">
                 
                 <el-collapse>
                   <el-collapse-item title="用户名修改" name="0">
                   <el-form-item label="账号">
                     <el-input type="username" v-model="ruleForm.name" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-row :gutter="20" style="margin:10px 10%;margin-left:100px;">
-                    <el-col :span="12"><el-button type="primary" icon="el-icon-user-solid" v-on:click="set_username()">提交用户名</el-button></el-col>
+                <el-row :gutter="20" style="margin:10px 10%;">
+                    <el-col :span="12"><el-button type="primary" v-on:click="set_username()">提交</el-button></el-col>
                     <el-col :span="12"><el-button @click="resetForm('ruleForm')">重置</el-button></el-col>
                 </el-row>
                   </el-collapse-item>
@@ -40,12 +40,12 @@
                     <el-form-item label="确认密码" prop="checkPass">
                         <el-input type="password" v-model="ruleForm.checkPass" autocomplete="off"></el-input>
                     </el-form-item>
-                    <el-row :gutter="20" style="margin:10px 10%;margin-left:100px;">
-                        <el-col :span="12"><el-button type="primary" icon="el-icon-user-solid" v-on:click="set_password()">提交密码</el-button></el-col>
+                    <el-row :gutter="10" style="margin:10px 10%;">
+                        <el-col :span="12"><el-button type="primary" v-on:click="set_password()">提交</el-button></el-col>
                         <el-col :span="12"><el-button @click="resetForm('ruleForm')">重置</el-button></el-col>
                     </el-row>
                   </el-collapse-item>
-                  <el-collapse-item title="github (照片资源收录)" name="2">
+                  <el-collapse-item title="gitee (照片资源收录)" name="2">
                     <el-form-item label="UserName">
                         <el-input type="text" v-model="ruleForm.github_username" autocomplete="off"></el-input>
                     </el-form-item>
@@ -55,10 +55,15 @@
                     <el-form-item label="Token">
                         <el-input type="text" v-model="ruleForm.github_token" autocomplete="off"></el-input>
                     </el-form-item>
-                    <el-row :gutter="20" style="margin:10px 10%;margin-left:100px;">
-                        <el-col :span="12"><el-button type="primary" icon="el-icon-user-solid" v-on:click="set_github()">提交信息</el-button></el-col>
+                    <el-row :gutter="20" style="margin:10px 10%;">
+                        <el-col :span="12"><el-button type="primary" v-on:click="set_github()">提交</el-button></el-col>
                         <el-col :span="12"><el-button @click="resetForm('ruleForm')">重置</el-button></el-col>
                     </el-row>
+                  </el-collapse-item>
+                  <el-collapse-item title="深色模式" name="3">
+                    <el-radio v-model="darkmode" label="auto" @change="change_dark_mode">跟随系统</el-radio>
+                    <el-radio v-model="darkmode" label="dark" @change="change_dark_mode">深色模式</el-radio>
+                    <el-radio v-model="darkmode" label="light" @change="change_dark_mode">浅色模式</el-radio>
                   </el-collapse-item>
                 </el-collapse>
                 
@@ -72,7 +77,7 @@
 </template>
 
 <script>
-// const $ = require("jquery");
+const $ = require("jquery");
 const config = require("../utils/config");
 const Loadding = require("../utils/loadding");
 const axios = require("axios");
@@ -132,13 +137,24 @@ export default {
           checkPass: [
             { validator: validatePass2, trigger: 'blur' }
           ],
-          }
+          },
+        darkmode:"auto"
     }
   },
   mounted:function(){
     this.auth_toke= window.localStorage.getItem("jwt_token");
     if(!this.auth_toke){
       window.location.href=config.login_path;
+    }
+    let _darkMode = localStorage.getItem("RSB_darkMode");
+    let _darkMode_auto = localStorage.getItem("RSB_darkMode_auto");
+    this.darkModeAuto = _darkMode_auto == "false" ? false : true;
+    if(this.darkModeAuto){
+      this.darkmode = "auto";
+    }else{
+      if (_darkMode) {
+        this.darkmode = _darkMode == "false" ? "light" : "dark";
+      }
     }
     var that = this;
     var first_loadding = new Loadding();
@@ -153,7 +169,7 @@ export default {
             console.log(returndata)
             that.user_info = returndata.data.data;
             if(that.user_info.github_info == null){
-              console.log("no github_info was settled.")
+              console.log("no gitee_info was settled.")
             }else{
               that.user_info.github_info = JSON.parse(that.user_info.github_info);
               that.ruleForm.github_username = that.user_info.github_info.username;
@@ -220,10 +236,10 @@ export default {
     set_github:function(){
       var that = this;
       var loadding = new Loadding();
-      loadding.add_title("设置Github");
+      loadding.add_title("设置Gitee");
       loadding.__init__();
       loadding.add_process(
-          "设置Github",
+          "设置Gitee",
           async function(){
           await axios.post(
               config.server_host + "/api/user/setgithub",
@@ -236,6 +252,24 @@ export default {
     logout:function(){
       localStorage.removeItem("jwt_token");
       location.reload();
+    },
+    change_dark_mode:function(changedValue){
+      let darkMode = false;
+      if(changedValue=="auto"){
+        localStorage.setItem("RSB_darkMode_auto","true");
+        darkMode= window.matchMedia('(prefers-color-scheme: dark)').matches;
+      }else{
+        localStorage.setItem("RSB_darkMode_auto","false");
+        if(changedValue=="dark"){
+          localStorage.setItem("RSB_darkMode","true");
+          darkMode = true;
+        }else{
+          localStorage.setItem("RSB_darkMode","false");
+          darkMode = false;
+        }
+      }
+      $("body").addClass(darkMode?"dark-mode":"");
+      $("body").removeClass(!darkMode?"dark-mode":"");    
     }
   }
 }

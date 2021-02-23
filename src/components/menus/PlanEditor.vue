@@ -4,7 +4,7 @@
             <!-- <el-col class="user_bar" :span="4">
                         <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
             </el-col> -->
-            <el-col class="title_bar" :span="24" ><i class="el-icon-s-order"></i>计划管理 </el-col>
+            <el-col class="title_bar" :span="24" ><i class="el-icon-s-order"></i> 计划管理 </el-col>
         </el-row>
     <!-- {{editForm}} -->
     <el-row class="ops" style="margin:10px;">

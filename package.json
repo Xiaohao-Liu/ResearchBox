@@ -23,7 +23,6 @@
     "express": "^4.17.1",
     "express-jwt": "^6.0.0",
     "express-validator": "^6.6.1",
-    "face-api.js": "^0.22.2",
     "jquery": "^3.5.1",
     "js-cookie": "^2.2.1",
     "jsonwebtoken": "^8.5.1",
@@ -39,14 +38,14 @@
     "node-sass": "^4.14.1",
     "normalize.css": "^8.0.1",
     "request": "^2.88.2",
-    "sass-loader": "^10.0.2",
     "sequelize": "^6.3.5",
     "vue": "^2.6.11",
     "vue-echarts": "^5.0.0-beta.0",
     "vue-katex": "^0.5.0",
     "vue-loader": "^15.9.3",
     "vue-mathjax": "0.0.11",
-    "vue-router": "^3.4.3"
+    "vue-router": "^3.4.3",
+    "vuetify": "^2.3.17"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
@@ -54,8 +53,11 @@
     "@vue/cli-service": "~4.5.0",
     "babel-eslint": "^10.1.0",
     "babel-plugin-component": "^1.1.1",
+    "deepmerge": "^4.2.2",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
+    "sass": "^1.29.0",
+    "sass-loader": "^10.1.0",
     "vue-template-compiler": "^2.6.11"
   },
   "eslintConfig": {

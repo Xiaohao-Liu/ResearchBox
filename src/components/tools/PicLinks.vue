@@ -19,8 +19,8 @@
 </template>
 
 <script>
-// const config = require("../../utils/config");
-// const axios = require("axios");
+const config = require("../../utils/config");
+const axios = require("axios");
 import Clipboard from 'clipboard';
 const md5 = require("../../utils/md5")
 export default {
@@ -28,46 +28,54 @@ export default {
 
   data(){
     return {
-        loading:false,
+        loading:true,
         msg:"",
         msg_hidden:true,
         imgs:[
-            {
-                idx:0,
-                name:"github",
-                piclink:"https://github.githubassets.com/favicons/favicon.svg"
-            },
-            {
-                idx:1,
-                name:"colab",
-                piclink:"https://colab.research.google.com/img/favicon.ico"
-            },
-            {
-                idx:2,
-                name:"google dirver",
-                piclink:"https://static.easyicon.net/preview/122/1224623.gif"
-            },
-            {
-                idx:3,
-                name:"MM'20",
-                piclink:"https://2020.acmmm.org/asset/images/icon.png"
-            },
-            {
-                idx:4,
-                name:"WWW'20",
-                piclink:"https://www2020.thewebconf.org/public/resources/images/favicon.png"
-            },
-            {
-                idx:5,
-                name:"Microsoft",
-                piclink:"https://c.s-microsoft.com/favicon.ico?v2"
-            }
+            // {
+            //     idx:0,
+            //     name:"github",
+            //     piclink:"https://github.githubassets.com/favicons/favicon.svg"
+            // },
+            // {
+            //     idx:1,
+            //     name:"colab",
+            //     piclink:"https://colab.research.google.com/img/favicon.ico"
+            // },
+            // {
+            //     idx:2,
+            //     name:"google dirver",
+            //     piclink:"https://static.easyicon.net/preview/122/1224623.gif"
+            // },
+            // {
+            //     idx:3,
+            //     name:"MM'20",
+            //     piclink:"https://2020.acmmm.org/asset/images/icon.png"
+            // },
+            // {
+            //     idx:4,
+            //     name:"WWW'20",
+            //     piclink:"https://www2020.thewebconf.org/public/resources/images/favicon.png"
+            // },
+            // {
+            //     idx:5,
+            //     name:"Microsoft",
+            //     piclink:"https://c.s-microsoft.com/favicon.ico?v2"
+            // }
         ]
     }
   },
   mounted:function(){
       var that = this;
+      axios.get(config.server_host + config.piclinks).then(res=>{
+          let data = JSON.parse(res.data.data)
+          for(var i =0;i< data.length;i++){ 
+              this.imgs.push(data[i]);
+          }
+          this.loading=false;
+      })
         var clipboard = new Clipboard('.line_button');
+
         clipboard.on('success', function(e) {
             var pid = e.trigger.getAttribute('pid');
             that.msg = that.imgs[pid].name + " Copied!";
@@ -91,6 +99,30 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" rel="stylesheet/scss">
 @import "../../assets/theme";
+html{
+  overflow-x:auto;
+  overflow-y: auto !important;
+}
+*{
+  box-sizing: content-box;
+}
+/* 设置滚动条的样式 */
+::-webkit-scrollbar {
+width:5px;
+height:5px;
+background-color: #eee;
+}
+
+/* 滚动槽 */
+::-webkit-scrollbar-track {
+border-radius:5px;
+}
+
+/* 滚动条滑块 */
+::-webkit-scrollbar-thumb {
+border-radius:5px;
+background:#aaa;
+}
 .el_message{
     width: auto;
 }
@@ -127,7 +159,7 @@ export default {
         padding: 5px;
     width: calc(100% - 20px);
     background: rgba(255,255,255,.9);
-    position: absolute;
+    position: fixed;
     border: 1px solid #eee;
     z-index: 10001;
     backdrop-filter: blur(4px);

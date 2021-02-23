@@ -34,7 +34,10 @@ router.get('/main', function (req, res, next) {
     var html = fs.readFileSync(config.cwd+'/dist/main.html', 'utf-8');
     res.send(html);
 })
-
+router.get('/download', function (req, res, next) {
+    var html = fs.readFileSync(config.cwd+'/dist/download.html', 'utf-8');
+    res.send(html);
+})
 router.get('/tool/translate', function (req, res, next) {
     var html = fs.readFileSync(config.cwd+'/dist/translate.html', 'utf-8');
     res.send(html);

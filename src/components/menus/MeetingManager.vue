@@ -4,7 +4,7 @@
             <!-- <el-col class="user_bar" :span="4">
                         <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
             </el-col> -->
-            <el-col class="title_bar" :span="24" ><i class="el-icon-receiving"></i>会议管理 </el-col>
+            <el-col class="title_bar" :span="24" ><i class="el-icon-receiving"></i> 会议管理 </el-col>
         </el-row>
       <el-select style="width:calc(100% - 20px);margin:10px;" v-model="select_meeting" :change="handlePush(select_meeting)" clearable autocomplete default-first-option filterable placeholder="请搜索">
         <el-option
@@ -33,7 +33,7 @@
 <el-card :class="'paper'+(paper.process==100?' finished':'')" v-for="paper in paper_list" :key="paper.Ntime">
         <el-row :gutter="10">
             <el-col :span="(paper.background!=null && paper.background!='')?8:0" :xs="24">
-                <div v-show="paper.background!=null && paper.background!=''" class="paper_img" style="width:100%;border-radius:5px;" :style="{backgroundImage:'url('+paper.background+')'}"/>
+                <div v-show="paper.background!=null && paper.background!=''" class="paper_img" style="border-radius:5px;" :style="{backgroundImage:'url('+paper.background+')'}" @click="scale"/>
             </el-col>
             <el-col :span="(paper.background!=null && paper.background!='')?16:24"  :xs="24">
                 <div  class="paper_head" style="cursor:pointer" v-on:click="$router.push('/papereditor/'+paper.id)">
@@ -76,7 +76,7 @@
 </template>
 
 <script>
-// const $ = require("jquery");
+const $ = require("jquery");
 const config = require("../../utils/config");
 const Loadding = require("../../utils/loadding");
 const axios = require('axios');
@@ -95,18 +95,26 @@ export default {
         search_meetings_id:[],
         paper_list:[],
         meeting_icon:{
-            www:"https://www2020.thewebconf.org/public/resources/images/favicon.png",
-            mm:"https://2020.acmmm.org/asset/images/icon.png",
-            sigir:"https://sigir.org/sigir2020/assets/img/logos/sigir.png",
-            kdd:"https://www.kdd.org/favicon.ico",
-            aaai:"https://aaai.org/Graphics/Logos/aaai-logo.png",
-            "collection*":"https://static.easyicon.net/preview/128/1282484.gif",
+            // www:"https://www2020.thewebconf.org/public/resources/images/favicon.png",
+            // mm:"https://2020.acmmm.org/asset/images/icon.png",
+            // sigir:"https://sigir.org/sigir2020/assets/img/logos/sigir.png",
+            // kdd:"https://www.kdd.org/favicon.ico",
+            // aaai:"https://aaai.org/Graphics/Logos/aaai-logo.png",
+            // "collection*":"https://static.easyicon.net/preview/128/1282484.gif",
+            // iclr:"https://iclr.cc/static/nips/img/ICLR-logo.png",
         }
     }
   },
   mounted:function(){
       var that =this;
       var first_loadding = new Loadding();
+      axios.get(config.server_host + config.MeetingPicsUrl).then(res=>{
+          let data = JSON.parse(res.data.data)
+            for(var i in data){
+              this.meeting_icon[i]=data[i];
+          }
+          console.log(this.meeting_icon)
+      })
     first_loadding.add_title("初始化");
     first_loadding.__init__();
     first_loadding.add_process(
@@ -136,7 +144,16 @@ export default {
         this.search_meetings_id.push(meetingid);
         this.get_papers_by_search_meetings();
     },
-
+    scale:function(event){
+          var scale_ele = event.currentTarget;
+          $(scale_ele).addClass("img_scale");
+          var cover = $("<div style='position:fixed;top:0px;left:0px;height:100%;width:100%;z-index:100000001;cursor: zoom-out;'></div>");
+          $("body").append(cover);
+          cover.on("click",function(){
+                $(scale_ele).removeClass("img_scale");
+                cover.remove();
+          })
+      },
     get_papers_by_search_meetings:function(){
         var that = this;
         if(that.search_meetings.length==0){return;}

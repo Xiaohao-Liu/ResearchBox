@@ -1,7 +1,12 @@
 .DS_Store
 node_modules
 /dist
-
+release
+storage
+dist.zip
+rsb.log
+src/utils/config.js
+package-lock.json
 
 # local env files
 .env.local
