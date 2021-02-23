@@ -1,5 +1,5 @@
 # ResearchBox
-![](https://raw.githubusercontent.com/WYKXLDZ/ResearchBox/master/main.png)
+![](public/ic_launcher.png)
 ## 功能介绍
 采用express、mysql、vue构建了一个Paper管理器，支持以下功能
 - Paper管理
@@ -8,11 +8,20 @@
 - 会议管理（根据设定的paper会议）
 - 计划管理（可以自由添加不同的paper，放入不同的计划中，观看计划进度）
 - 统计分析（基本的统计信息）
+- 文件管理
 
 额外功能
 - 单用户初始化、登录
 - 单用户自定义功能
 - 深色模式切换
+
+工具箱
+- 翻译
+- MD5加密
+- 常用图片链接
+- 知识库
+
+![](main.png)
 
 **2020.10.04 update**
 
@@ -29,16 +38,27 @@
 
 **2020.10.26 update**
 
-- 自适应页面
+- Adaptive page _v1
 
 **2020.11.07 update**
 
-- tag graph (Force Layout)
+- Tag graph (Force Layout)
 
+**2020.12.03 update**
 
+- File Manager (supports: file upload/download/share)
 
+**2021.01.10 update**
 
+- Papers in list mode
 
+**2021.01.12 update**
+
+- Adaptive page _v2 (more convenient on mobilephone)
+
+**2021.02.01 update**
+
+- Dark mode following system
 
 ## Installation 
 
