@@ -21,7 +21,9 @@
 - 常用图片链接
 - 知识库
 
-![](main.png)
+<p align="center"> <img height=300 src="pc.png" alt="WYKXLDZ" />
+<img height=300 src="mobile.png" alt="WYKXLDZ" />
+</p>
 
 **2020.10.04 update**
 
