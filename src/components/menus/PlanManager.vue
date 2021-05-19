@@ -1,12 +1,14 @@
 <template>
   <el-main style="position:absolute;height:100%;width:100%;top:0px;left:0px;">
+      <el-header class="top_bar">
       <el-row style="margin:0px;"> 
             <!-- <el-col class="user_bar" :span="4">
                         <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
             </el-col> -->
             <el-col class="title_bar" :span="24" ><i class="el-icon-s-order"></i> 计划管理 </el-col>
         </el-row>
-    <el-row class="ops" style="margin:10px;">
+      </el-header>
+    <el-row class="ops">
         <el-button type="primary" icon="el-icon-document" style="width: auto;" v-on:click="show_add_table==true?show_add_table=false:show_add_table=true;">添加Table</el-button>
         <el-card class="add_board" v-show="show_add_table">
             <el-form label-position="top" label-width="80px" :model="add_form">
@@ -19,14 +21,16 @@
                 </el-form-item>
             </el-form>
         </el-card>
+        <el-divider><i class="el-icon-arrow-down"></i></el-divider>
     </el-row>
-    <el-divider><i class="el-icon-arrow-down"></i></el-divider>
-    <el-badge  class="nums" v-for="table in now_tables" :key="table.id" :value="table.nums" type="primary">
-        <el-tag  class="left_table" v-on:click="$router.push('/planeditor/'+table.id)"  closable @close="delTable(table.id)">
-        <!-- <div class="process_bar" :style="{width:table.process+'%'}">{{table.title}}</div> -->
-        {{table.title}}
-        </el-tag>
-    </el-badge>
+    <el-card class="paper">
+        <el-badge  class="nums" v-for="table in now_tables" :key="table.id" :value="table.nums" type="primary">
+            <el-tag  class="left_table" v-on:click="$router.push('/planeditor/'+table.id)"  closable @close="delTable(table.id)">
+            <!-- <div class="process_bar" :style="{width:table.process+'%'}">{{table.title}}</div> -->
+            {{table.title}}
+            </el-tag>
+        </el-badge>
+    </el-card>
   </el-main>
 </template>
 

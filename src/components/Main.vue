@@ -96,7 +96,9 @@ import PlanManager from "./menus/PlanManager";
 import PlanEditor from "./menus/PlanEditor";
 import Analysis from "./menus/Analysis";
 import Storage from "./menus/Storage"
-import Experiments from "./menus/Experiments"
+// import Experiments from "./menus/Experiments"
+import Links from "./menus/Links"
+
 Vue.use(VueRouter);
 
 const router = new VueRouter({
@@ -112,7 +114,7 @@ const router = new VueRouter({
     { path: "/planeditor/:id", component: PlanEditor, props: true },
     { path: "/analysis", component: Analysis },
     { path: "/storage", component: Storage },
-    { path: "/experiments", component: Experiments }
+    { path: "/links", component: Links }
   ]
 });
 
@@ -239,12 +241,12 @@ export default {
           icon: "el-icon-files",
           route: "/storage"
         },
-        // {
-        //   idx: 7,
-        //   title: "实验箱",
-        //   icon: "el-icon-takeaway-box",
-        //   route: "/experiments"
-        // }
+        {
+          idx: 7,
+          title: "链接",
+          icon: "el-icon-link",
+          route: "/links"
+        }
       ],
       routerMap:{
         "papereditor":"Paper编辑",
@@ -256,7 +258,7 @@ export default {
         "planmanager":"计划管理",
         "meetingmanager":"会议管理",
         "user":"用户管理",
-        "experiments":"实验"
+        "links":"链接"
       }
     };
   },
@@ -529,7 +531,7 @@ body {
   top: 0px;
   left: 0px;
   z-index: 0;
-  margin: 0px;
+  margin: 10px 10%;
   padding: 0px;
   margin-bottom: 15px;
 }
@@ -878,14 +880,24 @@ $menu_item_h: 20px;
   }
 }
 #float_board.hidden {
-    width: 40px !important;
-    height: 40px !important;
-    min-width: 40px !important;
-    min-height: 40px !important;
+    width: 20px !important;
+    height: 20px !important;
+    min-width: 20px !important;
+    min-height: 20px !important;
+    // margin: 10px;
     border-radius: 100px;
-    .hidden_circle{display: block !important;opacity: 1 !important;background-size: 100%;}
+    cursor: pointer;
+    .hidden_circle{background-color:lightseagreen;display: block !important;opacity: 1 !important;background-size: 0%;background-repeat: no-repeat;}
     .top_line {display: none;}
     .main_board {display: none;}
+}
+#float_board.hidden:hover{
+    // width: 20px !important;
+    // height: 20px !important;
+    // min-width: 40px !important;
+    // min-height: 40px !important;
+    // margin: 0px;
+    .hidden_circle{background-size: 100%;background-color: white;}
 }
 
 .el-dropdown-menu__item .little_icon{
@@ -1079,11 +1091,14 @@ color: #eee;
 .paper_info{
     position: relative;
     transition: ease .5s;
-    box-shadow: 0px 0px 0px;
+    box-shadow: none !important;
+    background: transparent;
+    border-radius: 0px !important;
+
 }
 .ops{
     padding: 5x;
-    margin: 10px 10%;
+    margin: 10px 10% !important;
     width: calc(80% - 12px);
     margin-bottom: 10px;
 }
@@ -1091,19 +1106,22 @@ color: #eee;
     font-weight: bold;
 }
 .paper_title{
-    font-size: 1.2em;
+    font-size: 2em;
     font-weight: bold;
     text-align: center;
     margin-top: 10px;
+    font-family: 'kaTeX_Main';
     text-shadow: 2px 2px 6px #ddd;
 }
 .paper_author{
     margin-top: 10px;
+    font-family: 'kaTeX_Main';
     text-align: center;
 }
 .paper_meeting{
     text-align: center;
     margin-top: 10px;
+    font-family: 'kaTeX_Main';
 }
 .paper_cite{
     text-align: right;
@@ -1116,6 +1134,11 @@ color: #eee;
 
 .paper_edit{
     margin-top: 10px;
+}
+.paper_abstract{
+      text-align: justify;
+    margin: 10px 0px;
+    
 }
 .paper_edit .el-form-item__label{
     line-height: 20px;
@@ -1131,10 +1154,19 @@ color: #eee;
     border-radius: 10px;
 }
 
+.el-textarea{
+  min-height: 13rem;
+  height: 100%;
+}
 .el-textarea__inner{
     background:#333 !important;
     color:white !important;
+    min-height: 50vh !important;
 }
+.abstract .el-textarea__inner{
+  min-height: 13rem !important;
+}
+
 .el-tag + .el-tag {
   margin:2px 5px;
 margin-left: 10px;
@@ -1163,6 +1195,7 @@ vertical-align: bottom;
     box-sizing: border-box;
     box-shadow: 5px 5px 10px rgba(0,0,0,.1);
     transition: ease .5s;
+    font-family: 'kaTeX_Main';
 }
 #md_editor .katex .katex-html {
     display: inline-block;
@@ -1183,10 +1216,23 @@ vertical-align: bottom;
     height: 1.5em;
     transform: translate(0px, .3em);
     background:transparent;
+    display: inline;
+    border-radius: 1.5em;
+    transition: .2s all ease-out;
+}
+#md_editor a img:hover{
+    transform: scale(1.1);
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
 }
 #md_editor img{
     max-height: 400px;
     border-radius: 10px;
+    display: block;
+    margin: auto;
+    transition: ease .5s;
+}
+#md_editor img:hover{
+      box-shadow: 0px 4px 10px #eee;
 }
 .el-slider__runway,.el-slider__stop{
 background: rgba(255,255,255,.5);
@@ -1211,9 +1257,6 @@ thead tr th,.el-table tr ,.el-table,thead, thead tr{
         transition: ease .5s;
     }
 .dark-mode{
-    .paper_info{
-        background: #333;
-    }
     .paper_title{
         text-shadow: 0px 0px 0px;
     }
@@ -1313,11 +1356,11 @@ thead tr th,.el-table tr ,.el-table,thead, thead tr{
 .add_to_table{
         position: fixed;
     z-index: 11;
-    top: 40px;
-    background: #eee;
+    top: 80px;
+    background: white;
     border: 1px solid #ddd;
     width: 50%;
-    margin-left: 25%;
+    left: 25%;
     box-shadow: 0px 5px 20px -4px rgba(0,0,0,.2) !important;
 }
 .add_board .el-form-item__label{
@@ -1326,12 +1369,14 @@ thead tr th,.el-table tr ,.el-table,thead, thead tr{
 .paper{
     width: calc(80% - 12px);
     margin: 10px 10%;
+    border: 1px solid #ddd;
     // float: left;
     position: relative;
     // min-width: 150px;
     transition:ease .5s;
-    box-shadow: 0 8px 42px -8px rgba(0, 0, 0, 0.2);
+    box-shadow: none !important;
     border-radius: 1em;
+    // cursor: pointer;
     .paper_head{
           line-height: 1.2em;
     padding: 5px;
@@ -1339,6 +1384,7 @@ thead tr th,.el-table tr ,.el-table,thead, thead tr{
     margin-bottom: 1em;
     font-weight: bold;
     transition: ease .5s;
+    color:black;
     
     }
     .paper_img{
@@ -1347,23 +1393,28 @@ thead tr th,.el-table tr ,.el-table,thead, thead tr{
           max-width: 100%;
           // margin-left: calc(50% - 130px);
       //margin-top: calc(50% - 100px);
+      text-align: center;
       background-position: center;
       background-size: contain;
       background-repeat: no-repeat;
-      background-image: url(https://raw.githubusercontent.com/WYKXLDZ/ResearchBoxCollection/master/22_understanding_n_1.png);
+      // background-image: url(https://raw.githubusercontent.com/WYKXLDZ/ResearchBoxCollection/master/22_understanding_n_1.png);
       background-color: white;
       border-radius: 5px;
-      
-  }
-}
-.paper:hover{
-      cursor: pointer;
-      box-shadow: 0 8px 42px -8px rgba(0, 0, 0, 0.3);
+      img{
+        max-height: 100%;
+        max-width: 100%;
+        height: auto;
+        width: auto;
+      }
+    }
 }
 .paper .el-card__body{
     position: unset !important;
 }
 @media only screen and (max-width: 767px){
+    .xs_hidden{
+      display: none;
+    }
     #aside_bar{display: none;}
     #m_nav_bar{display: block;}
     .paper{
@@ -1373,7 +1424,7 @@ thead tr th,.el-table tr ,.el-table,thead, thead tr{
     }
     .ops{
       width: calc(100% - 12px);
-      margin:10px;
+      margin:10px !important;
     }
     .under_search_bar{
       margin-top:10px;
@@ -1442,7 +1493,7 @@ thead tr th,.el-table tr ,.el-table,thead, thead tr{
     }
     .ops{
         width: calc(100% - 12px);
-        margin:10px;
+        margin:10px !important;
     }
     #aside_bar{
         position: absolute !important;
@@ -1477,6 +1528,16 @@ thead tr th,.el-table tr ,.el-table,thead, thead tr{
     line-height: 1.6em;
     font-weight: bold;
 }
+.paper .author{
+        //position: absolute;
+    z-index: 0;
+    color: black;
+    top: 0px;
+    left: 20px;
+    font-size: 1em;
+    line-height: 1em;
+    // font-weight: bold;
+}
 .paper_query_item{
     background-color:rgba(0,128,128,.1);
     border-radius: 10px;
@@ -1503,13 +1564,24 @@ text-align: center;
     box-shadow: 0px 0px 10px rgba(0,0,0,.1);
 }
 .micro_tag{
-
     font-size: 8px !important;
     border-radius: 10px !important;
     padding: 0px 10px !important;
     height: 20px !important;
     line-height: 20px !important;
     background:$--color-primary !important;
+    color:white !important;
+    border:0px !important;
+    margin-right: 10px !important;
+    margin-left: 0px !important;
+}
+.table_tag{
+    font-size: 8px !important;
+    border-radius: 10px !important;
+    padding: 0px 10px !important;
+    height: 25px !important;
+    line-height: 25px !important;
+    background:$--color-primary-50 !important;
     color:white !important;
     border:0px !important;
     margin-right: 10px !important;
@@ -1544,14 +1616,31 @@ text-align: center;
 }
 .el-collapse-item__content{background:#efefef;padding: 10px !important;}
 .el-collapse-item__header,.el-collapse-item__content{
-  background:#efefef;
+      border-bottom: 1px solid white;
+  background:transparent;
     transition: ease .5s;
 }
 .el-card{
     transition: ease .5s;
     border-radius: 1em;
 }
+.el-button{
+  transition: ease .3s;
+}
+.el-button:hover{
+  
+  box-shadow:0px 3px 10px -3px #3f51b5;
+}
+.el-button--primary:hover{
+  box-shadow:0px 3px 10px -3px #3f51b5;
+}
 .dark-mode{
+  .el-tabs{
+    color:white;
+    .el-tabs__item{
+      color:white;
+    }
+  }
     .el-card{
         background: #333;
         border: 1px solid #444;
@@ -1611,6 +1700,9 @@ text-align: center;
     .micro_tag{
         color:#eee !important;
     }
+    .table_tag{
+        color:#eee !important;
+    }
     .finished{
             background: #333 !important;
             color: white !important;
@@ -1618,8 +1710,10 @@ text-align: center;
     .paper{
         background: #333 !important;
         color: white !important;
+        border: 1px solid #666;
         .paper_head{
           border-bottom: 1px solid #444;
+          color:white;
         }
     }
 }

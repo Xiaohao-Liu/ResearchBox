@@ -1,13 +1,15 @@
 <template>
   <el-main style="position:absolute;height:100%;width:100%;top:0px;left:0px;">
+      <el-header class="top_bar">
       <el-row style="margin:0px;"> 
             <!-- <el-col class="user_bar" :span="4">
                         <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
             </el-col> -->
             <el-col class="title_bar" :span="24" ><i class="el-icon-s-order"></i> 计划管理 </el-col>
         </el-row>
+      </el-header>
     <!-- {{editForm}} -->
-    <el-row class="ops" style="margin:10px;">
+    <el-row class="ops">
         <el-button type="primary" icon="el-icon-back" v-on:click="$router.back(-1)" circle></el-button>
         <el-button type="primary" icon="el-icon-finished" v-on:click="upload_all_changes()" circle></el-button>
     </el-row>
@@ -16,7 +18,7 @@
 
         </el-col>
     </el-row>
-    <el-card>
+    <el-card class="paper">
         <div class="plan_process" v-bind:style="{width:everageWidth+'%'}"></div>
       <el-table
         :data="paper_list"

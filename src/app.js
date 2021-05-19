@@ -4,7 +4,7 @@ const cors = require('cors')
 //导入自定义路由文件,创建模块化路由
 const routes = require("../src/router")
 const app = express()
-const port = 9090
+const port = 80
 const config = require("./utils/config")
 
 app.use(express.static(config.cwd + "/dist"));

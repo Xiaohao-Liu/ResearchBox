@@ -42,7 +42,12 @@ async function  insertTable(table){
 
 async function  delTable(id){
     var table = await Plan.findByPk(id);
-    return await table.destroy();
+    const stack = []
+    for(let paperid in table.papers.split(";")){
+      stack.push(del_paper_from_table(paperid,table.id))
+    }
+    stack.push(table.destroy())
+    return await Promise.all(stack);
 }
 
 async function  getTablesByNtime(){
@@ -67,12 +72,15 @@ async function  getTablesInfo(ids){
 async function  del_paper_from_table(paperid,tableid){
 
     var table = await Plan.findByPk(tableid);
-    table.nums = table.nums - 1;
-    var paperlist = table.papers==null?[]:table.papers.split(';');
-    paperlist.splice(paperlist.indexOf(paperid),1);
-    console.log(paperlist)
-    table.papers = paperlist.join(";");
-    return await table.save()
+    if(table != null){
+      table.nums = table.nums - 1;
+      var paperlist = table.papers==null?[]:table.papers.split(';');
+      paperlist.splice(paperlist.indexOf(paperid),1);
+      console.log(paperlist)
+      table.papers = paperlist.join(";");
+      return await table.save()
+    }
+    return null
 }
 
 async function  put_paper_to_table(paperid, tableid){

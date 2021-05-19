@@ -48,6 +48,9 @@ const Paper = sequelize.define('Paper', {
   md:{
     type:DataTypes.TEXT
     },
+  abstract:{
+    type:DataTypes.TEXT
+    },
   cite:{
     type: DataTypes.INTEGER,
     defaultValue:0
@@ -111,7 +114,7 @@ async function  getPapersInfo(ids){
 
 async function  getPapersSimpleInfo(ids){
     return await Paper.findAll({
-        attributes:['id','title','tags','meeting','Ptime','Ntime','process','background'],
+        attributes:['id','title','tags','meeting','Ptime','Ntime','process','background','tables'],
         where:{
             id:{
                 [Op.or]:ids
@@ -123,7 +126,7 @@ async function  getPapersSimpleInfo(ids){
 
 async function  getPapersQueryInfo(){
     return await Paper.findAll({
-        attributes:['id','title','process'],
+        attributes:['id','title','process','link'],
         raw:true,
     });
 }

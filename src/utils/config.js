@@ -2,13 +2,13 @@
 
 module.exports = {
     cwd:process.cwd(),
-    server_host:"http://localhost",
+    server_host:"http://47.106.35.151",
     mysql_host: 'localhost',
     mysql_port:3306,
     mysql_username:"root",
-    mysql_password:"123456",
+    mysql_password:"156321",
     database: 'RSB',
-    default_file_password:"123456",
+    default_file_password:"156321",
     // login_path:"/login.html",
     // main_path:"/main.html",
     
@@ -28,5 +28,6 @@ module.exports = {
     papers_per_page:8,
     MeetingPicsUrl:"/api/gitee/MeetingPics.json",
     piclinks:"/api/gitee/piclinks.json",
-    exprimentsUrl:"http://localhost"
+    links:"/api/gitee/links.json",
+    exprimentsUrl:"http://47.106.35.151:9090"
   }

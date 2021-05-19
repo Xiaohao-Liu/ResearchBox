@@ -1,12 +1,14 @@
 <template>
   <el-main style="position:absolute;height:100%;width:100%;top:0px;left:0px;">
+    <el-header class="top_bar">
     <el-row style="margin:0px;"> 
             <!-- <el-col class="user_bar" :span="4">
                         <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
             </el-col> -->
             <el-col class="title_bar" :span="24" ><i class="el-icon-data-analysis"></i> 统计分析 </el-col>
         </el-row>
-      <el-row :gutter=10 style="margin-top:10px;">
+    </el-header>
+      <el-row class="ops" :gutter=10>
           <el-col :span="6" :xs="24"  style="margin-top:10px;">
             <el-card>
               <div class="analysis_title">总数：</div>
@@ -34,7 +36,7 @@
             </el-card>
           </el-col>
       </el-row>
-      <el-row  :gutter=10 style="margin-top:10px;">
+      <el-row   class="ops" :gutter=10>
         <el-col  :span="12"  :xs="24"  style="margin-top:10px;">
           <el-card style="height:464px;" id="tagGraphBoard">
             <div id='tagGraphCanvas'></div>
@@ -63,7 +65,7 @@
           </el-col>
       </el-row>
 
-      <el-row :gutter=10 style="margin-top:10px;">
+      <el-row  class="ops" :gutter=10>
           <el-col :span="12"  :xs="24"  style="margin-top:10px;">
             <el-card class="top10" v-loading="meeting_top10_loading">
               <div class="analysis_title">Meeting TOP10：</div>

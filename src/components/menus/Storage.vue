@@ -1,11 +1,13 @@
 <template>
 <el-main style="position:absolute;height:100%;width:100%;top:0px;left:0px;">
+    <el-header class="top_bar">
     <el-row style="margin:0px;"> 
             <!-- <el-col class="user_bar" :span="4">
                         <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
             </el-col> -->
             <el-col class="title_bar" :span="24" ><i class="el-icon-files"></i> 文件存储 </el-col>
         </el-row>
+    </el-header>
     <file-browser :axiosConfig="{'baseURL': baseURL}" />
 </el-main>
 </template>

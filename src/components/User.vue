@@ -1,11 +1,14 @@
 <template>
   <el-main style="position:absolute;height:100%;width:100%;top:0px;left:0px;">
+    <el-header class="top_bar">
     <el-row style="margin:0px;"> 
             <!-- <el-col class="user_bar" :span="4">
                         <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
             </el-col> -->
             <el-col class="title_bar" :span="24" ><i class="el-icon-user"></i>用户管理 </el-col>
-        </el-row>
+    </el-row>
+    </el-header>
+    <el-card class="paper">
     <el-row style="margin-top:10px;">
       <el-col :span="24">
         <el-upload
@@ -73,6 +76,7 @@
     <el-row style="margin-top:10px;text-align:center;" >
       <el-button type="danger" plain @click="logout">登出帐号</el-button>
     </el-row>
+    </el-card>
   </el-main>
 </template>
 
@@ -254,6 +258,7 @@ export default {
       location.reload();
     },
     change_dark_mode:function(changedValue){
+      console.log("change to:", changedValue)
       let darkMode = false;
       if(changedValue=="auto"){
         localStorage.setItem("RSB_darkMode_auto","true");
